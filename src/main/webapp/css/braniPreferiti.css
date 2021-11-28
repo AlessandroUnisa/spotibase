@@ -1,0 +1,25 @@
+table{
+    text-align: center;
+    border: 2px solid var(--white);
+    border-collapse: collapse;
+}
+
+td > img {
+    width: 3rem;
+    margin-top: 5px;
+}
+
+button.controlBtn{
+    margin: 5px;
+}
+
+tr:nth-child(even){background-color: var(--blue)}
+
+@media screen and (max-width: 768px){
+    .w10{
+        flex-basis: 10%;
+    }
+    .w100{
+        flex-basis: 100%;
+    }
+}

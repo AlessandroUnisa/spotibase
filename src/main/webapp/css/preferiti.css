@@ -1,0 +1,12 @@
+#buttonPref{
+    padding-left: 0;
+    margin-left: auto;
+    margin-right: auto;
+    margin-bottom: 0;
+    width: auto;
+}
+
+#buttonPref li{
+    float: left;
+}
+

@@ -1,0 +1,219 @@
+/*CSS HEADER*/
+header a{
+    text-decoration:none;
+    text-transform: uppercase;
+    font-size:16px;
+    color: black;
+}
+
+header  li{
+    float: left;
+    list-style: none;
+}
+
+header a:hover{
+    color:#cccccc;
+    font-weight:bold;
+}
+
+/*LOGO*/
+header > div{
+    width: 8%;
+    float: left;
+    margin-left: auto;
+    margin-right: auto;
+  }
+  header img{width: 100%;}
+  
+/*MENU*/
+ul {
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    overflow: hidden;
+}
+
+li a {
+    display: block;
+    color: white;
+    text-align: center;
+    padding: 14px 16px;
+    text-decoration: none;
+}
+  
+li a:hover:not(.active) {
+    background-color: #111;
+}
+  
+.active {
+    background-color: #215658;
+}
+
+/*FORM RICERCA*/
+header form{
+    position: relative;
+    top:27px;
+    left: 50%;
+    transform: translate(-50%,-50%);
+    transition: all 1s;
+    width: 50px;
+    height: 50px;
+    background: white;
+    box-sizing: border-box;
+    border-radius: 25px;
+    border: 4px solid white;
+    padding: 5px;
+  }
+  .liForm{
+    float: right;
+  }
+  input[type="search"]{
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;;
+    height: 42.5px;
+    line-height: 30px;
+    outline: 0;
+    border: 0;
+    display: none;
+    font-size: 1em;
+    border-radius: 20px;
+    padding: 0 20px;
+  }
+  .fa{
+    box-sizing: border-box;
+    padding: 10px;
+    width: 42.5px;
+    height: 42.5px;
+    position: absolute;
+    top: 0;
+    right: 0;
+    border-radius: 50%;
+    color: #07051a;
+    text-align: center;
+    font-size: 1.5em;
+    transition: all 1s;
+  }
+
+  header form:hover{
+    width: 200px;
+    cursor: pointer;
+  }
+  
+  header form:hover input{
+    display: block;
+  }
+  
+  header form:hover .fa{
+    background: #07051a;
+    color: white;
+  }
+
+  /*button user*/
+  .user{
+    float:right;
+    width: 50px;
+    padding-right:5px ;
+    padding-top: 2px;
+    padding-left: 20px;
+    margin: 0;
+    cursor: pointer;
+  }
+
+  .user:hover .triangle, .user:hover .popupUser{
+    display: block;
+  }
+
+  .user:hover + div{
+      display: none;
+  }
+
+  #logo{
+    padding-top: 7px; 
+    padding-left:10px;
+    width: 80px;
+  }
+
+
+/*css header smartphone*/
+.sidenav {
+    height: 100%;
+    width: 0;
+    position: fixed;
+    z-index: 1;
+    top: 0;
+    left: 0;
+    overflow-x: hidden;
+    transition: 0.5s;
+    padding-top: 60px;
+    display: none;
+    background-image: linear-gradient(356deg ,#f8f8f8,#f8f8f8, #f8f8f8, #e9e9e9, #D1D1D2, #215658);
+    border-radius: 0px 20px 20px 0px;
+    box-shadow: #888888;
+}
+
+.sidenav a {
+    padding: 8px 8px 8px 32px;
+    text-decoration: none;
+    font-size: 28px;
+    color:var(--black);
+    display: block;
+    transition: 0.3s;
+}
+
+.sidenav div a:hover {
+    background-color: #215658;
+    color:white;
+    font-size: 29px;
+}
+
+.sidenav .closebtn {
+    position: absolute;
+    top: 0;
+    right: 6px;
+    font-size: 28px;
+
+}
+
+.main {
+    transition: margin-left .5s;
+    display: none;
+
+}
+.tendina{
+    margin-top: 50px;
+}
+.computer{
+    display: block;
+}
+#darkModeTendina{
+    display: none;
+}
+
+@media screen and (max-width: 769px) {
+    .sidenav {padding-top: 15px;}
+    .sidenav a {font-size: 18px;}
+    .main{
+        display: block;
+    }
+    .sidenav{
+        display: block;
+    }
+
+    .computer{
+        display: none;
+    }
+    #darkModeComputer{
+        display: none;
+    }
+    #darkModeTendina{
+        display: inline;
+        padding-left: 10px;
+        align-content: center;
+    }
+    header form{
+        width: 200px;
+    }
+}

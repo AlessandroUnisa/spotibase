@@ -1,0 +1,17 @@
+p{
+    text-align: center;
+    font-size: 2rem;
+}
+
+body{
+    background-image: url("../image/vinile.png");
+}
+
+h1{
+    font-size: 4rem;
+    text-align: center;
+}
+
+a{
+    text-decoration: none;
+}

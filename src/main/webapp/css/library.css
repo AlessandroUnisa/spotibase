@@ -1,0 +1,332 @@
+@font-face {
+    font-family: 'ManilaSans';
+    font-weight: bold;
+    font-style: normal;
+    src: url("../fonts/manilasansbld.otf");
+}
+
+@font-face {
+    font-family: 'ManilaSans';
+    font-weight: normal;
+    font-style: normal;
+    src: url("../fonts/manilasansreg.otf");
+}
+
+:root{
+    font-family: ManilaSans, sans-serif;
+    font-style: normal;
+    font-weight: normal;
+    font-size:clamp(16px,2vw,18px); /*2vm = 2% della viewport */
+    --white: #ffffff;
+    --black: #111112;
+    --grey: #D1D1D1;
+    --blue: #215658;
+    --blueLight: #3DA2A6;
+    --shadow: #111112b5;
+    /*height: 100%;*/
+}
+
+body{
+    min-height: 100%;
+    background-image: linear-gradient(180deg, #111112,#323233,#5C5C5E);
+    color: var(--white);
+    background-attachment: fixed;
+    background-repeat: no-repeat;
+    margin:0;
+}
+
+
+input, select, textarea{
+    padding: 8px;
+    border-width: 1px;
+    border-color:#cccccc;
+    background-color: var(--white);
+    border-style:solid;
+    box-shadow: 0 0 10px rgba(212,212,212,.54);
+
+}
+
+input:focus, textarea:focus,select:focus{
+    outline: none; /*non fa uscire il bordo nero*/
+}
+
+.app{ /*copre tutta la viewport*/
+    width:100vw;
+    height:100vh;
+    max-width:100%;/* non fa comparire la scrolbar*/
+}
+
+.hide{/**/
+    display: none !important;
+}
+
+/*flexbox modello di impaginazione dinamico*/
+
+.grid-x{/*disponde gli elementi figli in orizzontale*/
+    display: flex;/**/
+    flex-flow:row wrap;/*row=dispone a righe; wrap=se un figlio ha una grandezza tale da non rientrare nella riga lo stacca in verticale*/
+
+}
+/*stessa cosa ma per le colonne*/
+.grid-y{
+    display: flex;
+    flex-flow: column wrap;
+}
+
+.grid-inline{
+    display: inline-flex;
+}
+
+.justify-center{
+    justify-content: center;
+}
+
+.align-center{
+    align-items: center;
+}
+
+/*ad un elemento figlio occupa un inter riga*/
+.cell{
+    flex-basis: 100%;
+}
+
+.field{
+    display: inline-flex;
+    align-items: center;
+}
+
+/*tutti i figli che hanno come padre width setta la larghezza al 100% della pagina*/
+.field > input, .field > select, .field >textarea{
+    width:100%;
+}
+
+.field > input[disabled], .field > select[disabled], .field > textarea[disabled]{
+    background-color: var(--grey);
+}
+
+button{
+    cursor:pointer;
+    border: none;
+}
+
+.btn{
+    padding: 8px;
+    border-radius:4px;
+    font-size: 20px;
+    margin-top: 20px;
+    box-shadow:1px 1px 3px var(--grey);
+}
+
+.controlBtn{
+    background-color: white;
+    border-radius: 50%;
+    padding: 10px;
+    font-size: 15px;
+    color: black;
+}
+
+button.primary{
+    background-color: var(--blue);
+    color:var(--white);
+}
+
+button.primary:hover{
+    filter: brightness(110%);/*quando si passa con il mouse il colore diventa più chiaro*/
+}
+
+
+@media screen and (min-width:769px){
+
+    .w10{
+        flex-basis: 10%;
+    }
+
+    .w12{
+        flex-basis: 12%;
+    }
+
+    .w15{
+        flex-basis: 15%;
+    }
+
+    .w20{
+        flex-basis: 20%;
+    }
+
+    .w25{
+        flex-basis: 25%;
+    }
+
+    .w33{
+        flex-basis: 33%;
+    }
+
+    .w40{
+        flex-basis: 40%;
+    }
+
+    .w50{
+        flex-basis: 50%;
+    }
+
+    .w75{
+        flex-basis: 75%;
+    }
+
+    .w80{
+        flex-basis: 80%;
+    }
+
+    .w100{
+        flex-basis:100% ;
+    }
+}
+
+/*paginator*/
+.paginator{
+    list-style-type: none;
+}
+
+.paginator > li{
+    border: 1px solid;
+    padding: .3rem;
+}
+
+.paginator > li > a{
+    text-decoration: none;
+    color: var(--black);
+    cursor: pointer;
+}
+
+.noDisplay{
+    display: none;
+}
+
+/* The Close Button */
+.close {
+    color: #aaaaaa;
+    float: right;
+    font-size: 28px;
+    font-weight: bold;
+}
+
+.close:hover,
+.close:focus {
+    color: #000;
+    text-decoration: none;
+    cursor: pointer;
+}
+
+hr{
+    width: 93%;
+    background-color: var(--black);
+    border: .5px solid var(--black);
+}
+
+.text-small{
+    font-size: 15px;
+}
+
+h1{
+    font-size: 40px;
+    text-align: center;
+}
+
+h2{
+    font-size: 30px;
+    text-align: center;
+}
+
+h3{
+    text-align: center;
+}
+
+.overflowY{
+    overflow-y: auto;
+    max-width: 100vw;
+}
+
+.invalidSimple{
+    color: red;
+}
+
+.relative{
+    position: relative;
+}
+
+.triangle{
+    border: 20px solid white;
+    position: absolute;
+    right: 16px;
+    transform: rotate(63deg);
+    top: 52px;
+    display: none;
+    margin: 0;
+}
+
+.popupUser{
+    margin: 0;
+    text-align: center;
+    background: white;
+    border-radius: 15px;
+    color: black;
+    padding: 13px 13px 3px;
+    position: absolute;
+    right: 0;
+    display: none;
+    top: 63px;
+    z-index: 3;
+}
+
+.popupUserOption{
+    margin-bottom: 10px;
+}
+
+.popupUserOption:hover{
+    cursor: pointer;
+    font-weight: bold;
+}
+
+section{
+    padding-bottom: 150px;
+}
+
+.ticketBenvenuto{
+    display: block;
+    z-index: 2;
+    padding-bottom: 10px;
+    box-shadow: 0px 3px 10px 0px #00000085, inset -2px -1px 8px #11111173;
+}
+
+.badgeCart{
+    background-color: green;
+    padding: 4px;
+    border-radius: 50%;
+    font-size: 14px;
+    position: absolute;
+    right: 2px;
+}
+
+.divTotale{
+    text-align: center;
+    background-color: #215658;
+    padding: 20px;
+    box-shadow: 1px 1px 3px var(--grey);
+    font-size: 30px;
+    border-radius: 15px;
+}
+
+.divTotale + form button{
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+i{
+    cursor: pointer;
+}
+
+#hamburger{
+    font-size:30px;
+    cursor:pointer;
+}

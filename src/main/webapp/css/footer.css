@@ -1,0 +1,90 @@
+/*FOOTER*/
+footer{
+    color:#ffffff;
+    background-color:white;
+    text-align: center;
+    bottom:0;
+    width: 80%;
+    position: fixed;
+    left: 0;
+    right: 0;
+    margin-left: auto;
+    margin-right: auto;
+    border-top-right-radius: 15px;
+    border-top-left-radius: 15px;
+    z-index: 2;
+}
+  
+footer div{
+    color:#333;
+}
+
+/*AUDIO*/
+audio{width: 87%;}
+audio::-webkit-media-controls-panel {
+    background-color: #ffffff;
+}
+audio::-webkit-media-controls-play-button{
+    background-color: #F8F8F8;
+    border-radius: 50%;
+}
+
+/*BUTTON INFO PLUS HEART FOOTER*/
+.btnControl{
+    float:left;
+    border-radius: 50%;
+    border: none;
+    background-color: #fff;
+    font-size: 21px;
+    cursor: pointer;
+    padding: 16px;
+    color: black;
+}
+@media screen and (max-width: 769px) {
+    .btnControl{
+        font-size: 15px;
+        padding:6px;
+    }
+
+}
+@media screen and (max-width: 1400px) {
+    .btnControl{
+        float:none;
+    }
+
+}
+
+footer .fa-plus{
+    position: relative;
+}
+
+footer .fa-plus:hover .trianglePlaylist, footer .fa-plus:hover .contentPlaylist{
+    display: block;
+}
+
+.trianglePlaylist{
+    border: 11px solid grey;
+    position: absolute;
+    transform: rotate(45deg);
+    left: -13%;
+    bottom: 97%;
+    z-index: 1;
+    display: none;
+}
+
+.contentPlaylist{
+    background: grey;
+    padding: 10px;
+    font-family: ManilaSans;
+    position: absolute;
+    bottom: 121%;
+    left: -89%;
+    border-radius: 15px;
+    font-size: 16px;
+    z-index: 2;
+    display: none;
+}
+
+.contentPlaylist p:hover{
+    color: var(--blue);
+}

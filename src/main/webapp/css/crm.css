@@ -1,0 +1,74 @@
+.app{
+    display: flex;
+    flex-flow: row nowrap;
+}
+
+.menu > a{
+    text-decoration: none;
+    color: var(--white);
+    padding: 1rem;
+}
+
+.content{
+    background-color: var(--white);
+    flex:1;
+    transition: all .3s ease-in-out;
+}
+
+.sidebar{
+    flex-basis: 300px;
+    transition: all .3s ease-in-out;
+}
+.sidebar.collapse{
+    transform: translate3d(-300px,0,0);
+}
+
+.content.full-width{
+    margin-left: -300px;
+}
+
+.info{
+    text-align: right;
+    font-weight:normal;
+    padding-right: 1rem;
+    border:1px solid darkgray;
+}
+
+.body{
+    flex-grow: 1;
+}
+
+body{
+    margin:0;
+    background: var(--white);
+    color: black;
+}
+
+.topbar{
+    background-color: var(--black);
+    margin-bottom:20px;
+    width: 100%
+}
+
+.topbar > img{
+    width: 3rem;
+}
+
+.topbar > .accont{
+    display: none;
+}
+
+.topbar > .command{
+    flex:1;
+
+}
+
+.topbar > * {
+    color:var(--white);
+    margin-right: 8px;
+
+}
+
+.topbar > svg{
+    cursor: pointer;
+}

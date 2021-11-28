@@ -1,0 +1,43 @@
+.wrapper img{
+    width: 4rem;
+}
+
+.wrapper{
+    background-color: var(--white);
+    padding: 10px;
+    margin: 10px;
+    color: var(--black);
+}
+
+h1, h2{
+    flex-basis: 100%;
+}
+
+.fa-check-circle{
+    color: green;
+}
+
+.fa-times-circle{
+    color: red;
+}
+
+p {
+    flex-basis: 100%;
+    text-align: center;
+}
+
+.btnAcquista{
+    background-color: var(--blueLight);
+    color: var(--white);
+    padding: 23px;
+    width: 100%;
+    font-size: 20px;
+}
+
+.btnAcquista:hover{
+    filter: brightness(110%);
+}
+
+a{
+    color: inherit;
+}
