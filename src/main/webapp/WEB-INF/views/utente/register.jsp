@@ -7,12 +7,12 @@
         <jsp:param name="title" value="Spotibase | Registrati"/>
         <jsp:param name="style" value="loginRegister.css"/>
         <jsp:param name="script" value="register.js"/>
-        <jsp:param name="prefix" value="../"/>
+        <jsp:param name="prefix" value="./"/>
     </jsp:include>
 </head>
 <body>
 <jsp:include page="../partials/header.jsp">
-    <jsp:param name="prefix" value="../"/>
+    <jsp:param name="prefix" value="./"/>
 
 </jsp:include>
 <div class="container grid-y">
@@ -37,7 +37,7 @@
                     <input type="email" id="email" name="email" size="28" value="${email}" required>
                 </label><br>
                 <label for="pwd">
-                    Password:<img src="../icons/eye.svg" onclick="showPwd()"><br>
+                    Password:<img src="./icons/eye.svg" onclick="showPwd()"><br>
                     <c:if test="${errPasswd != null}">
                         <div class="invalidSimple"> ${errPasswd}</div>
                     </c:if>

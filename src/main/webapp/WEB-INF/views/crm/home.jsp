@@ -25,7 +25,7 @@
 
                 <div>
                     Benvenuto amministratore
-                    <button class="btn primary" onclick="window.location.href = '../account/logout';">Logout</button>
+                    <button class="btn primary" onclick="window.location.href = '../logout';">Logout</button>
                 </div>
             </header>
             <div class="body grid-x justify-center">

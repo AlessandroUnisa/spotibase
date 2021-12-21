@@ -14,7 +14,7 @@
                     <a href="./libreria">Libreria</a>
                 </c:when>
                 <c:otherwise>
-                    <a href="${param.prefix}account/register">Libreria</a>
+                    <a href="${param.prefix}register">Libreria</a>
                 </c:otherwise>
             </c:choose>
 
@@ -32,7 +32,7 @@
                         <a href="./libreria">Libreria</a>
                     </c:when>
                     <c:otherwise>
-                        <a href="${param.prefix}account/register">Libreria</a>
+                        <a href="${param.prefix}register">Libreria</a>
                     </c:otherwise>
                 </c:choose>
             </li>
@@ -43,11 +43,11 @@
                 <div class="popupUser">
                     <c:choose>
                         <c:when test="${sessionScope.isLogged}">
-                            <div class="popupUserOption"><a href="${param.prefix}account/logout">Logout</a></div>
+                            <div class="popupUserOption"><a href="${param.prefix}logout">Logout</a></div>
                         </c:when>
                         <c:otherwise>
-                            <div class="popupUserOption"><a href="${param.prefix}account/login" >Login</a></div>
-                            <div class="popupUserOption"><a href="${param.prefix}account/register">Registati</a></div>
+                            <div class="popupUserOption"><a href="${param.prefix}login" >Login</a></div>
+                            <div class="popupUserOption"><a href="${param.prefix}register">Registati</a></div>
                         </c:otherwise>
                     </c:choose>
                     <div class="popupUserOption"><a href="${param.prefix}carrello">Carrello</a></div>
@@ -74,11 +74,11 @@
 
                    <c:choose>
                        <c:when test="${sessionScope.isLogged}">
-                           <div class="popupUserOption"><a href="${param.prefix}account/logout">Logout</a></div>
+                           <div class="popupUserOption"><a href="${param.prefix}logout">Logout</a></div>
                        </c:when>
                        <c:otherwise>
-                           <div class="popupUserOption"><a href="${param.prefix}account/login" >Login</a></div>
-                           <div class="popupUserOption"><a href="${param.prefix}account/register">Registati</a></div>
+                           <div class="popupUserOption"><a href="${param.prefix}login" >Login</a></div>
+                           <div class="popupUserOption"><a href="${param.prefix}register">Registati</a></div>
                        </c:otherwise>
                    </c:choose>
                     <div class="popupUserOption"><a href="${param.prefix}carrello">Carrello</a></div>

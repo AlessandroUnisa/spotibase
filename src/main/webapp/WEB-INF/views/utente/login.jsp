@@ -7,12 +7,12 @@
        <jsp:param name="title" value="Spotibase | Login"/>
        <jsp:param name="style" value="loginRegister.css"/>
        <jsp:param name="script" value="login.js"/>
-       <jsp:param name="prefix" value="../"/>
+       <jsp:param name="prefix" value="./"/>
    </jsp:include>
 </head>
 <body>
 <jsp:include page="../partials/header.jsp">
-    <jsp:param name="prefix" value="../"/>
+    <jsp:param name="prefix" value="./"/>
 </jsp:include>
 <div class=" container grid-y">
     <h2>Login</h2>
@@ -28,7 +28,7 @@
                 </label>
 
                 <label for="pwd">
-                    *Password:<img src="../icons/eye.svg" onclick="showPwd()"><br>
+                    *Password:<img src="./icons/eye.svg" onclick="showPwd()"><br>
                     <input type="password" id="pwd" name="passwd" required ><br>
                 </label>
                 <button class="btn primary" value="submit" >Accedi</button>
