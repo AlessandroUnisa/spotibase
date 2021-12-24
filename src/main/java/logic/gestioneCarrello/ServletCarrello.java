@@ -2,8 +2,10 @@ package logic.gestioneCarrello;
 
 import data.Album.Album;
 import data.Album.AlbumDAO;
+import data.DAOAcquisto.AcquistoAPI;
 import data.DAOAcquisto.AcquistoDAO;
 import data.DAOCanzone.Canzone;
+import data.DAOCanzone.CanzoneAPI;
 import data.DAOCanzone.CanzoneDAO;
 
 import javax.servlet.*;
@@ -29,8 +31,8 @@ public class ServletCarrello extends HttpServlet {
 
         if(((TreeSet<String>)session.getAttribute("listCart")).size()>0){
             ArrayList<String> codici = new ArrayList<>((TreeSet<String>) session.getAttribute("listCart")); //codici presenti nel carrello
-            CanzoneDAO canzoneDAO = new CanzoneDAO();
-            AcquistoDAO acquistoDAO = new AcquistoDAO();
+            CanzoneAPI canzoneDAO = new CanzoneDAO();
+            AcquistoAPI acquistoDAO = new AcquistoDAO();
             AlbumDAO albumDAO = new AlbumDAO();
             String username = (String) request.getSession(false).getAttribute("username");
 
@@ -83,8 +85,8 @@ public class ServletCarrello extends HttpServlet {
         if(request.getSession(true).getAttribute("isLogged")!=null) {
             TreeSet<String> codici = (TreeSet<String>) request.getSession(false).getAttribute("listCart");
             Iterator iterator = codici.iterator();
-            CanzoneDAO canzoneDAO = new CanzoneDAO();
-            AcquistoDAO acquistoDAO = new AcquistoDAO();
+            CanzoneAPI canzoneDAO = new CanzoneDAO();
+            AcquistoAPI acquistoDAO = new AcquistoDAO();
             AlbumDAO albumDAO = new AlbumDAO();
             String username = (String) request.getSession(false).getAttribute("username");
             while (iterator.hasNext()) {

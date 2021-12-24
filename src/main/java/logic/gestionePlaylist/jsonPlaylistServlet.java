@@ -1,5 +1,6 @@
 package logic.gestionePlaylist;
 
+import data.DAOPlaylist.PlaylistAPI;
 import data.DAOPlaylist.PlaylistDAO;
 import org.json.simple.JSONObject;
 
@@ -16,7 +17,7 @@ public class jsonPlaylistServlet extends HttpServlet {
         String codiceCanzone = request.getParameter("codCan");
         String nomePlay = request.getParameter("nomePlay");
         String username = (String) request.getSession(false).getAttribute("username");
-        PlaylistDAO playlistDAO = new PlaylistDAO();
+        PlaylistAPI playlistDAO = new PlaylistDAO();
         JSONObject object = new JSONObject();
 
         if(playlistDAO.isPresent(codiceCanzone,nomePlay,username)) //se la canzone è gia presente nella playlist

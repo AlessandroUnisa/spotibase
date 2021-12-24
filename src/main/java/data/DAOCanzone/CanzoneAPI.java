@@ -6,12 +6,14 @@ import java.sql.SQLException;
 import java.util.List;
 
 public interface CanzoneAPI extends Dao<Canzone> {
+    Canzone doRetrieveCanzoneWithArtisti(String codiceCanzone) throws SQLException;
+    List<Canzone> doRetrieveCanzoniByCodiciWithArtisti(List<String> codici) throws SQLException;
 
     //metodi non documentati per IS
     List<Canzone> doRetrieveCanzoniUltimeUscite() throws SQLException;
     List<Canzone> doRetrivePopularSongsWithArtista() throws SQLException;
     List<Canzone> doRetrieveCanzoneRandom() throws SQLException;
-    List<String> doRetrieveaCodiciCanzoniPreferite(String username) throws SQLException;
+
     List<Canzone> doRetrieveSongsByPlaylist(String username, String titoloPlaylist) throws SQLException;
     List<Canzone> doRetrieveSongsByAlbum(String codAlbum) throws SQLException;
     List<Canzone> doRetrieveSinglesByArtista(String nomeDArte) throws SQLException;
@@ -27,6 +29,4 @@ public interface CanzoneAPI extends Dao<Canzone> {
     double doRetrieveTotaleGuadagno() throws SQLException;
     List<Canzone> doRetrieveCanzoniTopBuy() throws SQLException;
     Canzone doRetrieveCanzoneByCodice(String codice) throws SQLException;
-    List<Canzone> doRetrieveCanzoniByCodiciWithArtisti(List<String> codici) throws SQLException;
-
 }

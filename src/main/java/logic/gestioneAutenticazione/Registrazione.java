@@ -1,6 +1,7 @@
 package logic.gestioneAutenticazione;
 
 import data.DAOUtente.Utente;
+import data.DAOUtente.UtenteAPI;
 import data.DAOUtente.UtenteDAO;
 import data.DAOUtente.Validator;
 
@@ -25,7 +26,7 @@ public class Registrazione extends HttpServlet {
         String passwdCheck = request.getParameter("passwdCheck");
 
         Validator validator = new Validator();
-        UtenteDAO utenteDAO = new UtenteDAO();
+        UtenteAPI utenteDAO = new UtenteDAO();
         int flag=0;
         //errori: username gia presente, email non valida, passwd non uguali, passwd non valida
         //se l email non è valida oppure ci sono gia utenti con quella mail (la lista ne conterra al massimo uno)

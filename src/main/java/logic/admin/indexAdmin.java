@@ -6,6 +6,7 @@ import data.Album.AlbumDAO;
 import data.Artista.Artista;
 import data.Artista.ArtistaDAO;
 import data.DAOCanzone.Canzone;
+import data.DAOCanzone.CanzoneAPI;
 import data.DAOCanzone.CanzoneDAO;
 
 import javax.servlet.RequestDispatcher;
@@ -20,7 +21,7 @@ import java.sql.SQLException;
 @WebServlet(name = "indexAdmin", value = "/admin/dashboard")
 public class indexAdmin extends HttpServlet {
     private void doGetElem(HttpServletRequest request) throws SQLException {
-        CanzoneDAO canzoneDAO = new CanzoneDAO();
+        CanzoneAPI canzoneDAO = new CanzoneDAO();
         AlbumDAO albumDAO = new AlbumDAO();
         AbbonamentoDAO abbonamentoDAO = new AbbonamentoDAO();
         ArtistaDAO artistaDAO = new ArtistaDAO();
@@ -74,7 +75,7 @@ public class indexAdmin extends HttpServlet {
             canzone.setAnno(Integer.parseInt(request.getParameter("anno")));
             canzone.setDurata(Double.parseDouble(request.getParameter("durata")));
             canzone.setPrezzo(Double.parseDouble(request.getParameter("prezzo")));
-            CanzoneDAO canzoneDAO= new CanzoneDAO();
+            CanzoneAPI canzoneDAO= new CanzoneDAO();
             request.setAttribute("modifica",canzoneDAO.doUpdate(canzone));
             doGet(request,response);
 

@@ -77,7 +77,7 @@ public class ServletPlaylist extends HttpServlet {
     private void cancellaPlaylist(HttpServletRequest request) throws SQLException {
         String username = (String) request.getSession(false).getAttribute("username");
         String titolo = request.getParameter("delete");
-        PlaylistDAO playlistDAO = new PlaylistDAO();
+        PlaylistAPI playlistDAO = new PlaylistDAO();
         playlistDAO.doDelete(titolo+";"+username);
     }
 
@@ -86,7 +86,7 @@ public class ServletPlaylist extends HttpServlet {
         String titolo = request.getParameter("titolo");
         AttivazioneDAO attivazioneDAO = new AttivazioneDAO();
         int numPlaylist = new PlaylistDAO().doRetrieveNumPlaylistOfUtente(username);
-        PlaylistDAO playlistDAO = new PlaylistDAO();
+        PlaylistAPI playlistDAO = new PlaylistDAO();
 
         if(playlistDAO.isPresent(titolo,username)) //titolo gia presente
             response.sendRedirect("../libreria?presentPlay=1");
@@ -117,7 +117,7 @@ public class ServletPlaylist extends HttpServlet {
                 playlist.setTitolo(titolo);
                 playlist.setNote(note);
                 playlist.setUsername(username);
-                playlistDAO.doInsertPlaylist(playlist);
+                playlistDAO.doSave(playlist);
                 response.sendRedirect("../libreria");
             }
 

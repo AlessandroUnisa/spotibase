@@ -1,14 +1,17 @@
 package data.DAOPreferenza;
 
+import data.DAOCanzone.CanzoneQuery;
 import data.utils.Dao;
 import data.utils.SingletonJDBC;
 
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
 
 /**Questa classe gestisce le operazioni sui dati persistenti per la classe Preferenza*/
-public class PreferenzaDAO implements Dao<Preferenza> {
+public class PreferenzaDAO implements PreferenzaAPI {
 
     @Override
     /**Questo metodo ritorna la preferenza prelevata dal DB. Può essere usato per controllare se una preferenza si trova nel DB o meno
@@ -52,5 +55,16 @@ public class PreferenzaDAO implements Dao<Preferenza> {
         preparedStatement.setString(1,chiavi[0]);
         preparedStatement.setString(2,chiavi[1]);
         return preparedStatement.executeUpdate() == 1;
+    }
+
+    @Override
+    public List<String> doRetrieveaCodiciCanzoniPreferite(String username) throws SQLException {
+        PreparedStatement preparedStatement = SingletonJDBC.getConnection().prepareStatement("SELECT PRE.codiceCanzone FROM preferenza PRE WHERE PRE.usernameUtente=?;");
+        preparedStatement.setString(1,username);
+        ArrayList<String> codici = new ArrayList<>();
+        ResultSet resultSet = preparedStatement.executeQuery();
+        while (resultSet.next())
+            codici.add(resultSet.getString("PRE.codiceCanzone"));
+        return codici;
     }
 }

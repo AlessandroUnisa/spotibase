@@ -3,6 +3,7 @@ package logic;
 import data.Album.AlbumDAO;
 import data.Artista.ArtistaDAO;
 import data.DAOAcquisto.AcquistoDAO;
+import data.DAOCanzone.CanzoneAPI;
 import data.DAOCanzone.CanzoneDAO;
 import data.DAOPlaylist.PlaylistDAO;
 
@@ -21,7 +22,7 @@ public class ServletSearch extends HttpServlet {
 
     private void getSearch(HttpServletRequest request) throws SQLException {
         String searchStr = request.getParameter("search");
-        CanzoneDAO canzoni= new CanzoneDAO();
+        CanzoneAPI canzoni= new CanzoneDAO();
         ArtistaDAO artisti= new ArtistaDAO();
         AlbumDAO album = new AlbumDAO();
         request.setAttribute("canzoni",canzoni.doRetrieveByName(searchStr));

@@ -3,8 +3,10 @@ package logic.gestionePreferenza;
 import data.Album.AlbumDAO;
 import data.Artista.Artista;
 import data.Artista.ArtistaDAO;
+import data.DAOCanzone.CanzoneAPI;
 import data.DAOCanzone.CanzoneDAO;
 import data.DAOPreferenza.Preferenza;
+import data.DAOPreferenza.PreferenzaAPI;
 import data.DAOPreferenza.PreferenzaDAO;
 import org.json.simple.JSONObject;
 
@@ -21,8 +23,8 @@ import java.util.ArrayList;
 public class jsonPreferitiServlet extends HttpServlet {
 
     private void setPreferenzaCanzone(String username, String codice, JSONObject obj) throws SQLException {
-        CanzoneDAO canzoneDAO = new CanzoneDAO();
-        PreferenzaDAO preferenzaDAO = new PreferenzaDAO();
+        CanzoneAPI canzoneDAO = new CanzoneDAO();
+        PreferenzaAPI preferenzaDAO = new PreferenzaDAO();
         if(canzoneDAO.doRetrieveaCodiciCanzoniPreferite(username).contains(codice)){
             try {
                 obj.put("flag",preferenzaDAO.doSave(new Preferenza(codice,username)));

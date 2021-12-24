@@ -2,6 +2,7 @@ package logic;
 
 import data.Album.AlbumDAO;
 import data.DAOAcquisto.AcquistoDAO;
+import data.DAOCanzone.CanzoneAPI;
 import data.DAOCanzone.CanzoneDAO;
 import data.DAOPlaylist.PlaylistDAO;
 
@@ -32,7 +33,7 @@ public class ServletGenere extends HttpServlet {
         AlbumDAO album= new AlbumDAO();
         String gen= request.getParameter("genere");
         request.setAttribute("albumGenere",album.doRetrieveAlbumByGenere(gen));
-        CanzoneDAO canzone= new CanzoneDAO();
+        CanzoneAPI canzone= new CanzoneDAO();
         request.setAttribute("canzoniGenere",canzone.doRetrieveCanzoneByGenere(gen));
     }
 

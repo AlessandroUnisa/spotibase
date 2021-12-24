@@ -1,6 +1,10 @@
 package data.DAOCanzone;
 
 
+import data.Exceptions.OggettoGiaPresenteException;
+import data.Exceptions.OggettoNonCancellatoException;
+import data.Exceptions.OggettoNonInseritoException;
+import data.Exceptions.OggettoNonTrovatoException;
 import data.utils.Dao;
 import data.utils.SingletonJDBC;
 import data.Artista.Artista;
@@ -22,48 +26,89 @@ public class CanzoneDAO implements CanzoneAPI {
      * @return oggetto canzone
      * */
     public Canzone doGet(String chiave) throws SQLException {
-        String[] chiavi = chiave.split(";");
+        if(chiave == null)
+            throw new IllegalArgumentException("chiave è null");
+
         PreparedStatement preparedStatement = SingletonJDBC.getConnection().prepareStatement("SELECT * FROM canzone CAN WHERE CAN.codice = ?");
-        preparedStatement.setString(1,chiavi[0]);
+        preparedStatement.setString(1,chiave);
+        ResultSet resultSet = preparedStatement.executeQuery();
+
+        if(resultSet.getRow() == 0)
+            throw new OggettoNonTrovatoException("canzone non trovata nel db");
+
         CanzoneMapper mapper = new CanzoneMapper();
-        return mapper.map(preparedStatement.executeQuery());
+        return mapper.map(resultSet);
     }
 
-    /** Salva nel DB la canzone*/
-    public boolean doSave(Canzone canzone) throws SQLException {
-        PreparedStatement preparedStatement = SingletonJDBC.getConnection().prepareStatement("INSERT INTO canzone VALUES (?,?,?,?,?,?)");
-        preparedStatement.setString(1,canzone.getCodice());
-        preparedStatement.setInt(2,canzone.getAnno());
-        preparedStatement.setDouble(3,canzone.getDurata());
-        preparedStatement.setString(4,canzone.getTitolo());
-        preparedStatement.setDouble(5,canzone.getPrezzo());
-        return preparedStatement.executeUpdate()==1;
-    }
+    /** Salva nel DB la canzone
+     * @param canzone la canzone da salvare. Con titolo e codice settati
+     * */
+    public void doSave(Canzone canzone) throws SQLException {
+        if(canzone == null || canzone.getTitolo() == null || canzone.getCodice() == null)
+            throw new IllegalArgumentException("canzone o titolo o codice sono null");
 
+        try{
+            doGet(canzone.getCodice());
+            throw new OggettoGiaPresenteException("La canzone è gia presente");
+        }catch (OggettoNonTrovatoException e){
+            PreparedStatement preparedStatement = SingletonJDBC.getConnection().prepareStatement("INSERT INTO canzone VALUES (?,?,?,?,?,?)");
+            preparedStatement.setString(1,canzone.getCodice());
+            preparedStatement.setInt(2,canzone.getAnno());
+            preparedStatement.setDouble(3,canzone.getDurata());
+            preparedStatement.setString(4,canzone.getTitolo());
+            preparedStatement.setDouble(5,canzone.getPrezzo());
 
-    /** Elimina la canzone dal DB*/
-    public boolean doDelete(String codeCanzone) throws SQLException {
-        PreparedStatement preparedStatement = SingletonJDBC.getConnection().prepareStatement("DELETE FROM canzone WHERE codice=?");
-        preparedStatement.setString(1,codeCanzone);
-        return preparedStatement.executeUpdate()==1;
-    }
-
-//questi bho
-
-    /**Ritorna la canzone con la lista degli artisti*/
-    public Canzone doRetrieveCanzoneWithArtisti(String codiceCanzone) throws SQLException {
-        PreparedStatement statement = SingletonJDBC.getConnection().prepareStatement(CanzoneQuery.getQueryDoRetrieveCanzoneWithArtisti());
-        statement.setString(1,codiceCanzone);
-        ResultSet resultSet = statement.executeQuery();
-        Canzone canzone=null;
-        if(resultSet.next()){
-            canzone = new CanzoneMapper().map(resultSet);
-            canzone.setArtisti(new ArrayList<>());
-            canzone.getArtisti().add(new ArtistaMapper().map(resultSet));
-            while (resultSet.next())
-                canzone.getArtisti().add(new ArtistaMapper().map(resultSet));
+            if(preparedStatement.executeUpdate()!=1)
+                throw new OggettoNonInseritoException("La canzone non è stata inserita");
         }
-        return canzone;
+    }
+
+
+    /** Elimina la canzone dal DB
+     * @param codCanzone codice della canzone da eliminare
+     * */
+    public void doDelete(String codCanzone) throws SQLException {
+        if(codCanzone == null)
+            throw new IllegalArgumentException("codCanzone è null");
+
+        try{
+            doGet(codCanzone);
+            PreparedStatement preparedStatement = SingletonJDBC.getConnection().prepareStatement("DELETE FROM canzone WHERE codice=?");
+            preparedStatement.setString(1,codCanzone);
+            if(preparedStatement.executeUpdate()!=1)
+                throw new OggettoNonCancellatoException("La canzone non è stata cancellata");
+        }catch (OggettoNonTrovatoException e){
+            throw e;
+        }
+    }
+
+
+
+    /**Ritorna la canzone con la lista degli artisti
+     * @param codiceCanzone il codice della canzone da prelevare
+     * @return la canzone con all'interno ache la lista degli artisti
+     * */
+    public Canzone doRetrieveCanzoneWithArtisti(String codiceCanzone) throws SQLException {
+        if(codiceCanzone == null)
+            throw new IllegalArgumentException("codiceCanzone è null");
+
+        try{
+            doGet(codiceCanzone);
+            PreparedStatement statement = SingletonJDBC.getConnection().prepareStatement(CanzoneQuery.getQueryDoRetrieveCanzoneWithArtisti());
+            statement.setString(1,codiceCanzone);
+            ResultSet resultSet = statement.executeQuery();
+            Canzone canzone=null;
+            if(resultSet.next()){
+                canzone = new CanzoneMapper().map(resultSet);
+                canzone.setArtisti(new ArrayList<>());
+                canzone.getArtisti().add(new ArtistaMapper().map(resultSet));
+                while (resultSet.next())
+                    canzone.getArtisti().add(new ArtistaMapper().map(resultSet));
+            }
+            return canzone;
+        }catch (OggettoNonTrovatoException e){
+            throw e;
+        }
     }
 
 

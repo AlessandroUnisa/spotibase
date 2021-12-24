@@ -2,6 +2,9 @@ package data.DAOPreferenza;
 
 import data.utils.Dao;
 
-public interface PreferenzaAPI extends Dao<Preferenza> {
+import java.sql.SQLException;
+import java.util.List;
 
+public interface PreferenzaAPI extends Dao<Preferenza> {
+    List<String> doRetrieveaCodiciCanzoniPreferite(String username) throws SQLException;
 }

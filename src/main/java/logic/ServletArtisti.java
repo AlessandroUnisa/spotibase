@@ -2,6 +2,7 @@ package logic;
 
 import data.Artista.ArtistaDAO;
 import data.DAOAcquisto.AcquistoDAO;
+import data.DAOCanzone.CanzoneAPI;
 import data.DAOCanzone.CanzoneDAO;
 import data.DAOPlaylist.PlaylistDAO;
 
@@ -31,7 +32,7 @@ public class ServletArtisti extends HttpServlet {
             request.setAttribute("flagPref", new ArtistaDAO().doRetrieveNomiArteArtistiPreferiti(username).contains(nome));
         }
 
-        CanzoneDAO canzoni = new CanzoneDAO();
+        CanzoneAPI canzoni = new CanzoneDAO();
         request.setAttribute("pathImg",new ArtistaDAO().doRetrieveArtistaByNomeArte(nome).get(0).getPathImg());
         request.setAttribute("canzoni",canzoni.doRetrieveSongsByArtista(nome));
 

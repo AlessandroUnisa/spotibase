@@ -1,6 +1,7 @@
 package logic.gestioneAutenticazione;
 
 import data.DAOUtente.Utente;
+import data.DAOUtente.UtenteAPI;
 import data.DAOUtente.UtenteDAO;
 import data.DAOUtente.Validator;
 
@@ -21,7 +22,7 @@ public class Login extends HttpServlet {
         Utente utenteTemp = new Utente();
         utenteTemp.setEmail(request.getParameter("email"));
         utenteTemp.setPassword(request.getParameter("passwd"));  //per criptare la password
-        UtenteDAO utenteDAO = new UtenteDAO();
+        UtenteAPI utenteDAO = new UtenteDAO();
         Validator validator = new Validator();
 
         Utente utente = utenteDAO.findUser(utenteTemp.getEmail(),utenteTemp.getPassword());  //cerco l utente nel db

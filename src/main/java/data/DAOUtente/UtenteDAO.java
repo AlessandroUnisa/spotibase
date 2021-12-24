@@ -29,17 +29,28 @@ public class UtenteDAO implements UtenteAPI{
         PreparedStatement preparedStatement = SingletonJDBC.getConnection().prepareStatement("SELECT * FROM utente WHERE username=?");
         preparedStatement.setString(1,chiave);
        UtenteMapper mapper = new UtenteMapper();
-       return  mapper.map(preparedStatement.executeQuery());
+       return  mapper.map(preparedStatement.executeQuery());    //se executeQuery da 0 righe lancia eccezione
+    }
+    /**Cerca gli utente che hanno field = value*/
+    public List<Utente> findUsers(String field, String value) throws SQLException {
+        PreparedStatement statement = SingletonJDBC.getConnection().prepareStatement(UtenteQuery.getQueryFindAccountField(field));
+        statement.setString(1,value);
+        ResultSet resultSet = statement.executeQuery();
+        ArrayList<Utente> lista = new ArrayList<>();
+        UtenteMapper mapper = new UtenteMapper();
+        while (resultSet.next())
+            lista.add(mapper.map(resultSet));
+        return lista;
     }
 
-
     /** Salva nel DB l'utente nel db */
-    public boolean doSave(Utente utente) throws SQLException {
+    public boolean doSave(Utente utente) throws SQLException {//mettere void
             PreparedStatement preparedStatement = SingletonJDBC.getConnection().prepareStatement(UtenteQuery.getQueryUtenteSave());
             preparedStatement.setString(1, utente.getUsername());
             preparedStatement.setString(2, utente.getPassword());
             preparedStatement.setString(3, utente.getEmail());
-            return preparedStatement.executeUpdate()==1;
+
+            return preparedStatement.executeUpdate()==1; //se executeUpdate da -1 allora lancia eccezione
     }
 
     /**Cerca un utente per email e password*/
@@ -105,17 +116,7 @@ public class UtenteDAO implements UtenteAPI{
         return lista;
     }
 
-    /**Cerca gli utente che hanno field = value*/
-    public List<Utente> findUsers(String field, String value) throws SQLException {
-        PreparedStatement statement = SingletonJDBC.getConnection().prepareStatement(UtenteQuery.getQueryFindAccountField(field));
-        statement.setString(1,value);
-        ResultSet resultSet = statement.executeQuery();
-        ArrayList<Utente> lista = new ArrayList<>();
-        UtenteMapper mapper = new UtenteMapper();
-        while (resultSet.next())
-            lista.add(mapper.map(resultSet));
-        return lista;
-    }
+
 
     /**Ritona un Utente con album, artisti e canzoni preferite, playlist e abbonamenti*/
     public Utente fetchUtenteWithSongsAlbumArtistiPrefPlayAbbon(String username) throws SQLException {
