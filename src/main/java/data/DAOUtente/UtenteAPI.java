@@ -7,7 +7,7 @@ import java.sql.SQLException;
 import java.util.List;
 
 public interface UtenteAPI extends Dao<Utente> {
-    Utente findUser(String email, String password)  throws SQLException;
+    Utente doGet(String email, String password)  throws SQLException;
     List<Utente> findUsers(String field, String value) throws SQLException;
 
     //non documentati per IS

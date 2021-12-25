@@ -25,7 +25,7 @@ public class Login extends HttpServlet {
         UtenteAPI utenteDAO = new UtenteDAO();
         Validator validator = new Validator();
 
-        Utente utente = utenteDAO.findUser(utenteTemp.getEmail(),utenteTemp.getPassword());  //cerco l utente nel db
+        Utente utente = utenteDAO.doGet(utenteTemp.getEmail(),utenteTemp.getPassword());  //cerco l utente nel db
         if(utente!=null && validator.isAdminEmail(utente.getEmail())){  //amministratore
             HttpSession session = request.getSession(true);
             session.setAttribute("isLogged",true);

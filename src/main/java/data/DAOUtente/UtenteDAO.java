@@ -4,6 +4,10 @@ import data.Album.Album;
 import data.Album.AlbumMapper;
 import data.DAOCanzone.Canzone;
 import data.DAOCanzone.CanzoneMapper;
+import data.Exceptions.OggettoGiaPresenteException;
+import data.Exceptions.OggettoNonCancellatoException;
+import data.Exceptions.OggettoNonInseritoException;
+import data.Exceptions.OggettoNonTrovatoException;
 import data.utils.Dao;
 import data.utils.SingletonJDBC;
 import data.Artista.Artista;
@@ -26,13 +30,20 @@ public class UtenteDAO implements UtenteAPI{
      * @return l'oggetto utente
      * */
     public Utente doGet(String chiave) throws SQLException {
+        if(chiave == null || !chiave.contains(";"))
+            throw new IllegalArgumentException("la chiave è null o non valida");
         PreparedStatement preparedStatement = SingletonJDBC.getConnection().prepareStatement("SELECT * FROM utente WHERE username=?");
         preparedStatement.setString(1,chiave);
+        ResultSet resultSet = preparedStatement.executeQuery();
+        if(resultSet.getRow()==0)
+            throw new OggettoNonTrovatoException("L'utente non è stato trovato: "+chiave);
        UtenteMapper mapper = new UtenteMapper();
-       return  mapper.map(preparedStatement.executeQuery());    //se executeQuery da 0 righe lancia eccezione
+       return  mapper.map(resultSet);
     }
     /**Cerca gli utente che hanno field = value*/
     public List<Utente> findUsers(String field, String value) throws SQLException {
+        if(field == null || value == null )
+            throw new IllegalArgumentException("field o value null");
         PreparedStatement statement = SingletonJDBC.getConnection().prepareStatement(UtenteQuery.getQueryFindAccountField(field));
         statement.setString(1,value);
         ResultSet resultSet = statement.executeQuery();
@@ -44,34 +55,55 @@ public class UtenteDAO implements UtenteAPI{
     }
 
     /** Salva nel DB l'utente nel db */
-    public boolean doSave(Utente utente) throws SQLException {//mettere void
+    public void doSave(Utente utente) throws SQLException {
+        if (utente == null || utente.getUsername() == null || utente.getPassword() == null || utente.getEmail() == null)
+            throw new IllegalArgumentException("utente è null o qualche campo obbligatorio è null");
+        try {
+            doGet(utente.getUsername());
+            throw new OggettoGiaPresenteException("L'utente è gia presente");
+        }catch (OggettoNonTrovatoException e) {
             PreparedStatement preparedStatement = SingletonJDBC.getConnection().prepareStatement(UtenteQuery.getQueryUtenteSave());
             preparedStatement.setString(1, utente.getUsername());
             preparedStatement.setString(2, utente.getPassword());
             preparedStatement.setString(3, utente.getEmail());
 
-            return preparedStatement.executeUpdate()==1; //se executeUpdate da -1 allora lancia eccezione
+            if (preparedStatement.executeUpdate() != 1)
+                throw new OggettoNonInseritoException("L'utente non è stato inserito");
+        }
     }
 
     /**Cerca un utente per email e password*/
-    public Utente findUser(String email, String password) throws SQLException {
-            PreparedStatement statement = SingletonJDBC.getConnection().prepareStatement(UtenteQuery.getQueryFindAccount());
-            statement.setString(1,email);
-            statement.setString(2,password);
-            ResultSet resultSet = statement.executeQuery();
-            if(resultSet.next())
-                return new UtenteMapper().map(resultSet);
-            else return null;
+    public Utente doGet(String email, String password) throws SQLException {
+        if(email == null || password == null )
+            throw new IllegalArgumentException("email o password sono null");
+        PreparedStatement statement = SingletonJDBC.getConnection().prepareStatement(UtenteQuery.getQueryFindAccount());
+        statement.setString(1,email);
+        statement.setString(2,password);
+        ResultSet resultSet = statement.executeQuery();
+        if(resultSet.getRow()==0)
+            throw new OggettoNonTrovatoException("L'utente non è stato trovato");
+           // if(resultSet.next())
+            return new UtenteMapper().map(resultSet);
+
     }
 
     /** Elimina l'utente dal DB
      *  @param username la username dell'utente da eliminare
      * @return true se l'utente è stato eliminato, false altrimenti
      * */
-    public boolean doDelete(String username) throws SQLException {
-        PreparedStatement preparedStatement = SingletonJDBC.getConnection().prepareStatement("DELETE FROM utente WHERE username=?");
-        preparedStatement.setString(1,username);
-        return preparedStatement.executeUpdate()==1;
+    public void doDelete(String username) throws SQLException {
+        if(username == null)
+            throw new IllegalArgumentException("l'username è null o non valida");
+
+        try{
+            doGet(username);
+            PreparedStatement preparedStatement = SingletonJDBC.getConnection().prepareStatement("DELETE FROM utente WHERE username=?");
+            preparedStatement.setString(1,username);
+            if(preparedStatement.executeUpdate()!=1)
+                throw new OggettoNonCancellatoException("L'utente non è stato cancellato");
+        }catch (OggettoNonTrovatoException e){
+            throw e;
+        }
     }
 
 
