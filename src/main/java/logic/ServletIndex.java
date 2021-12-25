@@ -43,6 +43,7 @@ public class ServletIndex extends HttpServlet {
 
         if(session.getAttribute("isLogged")!=null){
             String username = (String)session.getAttribute("username");
+            System.out.println("fatto");
             request.setAttribute("listaPreferiti",new CanzoneDAO().doRetrieveaCodiciCanzoniPreferite(username));
 
             request.setAttribute("listaCanzoniAcquistate", new AcquistoDAO().doRetrieveCodiciCanzoniAcquistate(username));

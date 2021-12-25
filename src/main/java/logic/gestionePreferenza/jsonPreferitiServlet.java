@@ -8,6 +8,9 @@ import data.DAOCanzone.CanzoneDAO;
 import data.DAOPreferenza.Preferenza;
 import data.DAOPreferenza.PreferenzaAPI;
 import data.DAOPreferenza.PreferenzaDAO;
+import data.Exceptions.OggettoGiaPresenteException;
+import data.Exceptions.OggettoNonCancellatoException;
+import data.Exceptions.OggettoNonInseritoException;
 import org.json.simple.JSONObject;
 
 import javax.servlet.ServletException;
@@ -23,20 +26,21 @@ import java.util.ArrayList;
 public class jsonPreferitiServlet extends HttpServlet {
 
     private void setPreferenzaCanzone(String username, String codice, JSONObject obj) throws SQLException {
-        CanzoneAPI canzoneDAO = new CanzoneDAO();
         PreferenzaAPI preferenzaDAO = new PreferenzaDAO();
-        if(canzoneDAO.doRetrieveaCodiciCanzoniPreferite(username).contains(codice)){
+        if(preferenzaDAO.doRetrieveCodiciCanzoniPreferite(username).contains(codice)){
             try {
-                obj.put("flag",preferenzaDAO.doSave(new Preferenza(codice,username)));
-            } catch (SQLException throwables) {
-                throwables.printStackTrace();
+                preferenzaDAO.doSave(new Preferenza(codice,username));
+                obj.put("flag",true);
+            } catch (OggettoGiaPresenteException | IllegalArgumentException | OggettoNonInseritoException e) {
+               obj.put("flag",false);
             }
             obj.put("action", "rimossa");
         }else{
             try {
-                obj.put("flag",preferenzaDAO.doDelete(codice+";"+username));
-            } catch (SQLException throwables) {
-                throwables.printStackTrace();
+                preferenzaDAO.doDelete(codice+";"+username);
+                obj.put("flag",true);
+            } catch (OggettoNonCancellatoException | IllegalArgumentException e) {
+                obj.put("flag",false);
             }
             obj.put("action", "aggiunta");
         }

@@ -30,6 +30,7 @@ public class PreferenzaDAO implements PreferenzaAPI {
         preparedStatement.setString(1,chiavi[0]);
         preparedStatement.setString(2,chiavi[1]);
         ResultSet resultSet = preparedStatement.executeQuery();
+        resultSet.next();
         if(resultSet.getRow() == 0)
             throw new OggettoNonTrovatoException("preferenza non trovata nel db");
         return new Preferenza(resultSet.getString("codiceCanzone"),resultSet.getString("usernameUtente"));
@@ -79,7 +80,7 @@ public class PreferenzaDAO implements PreferenzaAPI {
     }
 
     @Override
-    public List<String> doRetrieveaCodiciCanzoniPreferite(String username) throws SQLException {
+    public List<String> doRetrieveCodiciCanzoniPreferite(String username) throws SQLException {
         if(username == null )
             throw new IllegalArgumentException("username è null");
         PreparedStatement preparedStatement = SingletonJDBC.getConnection().prepareStatement("SELECT PRE.codiceCanzone FROM preferenza PRE WHERE PRE.usernameUtente=?;");

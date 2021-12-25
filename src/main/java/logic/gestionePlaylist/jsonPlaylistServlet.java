@@ -2,6 +2,7 @@ package logic.gestionePlaylist;
 
 import data.DAOPlaylist.PlaylistAPI;
 import data.DAOPlaylist.PlaylistDAO;
+import data.Exceptions.OggettoNonInseritoException;
 import org.json.simple.JSONObject;
 
 import javax.servlet.*;
@@ -22,7 +23,14 @@ public class jsonPlaylistServlet extends HttpServlet {
 
         if(playlistDAO.isPresent(codiceCanzone,nomePlay,username)) //se la canzone è gia presente nella playlist
             object.put("flag", "isPresent");
-        else object.put("flag", new PlaylistDAO().doInsertSong(username,nomePlay,codiceCanzone));
+        else{
+            try{
+                new PlaylistDAO().doInsertSong(username,nomePlay,codiceCanzone);
+                object.put("flag", true);
+            }catch ( OggettoNonInseritoException e){
+                object.put("flag",false);
+            }
+        }
         return object;
     }
 

@@ -52,7 +52,7 @@ public class libreriaServlet extends HttpServlet {
         request.setAttribute("listaCanzoniAcquistate", acquistoDAO.doRetrieveCodiciCanzoniAcquistate(username));
 
         PreferenzaAPI preferenzaAPI = new PreferenzaDAO();
-        request.setAttribute("listaPreferiti", preferenzaAPI.doRetrieveaCodiciCanzoniPreferite(username));
+        request.setAttribute("listaPreferiti", preferenzaAPI.doRetrieveCodiciCanzoniPreferite(username));
         request.setAttribute("numImgPlaylist", numImgPlaylist);
         request.setAttribute("utente",utente);
         request.setAttribute("listPlaylist", utente.getPlaylists());

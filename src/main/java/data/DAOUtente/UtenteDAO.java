@@ -30,7 +30,7 @@ public class UtenteDAO implements UtenteAPI{
      * @return l'oggetto utente
      * */
     public Utente doGet(String chiave) throws SQLException {
-        if(chiave == null || !chiave.contains(";"))
+        if(chiave == null)
             throw new IllegalArgumentException("la chiave è null o non valida");
         PreparedStatement preparedStatement = SingletonJDBC.getConnection().prepareStatement("SELECT * FROM utente WHERE username=?");
         preparedStatement.setString(1,chiave);
@@ -80,11 +80,11 @@ public class UtenteDAO implements UtenteAPI{
         statement.setString(1,email);
         statement.setString(2,password);
         ResultSet resultSet = statement.executeQuery();
+        resultSet.next();
         if(resultSet.getRow()==0)
             throw new OggettoNonTrovatoException("L'utente non è stato trovato");
-           // if(resultSet.next())
-            return new UtenteMapper().map(resultSet);
 
+        return new UtenteMapper().map(resultSet);
     }
 
     /** Elimina l'utente dal DB

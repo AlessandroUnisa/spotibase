@@ -33,6 +33,7 @@ public class CanzoneDAO implements CanzoneAPI {
         preparedStatement.setString(1,chiave);
         ResultSet resultSet = preparedStatement.executeQuery();
 
+        resultSet.next();
         if(resultSet.getRow() == 0)
             throw new OggettoNonTrovatoException("canzone non trovata nel db");
 
@@ -93,6 +94,7 @@ public class CanzoneDAO implements CanzoneAPI {
             throw new IllegalArgumentException("codiceCanzone è null");
 
         try{
+            System.out.println(codiceCanzone+"-----------------------");
             doGet(codiceCanzone);
             PreparedStatement statement = SingletonJDBC.getConnection().prepareStatement(CanzoneQuery.getQueryDoRetrieveCanzoneWithArtisti());
             statement.setString(1,codiceCanzone);

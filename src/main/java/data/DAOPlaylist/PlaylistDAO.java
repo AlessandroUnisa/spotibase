@@ -32,6 +32,7 @@ public class PlaylistDAO implements PlaylistAPI {
         preparedStatement.setString(1,chiavi[0]);
         preparedStatement.setString(2,chiavi[1]);
         ResultSet resultSet = preparedStatement.executeQuery();
+        resultSet.next();
         if(resultSet.getRow()==0)
             throw new OggettoNonTrovatoException("La playlist non è stata trovata: "+chiave);
         else{

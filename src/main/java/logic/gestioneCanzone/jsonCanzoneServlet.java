@@ -27,7 +27,7 @@ public class jsonCanzoneServlet extends HttpServlet {
         PreferenzaAPI preferenzaAPI = new PreferenzaDAO();
         if(username!=null){ //se il tasto play è stato cliccato da un utente loggato
             obj.put("isLogged",true);
-            obj.put("pref",preferenzaAPI.doRetrieveaCodiciCanzoniPreferite(username).contains(code)); //vedo se la canzone è tra i preferiti
+            obj.put("pref",preferenzaAPI.doRetrieveCodiciCanzoniPreferite(username).contains(code)); //vedo se la canzone è tra i preferiti
         }else obj.put("isLogged", false);
 
         Canzone canzone = canzoneDAO.doRetrieveCanzoneWithArtisti(code);

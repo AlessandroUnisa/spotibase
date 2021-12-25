@@ -21,6 +21,7 @@ public class Registrazione extends HttpServlet {
 
     private void register(HttpServletRequest request, HttpServletResponse response) throws SQLException, NoSuchAlgorithmException, IOException, ServletException {
         String username = request.getParameter("username");
+        System.out.println(username+"**********");
         String email = request.getParameter("email");
         String passwd = request.getParameter("passwd");
         String passwdCheck = request.getParameter("passwdCheck");
