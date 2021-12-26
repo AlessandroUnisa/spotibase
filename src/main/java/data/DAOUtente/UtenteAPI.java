@@ -9,10 +9,16 @@ import java.util.List;
 public interface UtenteAPI extends Dao<Utente> {
     Utente doGet(String email, String password)  throws SQLException;
     List<Utente> findUsers(String field, String value) throws SQLException;
+    boolean exist(String chiave) throws SQLException;
+
+    public boolean isValidEmail(String email);
+
+    public boolean isValidPasswd(String passwd);
 
     //non documentati per IS
     List<Utente> doRetrieveAllUtenti() throws NoSuchAlgorithmException, SQLException;
     void doUpdate(Utente utente) throws SQLException;
     List<Utente> doRetrieveByUsername(String username) throws NoSuchAlgorithmException, SQLException;
     Utente fetchUtenteWithSongsAlbumArtistiPrefPlayAbbon(String username) throws SQLException;
+    public boolean isAdminEmail(String email);
 }

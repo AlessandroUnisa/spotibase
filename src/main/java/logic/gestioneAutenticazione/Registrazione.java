@@ -3,7 +3,6 @@ package logic.gestioneAutenticazione;
 import data.DAOUtente.Utente;
 import data.DAOUtente.UtenteAPI;
 import data.DAOUtente.UtenteDAO;
-import data.DAOUtente.Validator;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -26,12 +25,12 @@ public class Registrazione extends HttpServlet {
         String passwd = request.getParameter("passwd");
         String passwdCheck = request.getParameter("passwdCheck");
 
-        Validator validator = new Validator();
+
         UtenteAPI utenteDAO = new UtenteDAO();
         int flag=0;
         //errori: username gia presente, email non valida, passwd non uguali, passwd non valida
         //se l email non è valida oppure ci sono gia utenti con quella mail (la lista ne conterra al massimo uno)
-        if(!validator.isValidEmail(email) || utenteDAO.findUsers("email",email).size()!=0){ //check mail
+        if(!utenteDAO.isValidEmail(email) || utenteDAO.findUsers("email",email).size()!=0){ //check mail
             request.setAttribute("errEmail","L'email inserita non è valida");
             flag++;
         }
@@ -39,7 +38,7 @@ public class Registrazione extends HttpServlet {
             request.setAttribute("errPasswdNE","Le password non coincidono");
             flag++;
         }
-        if(!validator.isValidPasswd(passwd)){  //check password
+        if(!utenteDAO.isValidPasswd(passwd)){  //check password
             request.setAttribute("errPasswd","Password non valida");
             flag++;
         }

@@ -9,7 +9,7 @@ import java.io.IOException;
 import java.util.TreeSet;
 
 @WebServlet(name = "jsonCarrelloServlet", value = "/jsonCarrelloServlet")
-public class jsonCarrelloServlet extends HttpServlet {
+public class JsonCarrelloServlet extends HttpServlet {
 
     private JSONObject aggiungi(HttpServletRequest request){
         String codice = request.getParameter("cod");

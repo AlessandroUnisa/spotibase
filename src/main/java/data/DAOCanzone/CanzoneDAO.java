@@ -21,6 +21,15 @@ public class CanzoneDAO implements CanzoneAPI {
     //metodi documentati per IS----------------------------------------------------------------------------------------------
 
     @Override
+    public boolean exist(String codice) throws SQLException {
+        if(codice == null)
+            throw new IllegalArgumentException("codice è null");
+        PreparedStatement preparedStatement = SingletonJDBC.getConnection().prepareStatement("SELECT * FROM canzone CAN WHERE CAN.codice = ?");
+        preparedStatement.setString(1, codice);
+        return preparedStatement.executeQuery().next();
+    }
+
+    @Override
     /**Questo metodo preleva una canzone salvata nel db
      * @param chiavi la primary key della canzone
      * @return oggetto canzone
@@ -374,6 +383,8 @@ public class CanzoneDAO implements CanzoneAPI {
         }
         return new ArrayList<>(mappa.values());
     }
+
+
 /*
 
     public boolean doInsertPreferenza(String codice, String username){

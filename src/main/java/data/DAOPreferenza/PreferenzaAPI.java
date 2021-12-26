@@ -7,4 +7,5 @@ import java.util.List;
 
 public interface PreferenzaAPI extends Dao<Preferenza> {
     List<String> doRetrieveCodiciCanzoniPreferite(String username) throws SQLException;
+    boolean exist(String codCanzone, String username) throws SQLException;
 }

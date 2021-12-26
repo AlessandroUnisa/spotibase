@@ -3,7 +3,6 @@ package logic.gestioneAutenticazione;
 import data.DAOUtente.Utente;
 import data.DAOUtente.UtenteAPI;
 import data.DAOUtente.UtenteDAO;
-import data.DAOUtente.Validator;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -23,10 +22,9 @@ public class Login extends HttpServlet {
         utenteTemp.setEmail(request.getParameter("email"));
         utenteTemp.setPassword(request.getParameter("passwd"));  //per criptare la password
         UtenteAPI utenteDAO = new UtenteDAO();
-        Validator validator = new Validator();
 
         Utente utente = utenteDAO.doGet(utenteTemp.getEmail(),utenteTemp.getPassword());  //cerco l utente nel db
-        if(utente!=null && validator.isAdminEmail(utente.getEmail())){  //amministratore
+        if(utente!=null && utenteDAO.isAdminEmail(utente.getEmail())){  //amministratore
             HttpSession session = request.getSession(true);
             session.setAttribute("isLogged",true);
             session.setAttribute("username","admin");

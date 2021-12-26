@@ -23,7 +23,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 
 @WebServlet(name = "jsonPreferitiServlet", value = "/jsonPreferitiServlet")
-public class jsonPreferitiServlet extends HttpServlet {
+public class JsonPreferitiServlet extends HttpServlet {
 
     private void setPreferenzaCanzone(String username, String codice, JSONObject obj) throws SQLException {
         PreferenzaAPI preferenzaDAO = new PreferenzaDAO();

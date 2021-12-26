@@ -7,9 +7,6 @@ import java.sql.SQLException;
 public interface Dao<T> {
 
     T doGet(String chiave) throws SQLException;
-
-
     void doSave(T oggetto) throws SQLException;
-
     void doDelete(String chiave) throws SQLException;
 }

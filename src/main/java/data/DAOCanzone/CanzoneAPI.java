@@ -9,6 +9,8 @@ public interface CanzoneAPI extends Dao<Canzone> {
     Canzone doRetrieveCanzoneWithArtisti(String codiceCanzone) throws SQLException;
     List<Canzone> doRetrieveCanzoniByCodiciWithArtisti(List<String> codici) throws SQLException;
 
+    boolean exist(String codice) throws SQLException;
+
     //metodi non documentati per IS
     List<Canzone> doRetrieveCanzoniUltimeUscite() throws SQLException;
     List<Canzone> doRetrivePopularSongsWithArtista() throws SQLException;

@@ -43,10 +43,10 @@ public class AcquistoDAO implements AcquistoAPI {
     public void doSave(Acquisto acquisto) throws SQLException {
         if(acquisto == null || acquisto.getCodCanzone() == null || acquisto.getUsename() == null)
             throw new IllegalArgumentException("parametri non settati all'interno di acquisto");
-        try{
-            doGet(acquisto.getCodCanzone()+";"+acquisto.getUsename());
+
+        if(exist(acquisto.getUsename(), acquisto.getCodCanzone()))
             throw new OggettoGiaPresenteException("L'acquisto è gia presente");
-        }catch (OggettoNonTrovatoException e) {
+        else{
             PreparedStatement preparedStatement = SingletonJDBC.getConnection().prepareStatement("INSERT INTO uc VALUES (?,?)");
             preparedStatement.setString(1, acquisto.getUsename());
             preparedStatement.setString(2, acquisto.getCodCanzone());
@@ -63,17 +63,17 @@ public class AcquistoDAO implements AcquistoAPI {
     public void doDelete(String chiave) throws SQLException {
         if(chiave == null || !chiave.contains(";"))
             throw new IllegalArgumentException("la chiave è null o non valida");
-        try{
-            doGet(chiave);
-            String[] chiavi = chiave.split(";");
+
+        String[] chiavi = chiave.split(";");
+
+        if(exist(chiavi[0],chiavi[1])){
             PreparedStatement preparedStatement = SingletonJDBC.getConnection().prepareStatement("DELETE FROM uc WHERE username=? && codCanzone=?");
             preparedStatement.setString(1,chiavi[0]);
             preparedStatement.setString(2, chiavi[1]);
-        if(preparedStatement.executeUpdate()!=1)
-            throw new OggettoNonCancellatoException("l'acquisto non è stato cancellato");
-        }catch (OggettoNonTrovatoException e){
-            throw e;
-        }
+
+            if(preparedStatement.executeUpdate()!=1)
+                throw new OggettoNonCancellatoException("l'acquisto non è stato cancellato");
+        }else throw new OggettoNonTrovatoException("Acquisto non trovato");
     }
 
     @Override
@@ -84,16 +84,16 @@ public class AcquistoDAO implements AcquistoAPI {
     public void doInsertCanzoneAcquistata(String username, String codice) throws SQLException {
         if(username == null || codice == null)
             throw new IllegalArgumentException("username o codice sono null");
-        try {
-            doGet(codice + ";" + username);
+
+        if(exist(username,codice))
             throw new OggettoGiaPresenteException("L'acquisto è gia presente");
-        }catch(OggettoNonTrovatoException e){
-                PreparedStatement preparedStatement = SingletonJDBC.getConnection().prepareStatement(CanzoneQuery.getQueryDoInsertCanzoneAcquistata());
-                preparedStatement.setString(1, username);
-                preparedStatement.setString(2, codice);
-                if (preparedStatement.executeUpdate() != 1)
-                    throw new OggettoNonInseritoException("La canzone non è stata acquistata");
-            }
+        else{
+            PreparedStatement preparedStatement = SingletonJDBC.getConnection().prepareStatement(CanzoneQuery.getQueryDoInsertCanzoneAcquistata());
+            preparedStatement.setString(1, username);
+            preparedStatement.setString(2, codice);
+            if (preparedStatement.executeUpdate() != 1)
+                throw new OggettoNonInseritoException("La canzone non è stata acquistata");
+        }
     }
 
     /**Ritorna la lista delle canzoni acquistate dall utente*/
@@ -110,6 +110,20 @@ public class AcquistoDAO implements AcquistoAPI {
             codici.add(resultSet.getString("codCanzone"));
         return codici;
     }
+
+    @Override
+    public boolean exist(String username, String codCanzone) throws SQLException {
+        if(username == null || codCanzone == null)
+            throw new IllegalArgumentException("username o codCanzone sono null");
+        PreparedStatement preparedStatement = SingletonJDBC.getConnection().prepareStatement("SELECT * FROM acquisto WHERE username=? && codCanzone=?");
+        preparedStatement.setString(1,username);
+        preparedStatement.setString(2, codCanzone);
+         return preparedStatement.executeQuery().next();
+    }
+
+
+
+    //non documentati per IS----------------------------------------------------------------------------------------------------
 
     /**Ritorna le canzoni acquistate dall'utente*/
     public List<Canzone> doRetrieveCanzoniAcquistate(String username) throws SQLException {

@@ -37,6 +37,16 @@ public class PreferenzaDAO implements PreferenzaAPI {
     }
 
     @Override
+    public boolean exist(String codCanzone, String username) throws SQLException {
+        if(codCanzone == null || username == null)
+            throw new IllegalArgumentException("codCanzone o username sono null");
+        PreparedStatement preparedStatement = SingletonJDBC.getConnection().prepareStatement("SELECT * FROM preferenza WHERE codiceCanzone =? && usernameUtente=?;");
+        preparedStatement.setString(1,codCanzone);
+        preparedStatement.setString(2, username);
+        return preparedStatement.executeQuery().next();
+    }
+
+    @Override
     /**
      * Questo metodo salva una preferenza nel DB
      * @param preferenza la preferenza da salvare nel database. codCanzone e codUtente devono essere settati prima dell'invocazione
@@ -45,10 +55,10 @@ public class PreferenzaDAO implements PreferenzaAPI {
     public void doSave(Preferenza preferenza) throws SQLException {
         if(preferenza == null || preferenza.getCodCanzone() == null || preferenza.getCodUtente() == null)
             throw new IllegalArgumentException("codCanzone o codUtente sono settati a null");
-        try {
-            doGet(preferenza.getCodCanzone()+";"+preferenza.getCodUtente());
+
+        if(exist(preferenza.getCodCanzone(), preferenza.getCodUtente()))
             throw new OggettoGiaPresenteException("La preferenza è gia presente");
-        }catch (OggettoNonTrovatoException e) {
+        else{
             PreparedStatement preparedStatement = SingletonJDBC.getConnection().prepareStatement("INSERT INTO preferenza VALUES (?,?);");
             preparedStatement.setString(1, preferenza.getCodCanzone());
             preparedStatement.setString(2, preferenza.getCodUtente());
@@ -65,18 +75,14 @@ public class PreferenzaDAO implements PreferenzaAPI {
     public void doDelete(String chiave) throws SQLException {
         if(chiave == null || !chiave.contains(";"))
             throw new IllegalArgumentException("la chiave è null o non valida");
-
-        try{
-            doGet(chiave);
-            String chiavi[] = chiave.split(";");
+        String chiavi[] = chiave.split(";");
+        if(exist(chiavi[0],chiavi[1])){
             PreparedStatement preparedStatement = SingletonJDBC.getConnection().prepareStatement("DELETE FROM preferenza WHERE codiceCanzone =? && usernameUtente=?;");
             preparedStatement.setString(1,chiavi[0]);
             preparedStatement.setString(2,chiavi[1]);
             if(preparedStatement.executeUpdate()!=1)
                 throw new OggettoNonCancellatoException("La preferenza non è stata cancellata");
-        }catch (OggettoNonTrovatoException e){
-            throw e;
-        }
+        }else throw new OggettoNonTrovatoException("Preferenza non trovata");
     }
 
     @Override

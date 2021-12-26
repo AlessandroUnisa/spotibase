@@ -12,7 +12,7 @@ import java.io.IOException;
 import java.sql.SQLException;
 
 @WebServlet(name = "jsonPlaylistServlet", value = "/jsonPlaylistServlet")
-public class jsonPlaylistServlet extends HttpServlet {
+public class JsonPlaylistServlet extends HttpServlet {
 
     private JSONObject insertCanzone(HttpServletRequest request) throws SQLException {
         String codiceCanzone = request.getParameter("codCan");

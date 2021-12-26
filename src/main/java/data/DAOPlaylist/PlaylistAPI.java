@@ -13,6 +13,7 @@ public interface PlaylistAPI extends Dao<Playlist> {
     boolean isPresent(String titolo, String username) throws SQLException;
     int doRetrieveNumPlaylistOfUtente(String username) throws SQLException;
 
+
     //metodi non documentati per IS
     List<Playlist> doRetrieveAllPlaylist() throws SQLException;
     ArrayList<Playlist> doRetrieveByTitolo(String titolo) throws SQLException;

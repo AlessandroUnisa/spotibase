@@ -16,7 +16,7 @@ import java.io.IOException;
 import java.sql.SQLException;
 
 @WebServlet(name = "jsonAlbumServlet", value = "/jsonCanzoneServlet")
-public class jsonCanzoneServlet extends HttpServlet {
+public class JsonCanzoneServlet extends HttpServlet {
 
     private JSONObject getCanzone(HttpServletRequest request) throws SQLException {
         String code = request.getParameter("cod");

@@ -20,9 +20,21 @@ import data.DAOPlaylist.PlaylistMapper;
 import java.security.NoSuchAlgorithmException;
 import java.sql.*;
 import java.util.*;
+import java.util.regex.Pattern;
 
 public class UtenteDAO implements UtenteAPI{
     //Metodi documentati per IS---------------------------------------------------------------------------------
+
+    private static final Pattern MAIL_USER = Pattern.compile("^[a-zA-Z0-9.!#$%&’*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\\.[a-zA-Z0-9-]+)*$");
+    private static final Pattern PASSWD = Pattern.compile("^(?=.*\\d)(?=.*[a-z])(?=.*[A-Z]).{8,}$");
+
+    public boolean isValidEmail(String email){
+        return MAIL_USER.matcher(email).matches();
+    }
+
+    public boolean isValidPasswd(String passwd){
+        return PASSWD.matcher(passwd).matches();
+    }
 
     @Override
     /**Questo metodo permette di prelevare un utente dal db
@@ -54,14 +66,24 @@ public class UtenteDAO implements UtenteAPI{
         return lista;
     }
 
+    @Override
+    public boolean exist(String chiave) throws SQLException {
+        if(chiave == null)
+            throw new IllegalArgumentException("chiave è null");
+
+        PreparedStatement statement = SingletonJDBC.getConnection().prepareStatement("SELECT * FROM utente WHERE username = ?");
+        statement.setString(1, chiave);
+        return statement.executeQuery().next();
+    }
+
     /** Salva nel DB l'utente nel db */
     public void doSave(Utente utente) throws SQLException {
         if (utente == null || utente.getUsername() == null || utente.getPassword() == null || utente.getEmail() == null)
             throw new IllegalArgumentException("utente è null o qualche campo obbligatorio è null");
-        try {
-            doGet(utente.getUsername());
+
+        if(exist(utente.getUsername()))
             throw new OggettoGiaPresenteException("L'utente è gia presente");
-        }catch (OggettoNonTrovatoException e) {
+        else{
             PreparedStatement preparedStatement = SingletonJDBC.getConnection().prepareStatement(UtenteQuery.getQueryUtenteSave());
             preparedStatement.setString(1, utente.getUsername());
             preparedStatement.setString(2, utente.getPassword());
@@ -95,15 +117,13 @@ public class UtenteDAO implements UtenteAPI{
         if(username == null)
             throw new IllegalArgumentException("l'username è null o non valida");
 
-        try{
-            doGet(username);
+        if(exist(username)){
             PreparedStatement preparedStatement = SingletonJDBC.getConnection().prepareStatement("DELETE FROM utente WHERE username=?");
             preparedStatement.setString(1,username);
             if(preparedStatement.executeUpdate()!=1)
                 throw new OggettoNonCancellatoException("L'utente non è stato cancellato");
-        }catch (OggettoNonTrovatoException e){
-            throw e;
-        }
+
+        }else throw new OggettoNonTrovatoException("L'utente non è stato trovato");
     }
 
 
@@ -213,5 +233,11 @@ public class UtenteDAO implements UtenteAPI{
             utente.setAttivazioni(listAttivazione);
             return utente;
     }
+
+    private static final Pattern MAIL_ADMIN = Pattern.compile("^[a-zA-Z0-9.!#$%&’*+/=?^_`{|}~-]+@spotibase.it");
+    public boolean isAdminEmail(String email){
+        return MAIL_ADMIN.matcher(email).matches();
+    }
+
 
 }
