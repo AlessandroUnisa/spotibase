@@ -18,10 +18,10 @@ import java.sql.SQLException;
 @WebServlet(name = "jsonAlbumServlet", value = "/jsonCanzoneServlet")
 public class JsonCanzoneServlet extends HttpServlet {
 
-    private JSONObject getCanzone(HttpServletRequest request) throws SQLException {
+    private JSONObject getCanzone(HttpServletRequest request, CanzoneAPI canzoneAPI) throws SQLException {
         String code = request.getParameter("cod");
         JSONObject obj = new JSONObject();
-        CanzoneAPI canzoneDAO = new CanzoneDAO();
+
         String username = (String) request.getSession(false).getAttribute("username");
 
         PreferenzaAPI preferenzaAPI = new PreferenzaDAO();
@@ -30,7 +30,7 @@ public class JsonCanzoneServlet extends HttpServlet {
             obj.put("pref",preferenzaAPI.doRetrieveCodiciCanzoniPreferite(username).contains(code)); //vedo se la canzone è tra i preferiti
         }else obj.put("isLogged", false);
 
-        Canzone canzone = canzoneDAO.doRetrieveCanzoneWithArtisti(code);
+        Canzone canzone = canzoneAPI.doRetrieveCanzoneWithArtisti(code);
         obj.put("url",canzone.getPathMP3());  //setto i campi che servono per il footer
         obj.put("titolo",canzone.getTitolo());
         obj.put("artista",canzone.getArtisti().get(0).getNomeDArte());
@@ -44,7 +44,8 @@ public class JsonCanzoneServlet extends HttpServlet {
         response.setCharacterEncoding("utf-8");
         response.setContentType("application/json");
         try {
-            response.getWriter().println(getCanzone(request));
+            CanzoneAPI canzoneAPI = new CanzoneDAO();
+            response.getWriter().println(getCanzone(request,canzoneAPI));
         } catch (SQLException throwables) {
             throwables.printStackTrace();
         }

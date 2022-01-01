@@ -15,7 +15,7 @@ public interface CanzoneAPI extends Dao<Canzone> {
     List<Canzone> doRetrieveCanzoniUltimeUscite() throws SQLException;
     List<Canzone> doRetrivePopularSongsWithArtista() throws SQLException;
     List<Canzone> doRetrieveCanzoneRandom() throws SQLException;
-
+    List<String> doRetrieveaCodiciCanzoniPreferite(String username) throws SQLException;
     List<Canzone> doRetrieveSongsByPlaylist(String username, String titoloPlaylist) throws SQLException;
     List<Canzone> doRetrieveSongsByAlbum(String codAlbum) throws SQLException;
     List<Canzone> doRetrieveSinglesByArtista(String nomeDArte) throws SQLException;

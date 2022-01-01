@@ -31,17 +31,17 @@ public class ServletCarrello extends HttpServlet {
 
         if(((TreeSet<String>)session.getAttribute("listCart")).size()>0){
             ArrayList<String> codici = new ArrayList<>((TreeSet<String>) session.getAttribute("listCart")); //codici presenti nel carrello
-            CanzoneAPI canzoneDAO = new CanzoneDAO();
-            AcquistoAPI acquistoDAO = new AcquistoDAO();
+            CanzoneAPI canzoneAPI = new CanzoneDAO();
+            AcquistoAPI acquistoAPI = new AcquistoDAO();
             AlbumDAO albumDAO = new AlbumDAO();
             String username = (String) request.getSession(false).getAttribute("username");
 
-            ArrayList<Canzone> listaCanzoni = (ArrayList<Canzone>) canzoneDAO.doRetrieveCanzoniByCodiciWithArtisti(codici);
+            ArrayList<Canzone> listaCanzoni = (ArrayList<Canzone>) canzoneAPI.doRetrieveCanzoniByCodiciWithArtisti(codici);
             ArrayList<Album> listAlbum = (ArrayList<Album>) albumDAO.doRetrieveAlbumsByCodiciWithArtisti(codici);
 
             ArrayList<String> listCanzoniAcquistate = null;
 
-                listCanzoniAcquistate = (ArrayList<String>) acquistoDAO.doRetrieveCodiciCanzoniAcquistate(username);
+                listCanzoniAcquistate = (ArrayList<String>) acquistoAPI.doRetrieveCodiciCanzoniAcquistate(username);
 
             ArrayList<String> listAlbumAcquistati = (ArrayList<String>) albumDAO.doRetrieveCodiciAlbumAcquistati(username);
 
@@ -85,7 +85,7 @@ public class ServletCarrello extends HttpServlet {
         if(request.getSession(true).getAttribute("isLogged")!=null) {
             TreeSet<String> codici = (TreeSet<String>) request.getSession(false).getAttribute("listCart");
             Iterator iterator = codici.iterator();
-            CanzoneAPI canzoneDAO = new CanzoneDAO();
+
             AcquistoAPI acquistoDAO = new AcquistoDAO();
             AlbumDAO albumDAO = new AlbumDAO();
             String username = (String) request.getSession(false).getAttribute("username");

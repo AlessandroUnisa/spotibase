@@ -7,11 +7,9 @@ import data.Exceptions.OggettoGiaPresenteException;
 import data.Exceptions.OggettoNonCancellatoException;
 import data.Exceptions.OggettoNonInseritoException;
 import data.Exceptions.OggettoNonTrovatoException;
-import data.utils.Dao;
 import data.utils.SingletonJDBC;
 
 import java.sql.*;
-import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 

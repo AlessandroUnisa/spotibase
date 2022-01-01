@@ -18,7 +18,7 @@ import java.sql.SQLException;
 public class Registrazione extends HttpServlet {
 
 
-    private void register(HttpServletRequest request, HttpServletResponse response) throws SQLException, NoSuchAlgorithmException, IOException, ServletException {
+    public void register(HttpServletRequest request, HttpServletResponse response, UtenteAPI utenteAPI) throws SQLException, NoSuchAlgorithmException, IOException, ServletException {
         String username = request.getParameter("username");
         System.out.println(username+"**********");
         String email = request.getParameter("email");
@@ -26,11 +26,11 @@ public class Registrazione extends HttpServlet {
         String passwdCheck = request.getParameter("passwdCheck");
 
 
-        UtenteAPI utenteDAO = new UtenteDAO();
         int flag=0;
         //errori: username gia presente, email non valida, passwd non uguali, passwd non valida
         //se l email non è valida oppure ci sono gia utenti con quella mail (la lista ne conterra al massimo uno)
-        if(!utenteDAO.isValidEmail(email) || utenteDAO.findUsers("email",email).size()!=0){ //check mail
+        System.out.println(utenteAPI.isValidEmail(email)+" "+email);
+        if(!utenteAPI.isValidEmail(email) || utenteAPI.findUsers("email",email).size()!=0){ //check mail
             request.setAttribute("errEmail","L'email inserita non è valida");
             flag++;
         }
@@ -38,34 +38,47 @@ public class Registrazione extends HttpServlet {
             request.setAttribute("errPasswdNE","Le password non coincidono");
             flag++;
         }
-        if(!utenteDAO.isValidPasswd(passwd)){  //check password
+        System.out.println(passwd + " " + utenteAPI.isValidPasswd(passwd));
+        if(!utenteAPI.isValidPasswd(passwd)){  //check password
             request.setAttribute("errPasswd","Password non valida");
             flag++;
         }
-        if(utenteDAO.findUsers("username",username).size()!=0){ //check username
+        System.out.println(utenteAPI.findUsers("username",username) + " "+username);
+        if(utenteAPI.findUsers("username",username).size()!=0){ //check username
+            System.out.println("ora qui");
             request.setAttribute("errUsername","Username già presente");
+            flag++;
+        }
+        if(!utenteAPI.isValidUsername(username)){
+            request.setAttribute("errUsernameFormato", "La username non rispetta il formato");
             flag++;
         }
 
         if(flag>0){  //setto i campi che aveva gia inserito
+            System.out.println("flag= "+flag);
             request.setAttribute("username",username);
             request.setAttribute("email",email);
             request.setAttribute("passwd",passwd);
             request.setAttribute("passwdCheck",passwdCheck);
             request.getRequestDispatcher("./WEB-INF/views/utente/register.jsp").forward(request,response);
         }else{ //tutto ok
+            System.out.println("tutto ok");
+
             Utente utente = new Utente();
             utente.setPassword(passwd);
             utente.setEmail(email);
             utente.setUsername(username);
-            utenteDAO.doSave(utente);  //inserisco l utente nel db
+            utenteAPI.doSave(utente);  //inserisco l utente nel db
+
             HttpSession session = request.getSession(true); //è automaticamente loggato
             session.setAttribute("username",utente.getUsername());
             session.setAttribute("isLogged", true);
+
             response.sendRedirect("./index.html");
         }
 
     }
+
 
 
     @Override
@@ -85,7 +98,8 @@ public class Registrazione extends HttpServlet {
         response.setCharacterEncoding("utf-8");
         String path = request.getPathInfo();
         try {
-            register(request,response);
+            UtenteAPI utenteAPI = new UtenteDAO();
+            register(request,response, utenteAPI);
         } catch (SQLException throwables) {
             throwables.printStackTrace();
         } catch (NoSuchAlgorithmException e) {

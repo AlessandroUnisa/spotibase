@@ -21,10 +21,10 @@ public class Login extends HttpServlet {
         Utente utenteTemp = new Utente();
         utenteTemp.setEmail(request.getParameter("email"));
         utenteTemp.setPassword(request.getParameter("passwd"));  //per criptare la password
-        UtenteAPI utenteDAO = new UtenteDAO();
+        UtenteAPI utenteAPI = new UtenteDAO();
 
-        Utente utente = utenteDAO.doGet(utenteTemp.getEmail(),utenteTemp.getPassword());  //cerco l utente nel db
-        if(utente!=null && utenteDAO.isAdminEmail(utente.getEmail())){  //amministratore
+        Utente utente = utenteAPI.doGet(utenteTemp.getEmail(),utenteTemp.getPassword());  //cerco l utente nel db
+        if(utente!=null && utenteAPI.isAdminEmail(utente.getEmail())){  //amministratore
             HttpSession session = request.getSession(true);
             session.setAttribute("isLogged",true);
             session.setAttribute("username","admin");

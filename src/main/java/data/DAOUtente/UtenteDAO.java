@@ -8,7 +8,6 @@ import data.Exceptions.OggettoGiaPresenteException;
 import data.Exceptions.OggettoNonCancellatoException;
 import data.Exceptions.OggettoNonInseritoException;
 import data.Exceptions.OggettoNonTrovatoException;
-import data.utils.Dao;
 import data.utils.SingletonJDBC;
 import data.Artista.Artista;
 import data.Artista.ArtistaMapper;
@@ -25,11 +24,17 @@ import java.util.regex.Pattern;
 public class UtenteDAO implements UtenteAPI{
     //Metodi documentati per IS---------------------------------------------------------------------------------
 
-    private static final Pattern MAIL_USER = Pattern.compile("^[a-zA-Z0-9.!#$%&’*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\\.[a-zA-Z0-9-]+)*$");
+    //private static final Pattern MAIL_USER = Pattern.compile("^[a-zA-Z0-9.!#$%&’*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\\.[a-zA-Z0-9-]+)*$");
     private static final Pattern PASSWD = Pattern.compile("^(?=.*\\d)(?=.*[a-z])(?=.*[A-Z]).{8,}$");
+    private static final Pattern MAIL_USER = Pattern.compile("^(?:[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*|\"(?:[\\x01-\\x08\\x0b\\x0c\\x0e-\\x1f\\x21\\x23-\\x5b\\x5d-\\x7f]|\\\\[\\x01-\\x09\\x0b\\x0c\\x0e-\\x7f])*\")@(?:(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?|\\[(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?|[a-z0-9-]*[a-z0-9]:(?:[\\x01-\\x08\\x0b\\x0c\\x0e-\\x1f\\x21-\\x5a\\x53-\\x7f]|\\\\[\\x01-\\x09\\x0b\\x0c\\x0e-\\x7f])+)\\])$");
+    private static final Pattern USERNAME = Pattern.compile("^[a-zA-Z0-9\\-_]{1,40}$");
+
+    public boolean isValidUsername(String username){
+        return USERNAME.matcher(username).matches();
+    }
 
     public boolean isValidEmail(String email){
-        return MAIL_USER.matcher(email).matches();
+       return MAIL_USER.matcher(email).matches();
     }
 
     public boolean isValidPasswd(String passwd){
@@ -236,7 +241,7 @@ public class UtenteDAO implements UtenteAPI{
 
     private static final Pattern MAIL_ADMIN = Pattern.compile("^[a-zA-Z0-9.!#$%&’*+/=?^_`{|}~-]+@spotibase.it");
     public boolean isAdminEmail(String email){
-        return MAIL_ADMIN.matcher(email).matches();
+        return  MAIL_ADMIN.matcher(email).matches();
     }
 
 

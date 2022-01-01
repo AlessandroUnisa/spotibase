@@ -3,8 +3,6 @@ package logic.gestionePreferenza;
 import data.Album.AlbumDAO;
 import data.Artista.Artista;
 import data.Artista.ArtistaDAO;
-import data.DAOCanzone.CanzoneAPI;
-import data.DAOCanzone.CanzoneDAO;
 import data.DAOPreferenza.Preferenza;
 import data.DAOPreferenza.PreferenzaAPI;
 import data.DAOPreferenza.PreferenzaDAO;

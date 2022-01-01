@@ -18,14 +18,14 @@ public class JsonPlaylistServlet extends HttpServlet {
         String codiceCanzone = request.getParameter("codCan");
         String nomePlay = request.getParameter("nomePlay");
         String username = (String) request.getSession(false).getAttribute("username");
-        PlaylistAPI playlistDAO = new PlaylistDAO();
+        PlaylistAPI playlistAPI = new PlaylistDAO();
         JSONObject object = new JSONObject();
 
-        if(playlistDAO.isPresent(codiceCanzone,nomePlay,username)) //se la canzone è gia presente nella playlist
+        if(playlistAPI.isPresent(codiceCanzone,nomePlay,username)) //se la canzone è gia presente nella playlist
             object.put("flag", "isPresent");
         else{
             try{
-                new PlaylistDAO().doInsertSong(username,nomePlay,codiceCanzone);
+                playlistAPI.doInsertSong(username,nomePlay,codiceCanzone);
                 object.put("flag", true);
             }catch ( OggettoNonInseritoException e){
                 object.put("flag",false);

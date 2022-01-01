@@ -8,6 +8,7 @@ import data.DAOCanzone.CanzoneDAO;
 import data.DAOPreferenza.PreferenzaAPI;
 import data.DAOPreferenza.PreferenzaDAO;
 import data.DAOUtente.Utente;
+import data.DAOUtente.UtenteAPI;
 import data.DAOUtente.UtenteDAO;
 
 import javax.servlet.ServletException;
@@ -37,19 +38,19 @@ public class libreriaServlet extends HttpServlet {
         String username = (String) request.getSession(false).getAttribute("username");
         Random random = new Random();
         ArrayList<Integer> numImgPlaylist = new ArrayList<>();  //contiene num random per sfondo card playlist
-        CanzoneAPI canzoneDAO = new CanzoneDAO();
 
-        Utente utente = new UtenteDAO().fetchUtenteWithSongsAlbumArtistiPrefPlayAbbon(username); //recupera i preferiti, playlist e abbonamenti
+        UtenteAPI utenteAPI = new UtenteDAO();
+        Utente utente = utenteAPI.fetchUtenteWithSongsAlbumArtistiPrefPlayAbbon(username); //recupera i preferiti, playlist e abbonamenti
         for(int i=0; i<utente.getPlaylists().size(); i++)
             numImgPlaylist.add(1+random.nextInt(10));
 
-        AcquistoAPI acquistoDAO = new AcquistoDAO();
+        AcquistoAPI acquistoAPI = new AcquistoDAO();
 
-        request.setAttribute("canzoniAcquistate", acquistoDAO.doRetrieveCanzoniAcquistate(username));
+        request.setAttribute("canzoniAcquistate", acquistoAPI.doRetrieveCanzoniAcquistate(username));
 
         request.setAttribute("albumAcquistati", new AlbumDAO().doRetrieveAlbumAcquistati(username));
 
-        request.setAttribute("listaCanzoniAcquistate", acquistoDAO.doRetrieveCodiciCanzoniAcquistate(username));
+        request.setAttribute("listaCanzoniAcquistate", acquistoAPI.doRetrieveCodiciCanzoniAcquistate(username));
 
         PreferenzaAPI preferenzaAPI = new PreferenzaDAO();
         request.setAttribute("listaPreferiti", preferenzaAPI.doRetrieveCodiciCanzoniPreferite(username));

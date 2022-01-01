@@ -2,9 +2,11 @@ package logic;
 
 import data.Album.AlbumDAO;
 import data.Artista.ArtistaDAO;
+import data.DAOAcquisto.AcquistoAPI;
 import data.DAOAcquisto.AcquistoDAO;
 import data.DAOCanzone.CanzoneAPI;
 import data.DAOCanzone.CanzoneDAO;
+import data.DAOPlaylist.PlaylistAPI;
 import data.DAOPlaylist.PlaylistDAO;
 
 import javax.servlet.ServletException;
@@ -22,18 +24,18 @@ import java.util.TreeSet;
 public class ServletIndex extends HttpServlet {
 
     private void getElements(HttpServletRequest request, HttpServletResponse response) throws SQLException {
-        CanzoneAPI canzoni= new CanzoneDAO();
+        CanzoneAPI canzoneAPI = new CanzoneDAO();
         ArtistaDAO artisti= new ArtistaDAO();
         AlbumDAO album = new AlbumDAO();
-        request.setAttribute("canzoni",canzoni.doRetrivePopularSongsWithArtista());
+        request.setAttribute("canzoni",canzoneAPI.doRetrivePopularSongsWithArtista());
         request.setAttribute("artisti",artisti.doRetrieveArtistPopular());
         request.setAttribute("albums",album.doRetrieveAlbumPopular());
         request.setAttribute("artistiCasuali",artisti.doRetrieveArtistRandom());
         request.setAttribute("albumCasuali",album.doRetrieveAlbumRandom());
-        request.setAttribute("canzoniCasuali",canzoni.doRetrieveCanzoneRandom());
-        request.setAttribute("canzoniNew",canzoni.doRetrieveCanzoniUltimeUscite());
+        request.setAttribute("canzoniCasuali",canzoneAPI.doRetrieveCanzoneRandom());
+        request.setAttribute("canzoniNew",canzoneAPI.doRetrieveCanzoniUltimeUscite());
         request.setAttribute("albumNew",album.doRetrieveAlbumUltimeUscite());
-        request.setAttribute("canzoniTopBuy",canzoni.doRetrieveCanzoniTopBuy());
+        request.setAttribute("canzoniTopBuy",canzoneAPI.doRetrieveCanzoniTopBuy());
         request.setAttribute("albumTopBuy",album.doRetrieveAlbumTopBuy());
 
 
@@ -42,13 +44,15 @@ public class ServletIndex extends HttpServlet {
             session.setAttribute("listCart", new TreeSet<String>());
 
         if(session.getAttribute("isLogged")!=null){
+            AcquistoAPI acquistoAPI = new AcquistoDAO();
+            PlaylistAPI playlistAPI = new PlaylistDAO();
             String username = (String)session.getAttribute("username");
             System.out.println("fatto");
-            request.setAttribute("listaPreferiti",new CanzoneDAO().doRetrieveaCodiciCanzoniPreferite(username));
+            request.setAttribute("listaPreferiti",canzoneAPI.doRetrieveaCodiciCanzoniPreferite(username));
 
-            request.setAttribute("listaCanzoniAcquistate", new AcquistoDAO().doRetrieveCodiciCanzoniAcquistate(username));
+            request.setAttribute("listaCanzoniAcquistate", acquistoAPI.doRetrieveCodiciCanzoniAcquistate(username));
 
-            request.setAttribute("listPlaylist", new PlaylistDAO().doRetrievePlaylistByUtente(username));
+            request.setAttribute("listPlaylist", playlistAPI.doRetrievePlaylistByUtente(username));
         }
 
     }

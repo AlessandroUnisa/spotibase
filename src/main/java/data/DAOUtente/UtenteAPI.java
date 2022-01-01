@@ -10,7 +10,7 @@ public interface UtenteAPI extends Dao<Utente> {
     Utente doGet(String email, String password)  throws SQLException;
     List<Utente> findUsers(String field, String value) throws SQLException;
     boolean exist(String chiave) throws SQLException;
-
+    boolean isValidUsername(String username);
     public boolean isValidEmail(String email);
 
     public boolean isValidPasswd(String passwd);
