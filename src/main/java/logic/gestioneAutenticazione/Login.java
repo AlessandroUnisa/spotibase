@@ -17,28 +17,29 @@ import java.sql.SQLException;
 @WebServlet(name = "Login", value = "/login")
 public class Login extends HttpServlet {
 
-    private void login(HttpServletRequest request, HttpServletResponse response) throws SQLException, NoSuchAlgorithmException, IOException, ServletException {
+    public void login(HttpServletRequest request, HttpServletResponse response,UtenteAPI utenteAPI) throws SQLException, NoSuchAlgorithmException, IOException, ServletException {
         Utente utenteTemp = new Utente();
         utenteTemp.setEmail(request.getParameter("email"));
         utenteTemp.setPassword(request.getParameter("passwd"));  //per criptare la password
-        UtenteAPI utenteAPI = new UtenteDAO();
 
-        Utente utente = utenteAPI.doGet(utenteTemp.getEmail(),utenteTemp.getPassword());  //cerco l utente nel db
-        if(utente!=null && utenteAPI.isAdminEmail(utente.getEmail())){  //amministratore
-            HttpSession session = request.getSession(true);
-            session.setAttribute("isLogged",true);
-            session.setAttribute("username","admin");
-            response.sendRedirect("./admin/dashboard");
-        }else if(utente!=null){  //utente
-            HttpSession session = request.getSession(true);
-            session.setAttribute("isLogged",true);
-            session.setAttribute("username",utente.getUsername());
-            response.sendRedirect("./index.html");
-            //sendRedirect invece del forward perche poi il browser fa request sbagliati
-        }else{
-            request.setAttribute("errCredenziali","Credenziali errate");
-            request.getRequestDispatcher("./WEB-INF/views/utente/login.jsp").forward(request,response);
-        }
+
+            Utente utente = utenteAPI.doGet(utenteTemp.getEmail(), utenteTemp.getPassword());  //cerco l utente nel db
+            if (utente != null && utenteAPI.isAdminEmail(utente.getEmail())) {  //amministratore
+                HttpSession session = request.getSession(true);
+                session.setAttribute("isLogged", true);
+                session.setAttribute("username", "admin");
+                response.sendRedirect("./admin/dashboard");
+            } else if (utente != null ) {  //utente
+                HttpSession session = request.getSession(true);
+                session.setAttribute("isLogged", true);
+                session.setAttribute("username", utente.getUsername());
+                response.sendRedirect("./index.html");
+                //sendRedirect invece del forward perche poi il browser fa request sbagliati
+            } else {
+                request.setAttribute("errCredenziali", "Credenziali errate");
+                request.getRequestDispatcher("./WEB-INF/views/utente/login.jsp").forward(request, response);
+            }
+
     }
 
 
@@ -57,9 +58,10 @@ public class Login extends HttpServlet {
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         request.setCharacterEncoding("utf-8");
         response.setCharacterEncoding("utf-8");
+        UtenteAPI utenteAPI = new UtenteDAO();
         String path = request.getPathInfo();
         try {
-            login(request,response);
+            login(request,response,utenteAPI);
         } catch (SQLException throwables) {
             throwables.printStackTrace();
         } catch (NoSuchAlgorithmException e) {

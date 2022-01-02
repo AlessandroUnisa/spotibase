@@ -76,7 +76,7 @@ public class AcquistoDAO implements AcquistoAPI {
     }
 
     @Override
-    /**Questo metodo cancella un acquisto dal DB
+    /**Questo metodo inserisce una canzone negli acquisti
      * @param chiave la concatenazione della username e del codice canzone. Esempio: "pluto;C94"e
      * @return void
      * */
