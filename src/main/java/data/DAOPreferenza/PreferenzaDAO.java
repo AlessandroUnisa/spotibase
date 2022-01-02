@@ -6,6 +6,9 @@ import data.Exceptions.OggettoNonInseritoException;
 import data.Exceptions.OggettoNonTrovatoException;
 import data.utils.SingletonJDBC;
 
+import java.lang.annotation.Documented;
+import java.lang.annotation.Retention;
+import java.lang.annotation.Target;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;

@@ -5,6 +5,9 @@ import data.Artista.ArtistaMapper;
 import data.DAOCanzone.Canzone;
 import data.DAOCanzone.CanzoneMapper;
 
+import java.lang.annotation.Documented;
+import java.lang.annotation.Retention;
+import java.lang.annotation.Target;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -12,6 +15,10 @@ import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+
+import static java.lang.annotation.ElementType.METHOD;
+import static java.lang.annotation.ElementType.TYPE;
+import static java.lang.annotation.RetentionPolicy.RUNTIME;
 
 
 public class AlbumDAO {
@@ -147,6 +154,7 @@ public class AlbumDAO {
     }
 
     /** Salva nel DB l'album*/
+
     public void doSave(Album album) throws SQLException {
         PreparedStatement ps = SingletonJDBC.getConnection().prepareStatement(AlbumQuery.getQueryAlbumSave());
         ps.setString(1, album.getCodice());
@@ -160,6 +168,7 @@ public class AlbumDAO {
     }
 
     /** Elimina l'album dal DB*/
+
     public void doDelete(String codeAlbum) throws SQLException {
         PreparedStatement st = SingletonJDBC.getConnection().prepareStatement("DELETE FROM album WHERE codice=?");
         st.setString(1,codeAlbum);

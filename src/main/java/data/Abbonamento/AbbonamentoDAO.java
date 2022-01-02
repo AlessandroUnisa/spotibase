@@ -2,11 +2,19 @@ package data.Abbonamento;
 
 import data.utils.SingletonJDBC;
 
+import java.lang.annotation.Documented;
+import java.lang.annotation.Retention;
+import java.lang.annotation.Target;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
+
+import static java.lang.annotation.ElementType.METHOD;
+import static java.lang.annotation.ElementType.TYPE;
+import static java.lang.annotation.RetentionPolicy.RUNTIME;
+
 
 public class AbbonamentoDAO {
     //metodi NON documentati per IS----------------------------------------------------------------------------------------------

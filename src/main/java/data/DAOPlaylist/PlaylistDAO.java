@@ -9,9 +9,22 @@ import data.Exceptions.OggettoNonInseritoException;
 import data.Exceptions.OggettoNonTrovatoException;
 import data.utils.SingletonJDBC;
 
+import java.lang.annotation.Documented;
+import java.lang.annotation.Retention;
+import java.lang.annotation.Target;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
+
+import static java.lang.annotation.ElementType.METHOD;
+import static java.lang.annotation.ElementType.TYPE;
+import static java.lang.annotation.RetentionPolicy.RUNTIME;
+
+@Documented
+@Retention(RUNTIME)
+@Target({TYPE, METHOD})
+@interface Generated {
+}
 
 public class PlaylistDAO implements PlaylistAPI {
     //metodi documentati per IS-----------------------------------------------------------------------------------------
@@ -173,6 +186,7 @@ public class PlaylistDAO implements PlaylistAPI {
 
     //metodi non documentati per IS-----------------------------------------------------------------------------------------
     /** Ritorna tutti le playlist*/
+    @Generated
     public List<Playlist> doRetrieveAllPlaylist() throws SQLException {
         PreparedStatement st = SingletonJDBC.getConnection().prepareStatement("SELECT * FROM playlist;");
         ResultSet rs = st.executeQuery();
@@ -184,6 +198,7 @@ public class PlaylistDAO implements PlaylistAPI {
     }
 
     /** Ritorna la lista di playlist che hanno quel titolo*/
+    @Generated
     public ArrayList<Playlist> doRetrieveByTitolo(String titolo) throws SQLException {
         PreparedStatement st = SingletonJDBC.getConnection().prepareStatement("SELECT * FROM playlist WHERE titolo LIKE ?");
         String titoloLike = "%"+titolo+"%";
@@ -200,6 +215,7 @@ public class PlaylistDAO implements PlaylistAPI {
     }
 
     /**Rimuove la canzone dalla playlist*/
+    @Generated
     public boolean doRemoveSong(String titoloPlaylist, String username, String codice) throws SQLException {
         PreparedStatement preparedStatement = SingletonJDBC.getConnection().prepareStatement(PlaylistQuery.getQueryDoRemoveSong());
         preparedStatement.setString(1,titoloPlaylist);
@@ -208,6 +224,7 @@ public class PlaylistDAO implements PlaylistAPI {
         return preparedStatement.executeUpdate()==0;
     }
     /**Ritorna la playlist con le canzoni*/
+    @Generated
     public Playlist doRetrievePlaylistWithSongs(String username, String nome) throws SQLException {
         PreparedStatement preparedStatement = SingletonJDBC.getConnection().prepareStatement(PlaylistQuery.getQueryDoRetrievePlaylistWithSongs());
         preparedStatement.setString(1,username);
@@ -227,6 +244,7 @@ public class PlaylistDAO implements PlaylistAPI {
 
 
     /** Modifica la playlist */
+    @Generated
     public void doUpdate(Playlist playlist) throws SQLException {
         PreparedStatement st = SingletonJDBC.getConnection().prepareStatement(PlaylistQuery.getQueryPlaylistUpdate());
         st.setString(1,playlist.getTitolo());
