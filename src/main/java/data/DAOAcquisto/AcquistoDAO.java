@@ -29,6 +29,8 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
 public class AcquistoDAO implements AcquistoAPI {
     
     private Connection connection;
+    //ciao
+
     public AcquistoDAO(){
         this.connection = SingletonJDBC.getConnection();
     }
@@ -36,7 +38,7 @@ public class AcquistoDAO implements AcquistoAPI {
         this.connection = connection;
     }
 
-    
+
     @Override
     /**Questo metodo ritorna l'acquisto prelevato dal DB. Può essere usato per controllare se un acquisto si trova nel DB o meno
      * @param chiave la concatenazione della username e del codice canzone. Esempio: "pluto;C94"
@@ -46,10 +48,11 @@ public class AcquistoDAO implements AcquistoAPI {
         if(chiave == null || !chiave.contains(";"))
             throw new IllegalArgumentException("la chiave è null o non valida");
         String chiavi[] = chiave.split(";");
-        PreparedStatement preparedStatement = connection.prepareStatement("SELECT * FROM acquisto WHERE username=? && codCanzone=?");
+        PreparedStatement preparedStatement = connection.prepareStatement("SELECT * FROM uc WHERE username=? && codCanzone=?");
         preparedStatement.setString(1,chiavi[0]);
         preparedStatement.setString(2,chiavi[1]);
         ResultSet resultSet = preparedStatement.executeQuery();
+        resultSet.next();
         if(resultSet.getRow()==0)
             throw new OggettoNonTrovatoException("L'acquisto non è stato trovato: "+chiave);
         return new Acquisto(resultSet.getString("username"),resultSet.getString("codCanzone"));
@@ -61,6 +64,7 @@ public class AcquistoDAO implements AcquistoAPI {
      * @return true se il salvataggio avviene correttamente, false altrimenti
      * */
     public void doSave(Acquisto acquisto) throws SQLException {
+
         if(acquisto == null || acquisto.getCodCanzone() == null || acquisto.getUsename() == null)
             throw new IllegalArgumentException("parametri non settati all'interno di acquisto");
 
@@ -70,7 +74,7 @@ public class AcquistoDAO implements AcquistoAPI {
             PreparedStatement preparedStatement = connection.prepareStatement("INSERT INTO uc VALUES (?,?)");
             preparedStatement.setString(1, acquisto.getUsename());
             preparedStatement.setString(2, acquisto.getCodCanzone());
-            if (preparedStatement.executeUpdate() != 1)
+            if (preparedStatement.executeUpdate()!=1)
                 throw new OggettoNonInseritoException("L'acquisto non è stato inserito");
         }
     }
@@ -93,7 +97,8 @@ public class AcquistoDAO implements AcquistoAPI {
 
             if(preparedStatement.executeUpdate()!=1)
                 throw new OggettoNonCancellatoException("l'acquisto non è stato cancellato");
-        }else throw new OggettoNonTrovatoException("Acquisto non trovato");
+        }else
+            throw new OggettoNonTrovatoException("Acquisto non trovato");
     }
 
     @Override
@@ -105,9 +110,9 @@ public class AcquistoDAO implements AcquistoAPI {
         if(username == null || codice == null)
             throw new IllegalArgumentException("username o codice sono null");
 
-        if(exist(username,codice))
+        if(exist(username,codice)==true) {
             throw new OggettoGiaPresenteException("L'acquisto è gia presente");
-        else{
+        }else{
             PreparedStatement preparedStatement = connection.prepareStatement(CanzoneQuery.getQueryDoInsertCanzoneAcquistata());
             preparedStatement.setString(1, username);
             preparedStatement.setString(2, codice);
