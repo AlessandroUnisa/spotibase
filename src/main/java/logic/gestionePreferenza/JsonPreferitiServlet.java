@@ -23,11 +23,14 @@ import java.util.ArrayList;
 @WebServlet(name = "jsonPreferitiServlet", value = "/jsonPreferitiServlet")
 public class JsonPreferitiServlet extends HttpServlet {
 
-    private void setPreferenzaCanzone(String username, String codice, JSONObject obj) throws SQLException {
-        PreferenzaAPI preferenzaDAO = new PreferenzaDAO();
-        if(preferenzaDAO.doRetrieveCodiciCanzoniPreferite(username).contains(codice)){
+    public void setPreferenzaCanzone(String username, String codice,PreferenzaAPI preferenzaAPI, JSONObject obj) throws SQLException {
+
+        System.out.println(username);
+        System.out.println(codice);
+        System.out.println(preferenzaAPI.doRetrieveCodiciCanzoniPreferite(username));
+        if(preferenzaAPI.doRetrieveCodiciCanzoniPreferite(username).contains(codice)){
             try {
-                preferenzaDAO.doSave(new Preferenza(codice,username));
+                preferenzaAPI.doSave(new Preferenza(codice,username));
                 obj.put("flag",true);
             } catch (OggettoGiaPresenteException | IllegalArgumentException | OggettoNonInseritoException e) {
                obj.put("flag",false);
@@ -35,7 +38,7 @@ public class JsonPreferitiServlet extends HttpServlet {
             obj.put("action", "rimossa");
         }else{
             try {
-                preferenzaDAO.doDelete(codice+";"+username);
+                preferenzaAPI.doDelete(codice+";"+username);
                 obj.put("flag",true);
             } catch (OggettoNonCancellatoException | IllegalArgumentException e) {
                 obj.put("flag",false);
@@ -44,7 +47,8 @@ public class JsonPreferitiServlet extends HttpServlet {
         }
     }
 
-    private void setPreferenzaArtista(String username, String codice, JSONObject obj) throws SQLException {
+    private void setPreferenzaArtista(String username, String codice) throws SQLException {
+        JSONObject obj = new JSONObject();
         codice = codice.replace('-',' '); //per i gruppi con piu nomi
         ArtistaDAO artistaDAO = new ArtistaDAO();
         ArrayList<Artista> listPref = (ArrayList<Artista>) artistaDAO.doRetrieveArtistiPreferiti(username);
@@ -68,7 +72,8 @@ public class JsonPreferitiServlet extends HttpServlet {
 
     }
 
-    private void setPreferenzaAlbum(String username, String codice, JSONObject obj) throws SQLException {
+    private void setPreferenzaAlbum(String username, String codice) throws SQLException {
+        JSONObject obj = new JSONObject();
         AlbumDAO albumDAO = new AlbumDAO();
         if(albumDAO.doRetrieveaCodiciAlbumPreferiti(username).contains(codice))
             obj.put("flag", albumDAO.doRemovePreferenza(codice,username));
@@ -83,30 +88,33 @@ public class JsonPreferitiServlet extends HttpServlet {
         String codice = request.getParameter("cod");
         int tipo = Integer.parseInt(request.getParameter("tipo"));  //1-->canzone, 2-->artista, 3-->album
         String username = (String) request.getSession(false).getAttribute("username");
-        JSONObject obj = new JSONObject();
+
 
 
         if(tipo==1){//canzone
             try {
-                setPreferenzaCanzone(username,codice,obj);
+                JSONObject obj= new JSONObject();
+                PreferenzaAPI preferenzaAPI=new PreferenzaDAO();
+                setPreferenzaCanzone(username,codice,preferenzaAPI,obj);
             } catch (SQLException throwables) {
                 throwables.printStackTrace();
             }
         }else if(tipo==2){//artista, in questo caso codice = nomeDArte
             try {
-                setPreferenzaArtista(username,codice,obj);
+                setPreferenzaArtista(username,codice);
             } catch (SQLException throwables) {
                 throwables.printStackTrace();
             }
         }else if(tipo==3){//album
             try {
-                setPreferenzaAlbum(username,codice,obj);
+                setPreferenzaAlbum(username,codice);
             } catch (SQLException throwables) {
                 throwables.printStackTrace();
             }
         }
-        response.getWriter().println(obj);
+
     }
+
 
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
