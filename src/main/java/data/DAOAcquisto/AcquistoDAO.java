@@ -34,7 +34,9 @@ public class AcquistoDAO implements AcquistoAPI {
     public AcquistoDAO(){
         this.connection = SingletonJDBC.getConnection();
     }
+
     public AcquistoDAO(Connection connection){
+
         this.connection = connection;
     }
 

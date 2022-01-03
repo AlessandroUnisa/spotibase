@@ -4,22 +4,19 @@ package logic.gestioneAutenticazione;
 import data.DAOUtente.Utente;
 import data.DAOUtente.UtenteAPI;
 import data.DAOUtente.UtenteDAO;
-import org.junit.After;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
-import org.mockito.Mock;
 import org.mockito.Mockito;
-import org.mockito.stubbing.Answer;
-import org.springframework.mock.web.*;
-import org.springframework.core.*;
-import static org.junit.Assert.*;
+import org.springframework.mock.web.MockHttpServletRequest;
+import org.springframework.mock.web.MockHttpServletResponse;
+import org.springframework.mock.web.MockHttpSession;
+
 import javax.servlet.ServletException;
 import java.io.IOException;
 import java.security.NoSuchAlgorithmException;
 import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.List;
+
+import static org.junit.Assert.assertEquals;
 
 public class LoginTest {
     MockHttpServletRequest request;
