@@ -85,16 +85,24 @@ public class ServletPlaylist extends HttpServlet {
         playlistAPI.doDelete(titolo+";"+username);
     }
 
-    private void creaPlaylist(HttpServletRequest request, HttpServletResponse response) throws SQLException, IOException {
+    public void creaPlaylist(HttpServletRequest request, HttpServletResponse response,PlaylistAPI playlistAPI) throws SQLException, IOException {
         String username = (String) request.getSession(false).getAttribute("username");
         String titolo = request.getParameter("titolo");
-        AttivazioneDAO attivazioneDAO = new AttivazioneDAO();
-        PlaylistAPI playlistAPI = new PlaylistDAO();
-        int numPlaylist = playlistAPI.doRetrieveNumPlaylistOfUtente(username);
-        PlaylistAPI playlistDAO = new PlaylistDAO();
+        System.out.println(titolo);
 
-        if(playlistDAO.isPresent(titolo,username)) //titolo gia presente
+        if(!playlistAPI.isValidTitolo(titolo)){
+            throw new IllegalArgumentException("titolo non valido");
+        }
+
+        AttivazioneDAO attivazioneDAO = new AttivazioneDAO();
+
+        int numPlaylist = playlistAPI.doRetrieveNumPlaylistOfUtente(username);
+
+
+        if(playlistAPI.isPresent(titolo,username)) { //titolo gia presente
             response.sendRedirect("../libreria?presentPlay=1");
+            throw new IllegalArgumentException("playlist già esistente");
+        }
         else {
             boolean flag = false;
             if (numPlaylist > 3) {
@@ -117,16 +125,19 @@ public class ServletPlaylist extends HttpServlet {
                 response.sendRedirect("../libreria?errInsPlay=1");
             else {
                 String note = request.getParameter("note");
-
-                Playlist playlist = new Playlist();
-                playlist.setTitolo(titolo);
-                playlist.setNote(note);
-                playlist.setUsername(username);
-                playlistDAO.doSave(playlist);
-                response.sendRedirect("../libreria");
+                if( !playlistAPI.isValidNota(note)){
+                    System.out.println(note);
+                    throw new IllegalArgumentException("nota non valida");
+                }
+                else {
+                    Playlist playlist = new Playlist();
+                    playlist.setTitolo(titolo);
+                    playlist.setNote(note);
+                    playlist.setUsername(username);
+                    playlistAPI.doSave(playlist);
+                    response.sendRedirect("../libreria");
+                }
             }
-
-
         }
     }
 
@@ -147,7 +158,8 @@ public class ServletPlaylist extends HttpServlet {
             case "/crea": {
                 //inserimento playlist. senza abbonamento max 4, plus-->15, mega-->45, ultra illimitate
                 try {
-                    creaPlaylist(request,response);
+                    PlaylistAPI playlistAPI = new PlaylistDAO();
+                    creaPlaylist(request,response,playlistAPI);
                 } catch (SQLException throwables) {
                     throwables.printStackTrace();
                 }
