@@ -20,28 +20,21 @@ import java.util.TreeSet;
 @WebServlet(name = "ServletCarrello", value = "/carrello")
 public class ServletCarrello extends HttpServlet {
 
-    private void visualizzaCarrello(HttpServletRequest request) throws SQLException {
-        String codice = request.getParameter("del"); //viene settato se viene richiesta la cancellazione di un elemento
+
+    public void visualizzaCarrello(HttpServletRequest request, CanzoneAPI canzoneAPI, AcquistoAPI acquistoAPI, AlbumDAO albumDAO) throws SQLException {
         HttpSession session = request.getSession(true);
 
         if(session.getAttribute("listCart")==null)
             session.setAttribute("listCart", new TreeSet<String>());
-        if (codice!=null)
-            ((TreeSet<String>) session.getAttribute("listCart")).remove(codice);
 
         if(((TreeSet<String>)session.getAttribute("listCart")).size()>0){
             ArrayList<String> codici = new ArrayList<>((TreeSet<String>) session.getAttribute("listCart")); //codici presenti nel carrello
-            CanzoneAPI canzoneAPI = new CanzoneDAO();
-            AcquistoAPI acquistoAPI = new AcquistoDAO();
-            AlbumDAO albumDAO = new AlbumDAO();
             String username = (String) request.getSession(false).getAttribute("username");
 
             ArrayList<Canzone> listaCanzoni = (ArrayList<Canzone>) canzoneAPI.doRetrieveCanzoniByCodiciWithArtisti(codici);
             ArrayList<Album> listAlbum = (ArrayList<Album>) albumDAO.doRetrieveAlbumsByCodiciWithArtisti(codici);
 
-            ArrayList<String> listCanzoniAcquistate = null;
-
-                listCanzoniAcquistate = (ArrayList<String>) acquistoAPI.doRetrieveCodiciCanzoniAcquistate(username);
+            ArrayList<String> listCanzoniAcquistate = (ArrayList<String>) acquistoAPI.doRetrieveCodiciCanzoniAcquistate(username);
 
             ArrayList<String> listAlbumAcquistati = (ArrayList<String>) albumDAO.doRetrieveCodiciAlbumAcquistati(username);
 
@@ -54,6 +47,7 @@ public class ServletCarrello extends HttpServlet {
             for (int i=0; i<listAlbum.size(); i++)
                 if(listAlbumAcquistati.contains(listAlbum.get(i).getCodice()))
                     ((TreeSet<String>) session.getAttribute("listCart")).remove(listAlbum.remove(i).getCodice());
+
 
             double totale = 0;
             for(Canzone canzone : listaCanzoni)
@@ -68,35 +62,42 @@ public class ServletCarrello extends HttpServlet {
 
     }
 
+    public void eliminaDalCarrello(HttpServletRequest request){
+        String codice = request.getParameter("del"); //viene settato se viene richiesta la cancellazione di un elemento
+        if (codice!=null){
+            HttpSession session = request.getSession(true);
+            ((TreeSet<String>) session.getAttribute("listCart")).remove(codice);
+        }
+    }
+
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         //visualizzazione carrello
         request.setCharacterEncoding("utf-8");
         response.setCharacterEncoding("utf-8");
+
+        eliminaDalCarrello(request);
+
         try {
-            visualizzaCarrello(request);
+            AcquistoAPI acquistoAPI = new AcquistoDAO();
+            CanzoneAPI canzoneAPI = new CanzoneDAO();
+            visualizzaCarrello(request,canzoneAPI,acquistoAPI, new AlbumDAO());
         } catch (SQLException throwables) {
             throwables.printStackTrace();
         }
         request.getRequestDispatcher("WEB-INF/views/carrello/carrello.jsp").forward(request,response);
     }
 
-    private void acquisto(HttpServletRequest request) throws SQLException {
+    private void acquisto(HttpServletRequest request, AcquistoAPI acquistoAPI, AlbumDAO albumDAO) throws SQLException {
         if(request.getSession(true).getAttribute("isLogged")!=null) {
             TreeSet<String> codici = (TreeSet<String>) request.getSession(false).getAttribute("listCart");
             Iterator iterator = codici.iterator();
 
-            AcquistoAPI acquistoDAO = new AcquistoDAO();
-            AlbumDAO albumDAO = new AlbumDAO();
             String username = (String) request.getSession(false).getAttribute("username");
             while (iterator.hasNext()) {
                 String item = (String) iterator.next();
                 if (item.charAt(0) == 'C') {
-                    try {
-                        acquistoDAO.doInsertCanzoneAcquistata(username, item);
-                    } catch (SQLException throwables) {
-                        throwables.printStackTrace();
-                    }
+                        acquistoAPI.doInsertCanzoneAcquistata(username, item);
                 }
                 else albumDAO.doInsertAlbumAcquistato(username, item);
             }
@@ -112,7 +113,8 @@ public class ServletCarrello extends HttpServlet {
         request.setCharacterEncoding("utf-8");
         response.setCharacterEncoding("utf-8");
         try {
-            acquisto(request);
+            AcquistoAPI acquistoAPI = new AcquistoDAO();
+            acquisto(request,acquistoAPI,new AlbumDAO());
         } catch (SQLException throwables) {
             throwables.printStackTrace();
         }

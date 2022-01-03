@@ -36,7 +36,24 @@ public class RegistrazioneTest {
         utenteAPI = Mockito.mock(UtenteDAO.class);
         session = new MockHttpSession();
     }
+    @Test
+    public void registerEmailNonRispettaFormatoTest() throws SQLException, NoSuchAlgorithmException, ServletException, IOException {
+        String email = "@gmail.com"; // non corretta
+        String username = "antonio_73"; //corretta
+        String passwd = "Pluto1234", passwdCheck = "Pluto1234"; //corretta
 
+        setParametersRequest(email,username,passwd,passwdCheck);
+
+        Mockito.when(utenteAPI.isValidEmail(email)).thenReturn(false); //email non rispetta il fromato
+        Mockito.when(utenteAPI.findUsers("email",email)).thenReturn(new ArrayList<>()); //email non presente nel DB
+        Mockito.when(utenteAPI.isValidPasswd(passwd)).thenReturn(true); //password rispetta il formato
+        Mockito.when(utenteAPI.findUsers("username",username)).thenReturn(new ArrayList<>());//username non presente nel DB
+        Mockito.when(utenteAPI.isValidUsername(username)).thenReturn(true);//rispetta il formato
+        registrazione.register(request,response,utenteAPI);
+
+        assertParametersRequest(email,username,passwd,passwdCheck);
+        assertEquals("L'email inserita non è valida",request.getAttribute("errEmail"));
+    }
     @Test
     public void registerUsernameNonRispettaFormatoTest() throws SQLException, NoSuchAlgorithmException, ServletException, IOException {
         String email = "antonio73@gmail.com"; //corretta

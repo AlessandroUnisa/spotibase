@@ -9,13 +9,34 @@ import data.DAOCanzone.Canzone;
 import data.DAOCanzone.CanzoneMapper;
 import data.DAOCanzone.CanzoneQuery;
 
+import javax.annotation.processing.Generated;
+import java.lang.annotation.Documented;
+import java.lang.annotation.Retention;
+import java.lang.annotation.Target;
+import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
+import static java.lang.annotation.ElementType.METHOD;
+import static java.lang.annotation.ElementType.TYPE;
+import static java.lang.annotation.RetentionPolicy.RUNTIME;
+
+
+
 public class AcquistoDAO implements AcquistoAPI {
+    
+    private Connection connection;
+    public AcquistoDAO(){
+        this.connection = SingletonJDBC.getConnection();
+    }
+    public AcquistoDAO(Connection connection){
+        this.connection = connection;
+    }
+
+    
     @Override
     /**Questo metodo ritorna l'acquisto prelevato dal DB. Può essere usato per controllare se un acquisto si trova nel DB o meno
      * @param chiave la concatenazione della username e del codice canzone. Esempio: "pluto;C94"
@@ -25,7 +46,7 @@ public class AcquistoDAO implements AcquistoAPI {
         if(chiave == null || !chiave.contains(";"))
             throw new IllegalArgumentException("la chiave è null o non valida");
         String chiavi[] = chiave.split(";");
-        PreparedStatement preparedStatement = SingletonJDBC.getConnection().prepareStatement("SELECT * FROM acquisto WHERE username=? && codCanzone=?");
+        PreparedStatement preparedStatement = connection.prepareStatement("SELECT * FROM acquisto WHERE username=? && codCanzone=?");
         preparedStatement.setString(1,chiavi[0]);
         preparedStatement.setString(2,chiavi[1]);
         ResultSet resultSet = preparedStatement.executeQuery();
@@ -46,7 +67,7 @@ public class AcquistoDAO implements AcquistoAPI {
         if(exist(acquisto.getUsename(), acquisto.getCodCanzone()))
             throw new OggettoGiaPresenteException("L'acquisto è gia presente");
         else{
-            PreparedStatement preparedStatement = SingletonJDBC.getConnection().prepareStatement("INSERT INTO uc VALUES (?,?)");
+            PreparedStatement preparedStatement = connection.prepareStatement("INSERT INTO uc VALUES (?,?)");
             preparedStatement.setString(1, acquisto.getUsename());
             preparedStatement.setString(2, acquisto.getCodCanzone());
             if (preparedStatement.executeUpdate() != 1)
@@ -66,7 +87,7 @@ public class AcquistoDAO implements AcquistoAPI {
         String[] chiavi = chiave.split(";");
 
         if(exist(chiavi[0],chiavi[1])){
-            PreparedStatement preparedStatement = SingletonJDBC.getConnection().prepareStatement("DELETE FROM uc WHERE username=? && codCanzone=?");
+            PreparedStatement preparedStatement = connection.prepareStatement("DELETE FROM uc WHERE username=? && codCanzone=?");
             preparedStatement.setString(1,chiavi[0]);
             preparedStatement.setString(2, chiavi[1]);
 
@@ -76,7 +97,7 @@ public class AcquistoDAO implements AcquistoAPI {
     }
 
     @Override
-    /**Questo metodo cancella un acquisto dal DB
+    /**Questo metodo inserisce una canzone negli acquisti
      * @param chiave la concatenazione della username e del codice canzone. Esempio: "pluto;C94"e
      * @return void
      * */
@@ -87,7 +108,7 @@ public class AcquistoDAO implements AcquistoAPI {
         if(exist(username,codice))
             throw new OggettoGiaPresenteException("L'acquisto è gia presente");
         else{
-            PreparedStatement preparedStatement = SingletonJDBC.getConnection().prepareStatement(CanzoneQuery.getQueryDoInsertCanzoneAcquistata());
+            PreparedStatement preparedStatement = connection.prepareStatement(CanzoneQuery.getQueryDoInsertCanzoneAcquistata());
             preparedStatement.setString(1, username);
             preparedStatement.setString(2, codice);
             if (preparedStatement.executeUpdate() != 1)
@@ -100,7 +121,7 @@ public class AcquistoDAO implements AcquistoAPI {
         if(username == null){
             throw new IllegalArgumentException("username è null");
         }
-        PreparedStatement preparedStatement = SingletonJDBC.getConnection().prepareStatement(CanzoneQuery.getQueryDoRetrieveCodiciCanzoniAcquistate());
+        PreparedStatement preparedStatement = connection.prepareStatement(CanzoneQuery.getQueryDoRetrieveCodiciCanzoniAcquistate());
         preparedStatement.setString(1,username);
         preparedStatement.setString(2,username);
         ResultSet resultSet = preparedStatement.executeQuery();
@@ -114,7 +135,7 @@ public class AcquistoDAO implements AcquistoAPI {
     public boolean exist(String username, String codCanzone) throws SQLException {
         if(username == null || codCanzone == null)
             throw new IllegalArgumentException("username o codCanzone sono null");
-        PreparedStatement preparedStatement = SingletonJDBC.getConnection().prepareStatement("SELECT * FROM acquisto WHERE username=? && codCanzone=?");
+        PreparedStatement preparedStatement = connection.prepareStatement("SELECT * FROM uc WHERE username=? && codCanzone=?");
         preparedStatement.setString(1,username);
         preparedStatement.setString(2, codCanzone);
          return preparedStatement.executeQuery().next();
@@ -125,11 +146,12 @@ public class AcquistoDAO implements AcquistoAPI {
     //non documentati per IS----------------------------------------------------------------------------------------------------
 
     /**Ritorna le canzoni acquistate dall'utente*/
+
     public List<Canzone> doRetrieveCanzoniAcquistate(String username) throws SQLException {
         if(username == null){
             throw new IllegalArgumentException("username è null");
         }
-        PreparedStatement statement = SingletonJDBC.getConnection().prepareStatement(CanzoneQuery.getQueryDoRetrieveCanzoniAcquistate());
+        PreparedStatement statement = connection.prepareStatement(CanzoneQuery.getQueryDoRetrieveCanzoniAcquistate());
         statement.setString(1,username);
         statement.setString(2, username);
         ResultSet resultSet = statement.executeQuery();

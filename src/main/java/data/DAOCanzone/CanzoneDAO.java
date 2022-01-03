@@ -9,12 +9,25 @@ import data.utils.SingletonJDBC;
 import data.Artista.Artista;
 import data.Artista.ArtistaMapper;
 
+import java.lang.annotation.Documented;
+import java.lang.annotation.Retention;
+import java.lang.annotation.Target;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
+
+import static java.lang.annotation.ElementType.METHOD;
+import static java.lang.annotation.ElementType.TYPE;
+import static java.lang.annotation.RetentionPolicy.RUNTIME;
+
+@Documented
+@Retention(RUNTIME)
+@Target({TYPE, METHOD})
+@interface Generated {
+}
 
 public class CanzoneDAO implements CanzoneAPI {
     //metodi documentati per IS----------------------------------------------------------------------------------------------
@@ -127,6 +140,7 @@ public class CanzoneDAO implements CanzoneAPI {
     //metodi NON documentati per IS----------------------------------------------------------------------------------------------
 
     /**Ritorna le ultime uscite*/
+    @Generated
     public List<Canzone> doRetrieveCanzoniUltimeUscite() throws SQLException {
             PreparedStatement st = SingletonJDBC.getConnection().prepareStatement(CanzoneQuery.getQueryDoRetriveCanzoniUltimeUscite());
             ResultSet rs = st.executeQuery();
@@ -138,6 +152,7 @@ public class CanzoneDAO implements CanzoneAPI {
     }
 
     /**Ritorna le canzoni con piu preferenze con la lista degli artisti*/
+    @Generated
     public List<Canzone> doRetrivePopularSongsWithArtista() throws SQLException {
         PreparedStatement st = SingletonJDBC.getConnection().prepareStatement(CanzoneQuery.getQueryDoRetrievePopularSongsWithArtista());
         ResultSet resultSet= st.executeQuery();
@@ -161,6 +176,7 @@ public class CanzoneDAO implements CanzoneAPI {
     }
 
     /**Ritorna una lista di canzoni random*/
+    @Generated
     public List<Canzone> doRetrieveCanzoneRandom() throws SQLException {
         PreparedStatement st = SingletonJDBC.getConnection().prepareStatement(CanzoneQuery.getQueryDoRetriveCanzoneRandom());
         ResultSet rs = st.executeQuery();
@@ -174,6 +190,7 @@ public class CanzoneDAO implements CanzoneAPI {
 
 
     /**Ritorna i codici delle canzoni preferite dall utente*/
+    @Generated
     public List<String> doRetrieveaCodiciCanzoniPreferite(String username) throws SQLException {
         PreparedStatement preparedStatement = SingletonJDBC.getConnection().prepareStatement(CanzoneQuery.getQueryDoRetrieveCodiciCanzoniPreferite());
         preparedStatement.setString(1,username);
@@ -184,6 +201,7 @@ public class CanzoneDAO implements CanzoneAPI {
         return codici;
     }
 
+    @Generated
    public List<Canzone> doRetrieveSongsByPlaylist(String username, String titoloPlaylist) throws SQLException {
 
             PreparedStatement st = SingletonJDBC.getConnection().prepareStatement(CanzoneQuery.getQueryDoRetrieveSongsByPlaylist());
@@ -198,7 +216,7 @@ public class CanzoneDAO implements CanzoneAPI {
 
             return lista;
     }
-
+    @Generated
    public List<Canzone> doRetrieveSongsByAlbum(String codAlbum) throws SQLException {
         PreparedStatement st = SingletonJDBC.getConnection().prepareStatement(CanzoneQuery.getQueryDoRetrieveSongsByAlbum());
         String codAlbumLike = "%"+codAlbum+"%";
@@ -210,7 +228,7 @@ public class CanzoneDAO implements CanzoneAPI {
 
         return lista;
     }
-
+    @Generated
    public List<Canzone> doRetrieveSinglesByArtista(String nomeDArte) throws SQLException {
         PreparedStatement st = SingletonJDBC.getConnection().prepareStatement(CanzoneQuery.getQueryDoRetrieveSinglesByArtista());
         String nomeDArteLike = "%"+nomeDArte+"%";
@@ -224,6 +242,7 @@ public class CanzoneDAO implements CanzoneAPI {
     }
 
     /**Ritorna le canzoni dell artista*/
+    @Generated
    public List<Canzone> doRetrieveSongsByArtista(String nomeDArte) throws SQLException {
         PreparedStatement st = SingletonJDBC.getConnection().prepareStatement(CanzoneQuery.getQueryDoRetrieveSongsByArtista());
         String nomeDArteLike = "%"+nomeDArte+"%";
@@ -237,6 +256,7 @@ public class CanzoneDAO implements CanzoneAPI {
     }
 
     /**Ritorna le canzoni con piu preferenze*/
+    @Generated
    public List<Canzone> doRetrieveCanzonePopular() throws SQLException {
         PreparedStatement st = SingletonJDBC.getConnection().prepareStatement(CanzoneQuery.getQueryDoRetrieveCanzonePopular());
         ResultSet rs = st.executeQuery();
@@ -248,6 +268,7 @@ public class CanzoneDAO implements CanzoneAPI {
     }
 
     /** Ritorna la lista di canzoni che hanno quel titolo */
+    @Generated
    public List<Canzone> doRetrieveByName(String titolo) throws SQLException {
         PreparedStatement st = SingletonJDBC.getConnection().prepareStatement("SELECT * FROM canzone CAN WHERE CAN.titolo LIKE ?");
         String titleLike = "%"+titolo+"%";
@@ -264,6 +285,7 @@ public class CanzoneDAO implements CanzoneAPI {
 
 
    /** Modifica la canzone */
+   @Generated
    public boolean doUpdate(Canzone canzone) throws SQLException {
         PreparedStatement st = SingletonJDBC.getConnection().prepareStatement(CanzoneQuery.getQueryCanzoneUpdate());
         st.setString(1,canzone.getTitolo());
@@ -275,6 +297,7 @@ public class CanzoneDAO implements CanzoneAPI {
    }
 
    /** Ritorna tutti le canzoni*/
+   @Generated
    public List<Canzone> doRetrieveAllCanzoni() throws SQLException {
         PreparedStatement st = SingletonJDBC.getConnection().prepareStatement("SELECT * FROM canzone CAN;");
         ResultSet rs = st.executeQuery();
@@ -284,7 +307,7 @@ public class CanzoneDAO implements CanzoneAPI {
 
         return lista;
    }
-
+    @Generated
    public List<Canzone> doRetrieveAllCanzoni(int offset, int numElements) throws SQLException {
         PreparedStatement st = SingletonJDBC.getConnection().prepareStatement("SELECT * FROM canzone CAN ORDER BY CAN.titolo LIMIT ?,?;");
         st.setInt(1,offset);
@@ -298,6 +321,7 @@ public class CanzoneDAO implements CanzoneAPI {
    }
 
    /** Ritorna le canzoni del genere passato*/
+   @Generated
    public List<Canzone> doRetrieveCanzoneByGenere(String genere) throws SQLException {
         PreparedStatement ps = SingletonJDBC.getConnection().prepareStatement(CanzoneQuery.getQueryCanzoneByGenere());
         ps.setString(1,'%'+genere+'%');
@@ -308,7 +332,7 @@ public class CanzoneDAO implements CanzoneAPI {
 
         return canzoni;
     }
-
+    @Generated
     public List<Canzone> doRetrieveCanzoneByGenere(String genere, String filterSQL, int offset, int numElements) throws SQLException {
 
         PreparedStatement preparedStatement = SingletonJDBC.getConnection().prepareStatement(CanzoneQuery.getQueryCanzoneByGenere(filterSQL));
@@ -324,6 +348,7 @@ public class CanzoneDAO implements CanzoneAPI {
     }
 
     /**Ritorna il numero di canzoni nel DB*/
+    @Generated
    public int doRetrieveNumCanzoni() throws SQLException {
        PreparedStatement statement = SingletonJDBC.getConnection().prepareStatement("SELECT COUNT(*) NUM FROM canzone;");
        ResultSet resultSet = statement.executeQuery();
@@ -336,6 +361,7 @@ public class CanzoneDAO implements CanzoneAPI {
    * */
 
     /**Ritorna la somma dei guadagni dalle canzoni acquistate*/
+    @Generated
     public double doRetrieveTotaleGuadagno() throws SQLException {
         PreparedStatement st = SingletonJDBC.getConnection().prepareStatement(CanzoneQuery.getQueryTotaleGuadagni());
         ResultSet rs = st.executeQuery();
@@ -345,6 +371,7 @@ public class CanzoneDAO implements CanzoneAPI {
     }
 
     /**Ritorna le canzoni piu acquistate*/
+    @Generated
     public List<Canzone> doRetrieveCanzoniTopBuy() throws SQLException {
         PreparedStatement preparedStatement = SingletonJDBC.getConnection().prepareStatement(CanzoneQuery.getQueryDoRetrieveCanzoniTopBuy());
         ResultSet resultSet = preparedStatement.executeQuery();
@@ -355,6 +382,7 @@ public class CanzoneDAO implements CanzoneAPI {
     }
 
     /**Ritorna la canzone con quel codice*/
+    @Generated
     public Canzone doRetrieveCanzoneByCodice(String codice) throws SQLException {
         PreparedStatement preparedStatement = SingletonJDBC.getConnection().prepareStatement(CanzoneQuery.getQueryDoRetrieveAlbumByCodice());
         preparedStatement.setString(1,codice);
@@ -365,6 +393,7 @@ public class CanzoneDAO implements CanzoneAPI {
     }
 
     /**Ritorna la lista di canzoni in base ai codici passati, con la lista artisti*/
+    @Generated
     public List<Canzone> doRetrieveCanzoniByCodiciWithArtisti(List<String> codici) throws SQLException {
         PreparedStatement preparedStatement = SingletonJDBC.getConnection().prepareStatement(CanzoneQuery.getQueryDoRetrieveCanzoniByCodici(codici.size()));
         for(int i=0; i<codici.size(); i++)

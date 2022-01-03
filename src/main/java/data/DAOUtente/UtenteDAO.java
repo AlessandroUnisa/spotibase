@@ -16,10 +16,21 @@ import data.Attivazione.AttivazioneMapper;
 import data.DAOPlaylist.Playlist;
 import data.DAOPlaylist.PlaylistMapper;
 
+import java.lang.annotation.*;
 import java.security.NoSuchAlgorithmException;
 import java.sql.*;
 import java.util.*;
 import java.util.regex.Pattern;
+
+import static java.lang.annotation.ElementType.METHOD;
+import static java.lang.annotation.ElementType.TYPE;
+import static java.lang.annotation.RetentionPolicy.RUNTIME;
+
+@Documented
+@Retention(RUNTIME)
+@Target({TYPE, METHOD})
+@interface Generated {
+}
 
 public class UtenteDAO implements UtenteAPI{
     //Metodi documentati per IS---------------------------------------------------------------------------------
@@ -137,6 +148,7 @@ public class UtenteDAO implements UtenteAPI{
 
     // Metodi non documentati per IS -----------------------------------------------------------------------------------
     /** Ritorna tutti gli utenti*/
+    @Generated
     public List<Utente> doRetrieveAllUtenti() throws NoSuchAlgorithmException, SQLException {
         PreparedStatement st = SingletonJDBC.getConnection().prepareStatement("SELECT * FROM utente;");
         ResultSet rs = st.executeQuery();
@@ -148,6 +160,7 @@ public class UtenteDAO implements UtenteAPI{
     }
 
     /** Modifica l'utente */
+    @Generated
     public void doUpdate(Utente utente) throws SQLException {
         PreparedStatement st = SingletonJDBC.getConnection().prepareStatement(UtenteQuery.getQueryUtenteUpdate());
         st.setString(1,utente.getPassword());
@@ -159,6 +172,7 @@ public class UtenteDAO implements UtenteAPI{
 
 
     /** Ritorna la lista di utenti che hanno quel username */
+    @Generated
     public List<Utente> doRetrieveByUsername(String username) throws NoSuchAlgorithmException, SQLException {
         PreparedStatement st = SingletonJDBC.getConnection().prepareStatement("SELECT * FROM utente WHERE username LIKE ?");
         String usernameLike = "%"+username+"%";
@@ -176,6 +190,7 @@ public class UtenteDAO implements UtenteAPI{
 
 
     /**Ritona un Utente con album, artisti e canzoni preferite, playlist e abbonamenti*/
+    @Generated
     public Utente fetchUtenteWithSongsAlbumArtistiPrefPlayAbbon(String username) throws SQLException {
             PreparedStatement st = SingletonJDBC.getConnection().prepareStatement(UtenteQuery.getQueryFetchPrefPlaylistAttByUsername());
             st.setString(1,username);
@@ -240,6 +255,7 @@ public class UtenteDAO implements UtenteAPI{
     }
 
     private static final Pattern MAIL_ADMIN = Pattern.compile("^[a-zA-Z0-9.!#$%&’*+/=?^_`{|}~-]+@spotibase.it");
+    @Generated
     public boolean isAdminEmail(String email){
         return  MAIL_ADMIN.matcher(email).matches();
     }

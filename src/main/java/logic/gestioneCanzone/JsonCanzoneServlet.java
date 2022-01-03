@@ -3,6 +3,8 @@ package logic.gestioneCanzone;
 import data.DAOCanzone.Canzone;
 import data.DAOCanzone.CanzoneAPI;
 import data.DAOCanzone.CanzoneDAO;
+import data.DAOPlaylist.PlaylistAPI;
+import data.DAOPlaylist.PlaylistDAO;
 import data.DAOPreferenza.PreferenzaAPI;
 import data.DAOPreferenza.PreferenzaDAO;
 import org.json.simple.JSONObject;
@@ -18,13 +20,12 @@ import java.sql.SQLException;
 @WebServlet(name = "jsonAlbumServlet", value = "/jsonCanzoneServlet")
 public class JsonCanzoneServlet extends HttpServlet {
 
-    private JSONObject getCanzone(HttpServletRequest request, CanzoneAPI canzoneAPI) throws SQLException {
+    public JSONObject getCanzone(HttpServletRequest request, CanzoneAPI canzoneAPI, PreferenzaAPI preferenzaAPI) throws SQLException {
         String code = request.getParameter("cod");
         JSONObject obj = new JSONObject();
 
         String username = (String) request.getSession(false).getAttribute("username");
 
-        PreferenzaAPI preferenzaAPI = new PreferenzaDAO();
         if(username!=null){ //se il tasto play è stato cliccato da un utente loggato
             obj.put("isLogged",true);
             obj.put("pref",preferenzaAPI.doRetrieveCodiciCanzoniPreferite(username).contains(code)); //vedo se la canzone è tra i preferiti
@@ -45,7 +46,8 @@ public class JsonCanzoneServlet extends HttpServlet {
         response.setContentType("application/json");
         try {
             CanzoneAPI canzoneAPI = new CanzoneDAO();
-            response.getWriter().println(getCanzone(request,canzoneAPI));
+            PreferenzaAPI preferenzaAPI = new PreferenzaDAO();
+            response.getWriter().println(getCanzone(request,canzoneAPI,preferenzaAPI));
         } catch (SQLException throwables) {
             throwables.printStackTrace();
         }
