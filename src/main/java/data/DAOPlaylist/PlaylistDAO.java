@@ -15,6 +15,7 @@ import java.lang.annotation.Target;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.regex.Pattern;
 
 import static java.lang.annotation.ElementType.METHOD;
 import static java.lang.annotation.ElementType.TYPE;
@@ -184,6 +185,22 @@ public class PlaylistDAO implements PlaylistAPI {
         return resultSet.getInt("num");
     }
 
+    private static final Pattern TITLE = Pattern.compile("^[a-zA-Z0-9_.-. ]{0,100}\\w$");
+    private static final Pattern NOTA = Pattern.compile("^[a-zA-Z0-9_.-. ]{0,100}\\w$");
+
+    @Override
+    public boolean isValidTitolo(String titolo) throws SQLException {
+        return TITLE.matcher(titolo).matches();
+    }
+
+    @Override
+    public boolean isValidNota(String nota) throws SQLException {
+        if(nota == null)
+            return true;
+        return NOTA.matcher(nota).matches();
+    }
+
+
     //metodi non documentati per IS-----------------------------------------------------------------------------------------
     /** Ritorna tutti le playlist*/
     @Generated
@@ -256,6 +273,8 @@ public class PlaylistDAO implements PlaylistAPI {
         if(st.executeUpdate()!=1)
             throw new RuntimeException("delete error");
     }
+
+
 
   /*
     public void doInsertPlaylist(Playlist playlist) throws SQLException {
