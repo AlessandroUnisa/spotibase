@@ -12,6 +12,7 @@ import data.Artista.ArtistaMapper;
 import java.lang.annotation.Documented;
 import java.lang.annotation.Retention;
 import java.lang.annotation.Target;
+import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -30,13 +31,21 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
 }
 
 public class CanzoneDAO implements CanzoneAPI {
+    
+    Connection connection;
+    public CanzoneDAO(){
+        this.connection = SingletonJDBC.getConnection();
+    }
+    public CanzoneDAO(Connection connection) {
+        this.connection = connection;
+    }
     //metodi documentati per IS----------------------------------------------------------------------------------------------
 
     @Override
     public boolean exist(String codice) throws SQLException {
         if(codice == null)
             throw new IllegalArgumentException("codice è null");
-        PreparedStatement preparedStatement = SingletonJDBC.getConnection().prepareStatement("SELECT * FROM canzone CAN WHERE CAN.codice = ?");
+        PreparedStatement preparedStatement = connection.prepareStatement("SELECT * FROM canzone CAN WHERE CAN.codice = ?");
         preparedStatement.setString(1, codice);
         return preparedStatement.executeQuery().next();
     }
@@ -50,7 +59,7 @@ public class CanzoneDAO implements CanzoneAPI {
         if(chiave == null)
             throw new IllegalArgumentException("chiave è null");
 
-        PreparedStatement preparedStatement = SingletonJDBC.getConnection().prepareStatement("SELECT * FROM canzone CAN WHERE CAN.codice = ?");
+        PreparedStatement preparedStatement = connection.prepareStatement("SELECT * FROM canzone CAN WHERE CAN.codice = ?");
         preparedStatement.setString(1,chiave);
         ResultSet resultSet = preparedStatement.executeQuery();
 
@@ -73,13 +82,15 @@ public class CanzoneDAO implements CanzoneAPI {
             doGet(canzone.getCodice());
             throw new OggettoGiaPresenteException("La canzone è gia presente");
         }catch (OggettoNonTrovatoException e){
-            PreparedStatement preparedStatement = SingletonJDBC.getConnection().prepareStatement("INSERT INTO canzone VALUES (?,?,?,?,?,?)");
+            PreparedStatement preparedStatement = connection.prepareStatement("INSERT INTO canzone VALUES (?,?,?,?,?,?,?,?)");
             preparedStatement.setString(1,canzone.getCodice());
             preparedStatement.setInt(2,canzone.getAnno());
             preparedStatement.setDouble(3,canzone.getDurata());
             preparedStatement.setString(4,canzone.getTitolo());
             preparedStatement.setDouble(5,canzone.getPrezzo());
-
+            preparedStatement.setString(6,canzone.getAlbum().getCodice());
+            preparedStatement.setString(7,canzone.getPathImg());
+            preparedStatement.setString(8,canzone.getPathMP3());
             if(preparedStatement.executeUpdate()!=1)
                 throw new OggettoNonInseritoException("La canzone non è stata inserita");
         }
@@ -95,7 +106,7 @@ public class CanzoneDAO implements CanzoneAPI {
 
         try{
             doGet(codCanzone);
-            PreparedStatement preparedStatement = SingletonJDBC.getConnection().prepareStatement("DELETE FROM canzone WHERE codice=?");
+            PreparedStatement preparedStatement = connection.prepareStatement("DELETE FROM canzone WHERE codice=?");
             preparedStatement.setString(1,codCanzone);
             if(preparedStatement.executeUpdate()!=1)
                 throw new OggettoNonCancellatoException("La canzone non è stata cancellata");
@@ -117,7 +128,7 @@ public class CanzoneDAO implements CanzoneAPI {
         try{
             System.out.println(codiceCanzone+"-----------------------");
             doGet(codiceCanzone);
-            PreparedStatement statement = SingletonJDBC.getConnection().prepareStatement(CanzoneQuery.getQueryDoRetrieveCanzoneWithArtisti());
+            PreparedStatement statement = connection.prepareStatement(CanzoneQuery.getQueryDoRetrieveCanzoneWithArtisti());
             statement.setString(1,codiceCanzone);
             ResultSet resultSet = statement.executeQuery();
             Canzone canzone=null;
@@ -142,7 +153,7 @@ public class CanzoneDAO implements CanzoneAPI {
     /**Ritorna le ultime uscite*/
     @Generated
     public List<Canzone> doRetrieveCanzoniUltimeUscite() throws SQLException {
-            PreparedStatement st = SingletonJDBC.getConnection().prepareStatement(CanzoneQuery.getQueryDoRetriveCanzoniUltimeUscite());
+            PreparedStatement st = connection.prepareStatement(CanzoneQuery.getQueryDoRetriveCanzoniUltimeUscite());
             ResultSet rs = st.executeQuery();
             ArrayList<Canzone> lista = new ArrayList<>();
             while(rs.next())
@@ -154,7 +165,7 @@ public class CanzoneDAO implements CanzoneAPI {
     /**Ritorna le canzoni con piu preferenze con la lista degli artisti*/
     @Generated
     public List<Canzone> doRetrivePopularSongsWithArtista() throws SQLException {
-        PreparedStatement st = SingletonJDBC.getConnection().prepareStatement(CanzoneQuery.getQueryDoRetrievePopularSongsWithArtista());
+        PreparedStatement st = connection.prepareStatement(CanzoneQuery.getQueryDoRetrievePopularSongsWithArtista());
         ResultSet resultSet= st.executeQuery();
         LinkedHashMap<String,Canzone> mappaCanzone= new LinkedHashMap<>();
         CanzoneMapper canzoneMapper= new CanzoneMapper();
@@ -178,7 +189,7 @@ public class CanzoneDAO implements CanzoneAPI {
     /**Ritorna una lista di canzoni random*/
     @Generated
     public List<Canzone> doRetrieveCanzoneRandom() throws SQLException {
-        PreparedStatement st = SingletonJDBC.getConnection().prepareStatement(CanzoneQuery.getQueryDoRetriveCanzoneRandom());
+        PreparedStatement st = connection.prepareStatement(CanzoneQuery.getQueryDoRetriveCanzoneRandom());
         ResultSet rs = st.executeQuery();
         ArrayList<Canzone> lista = new ArrayList<>();
         while(rs.next())
@@ -192,7 +203,7 @@ public class CanzoneDAO implements CanzoneAPI {
     /**Ritorna i codici delle canzoni preferite dall utente*/
     @Generated
     public List<String> doRetrieveaCodiciCanzoniPreferite(String username) throws SQLException {
-        PreparedStatement preparedStatement = SingletonJDBC.getConnection().prepareStatement(CanzoneQuery.getQueryDoRetrieveCodiciCanzoniPreferite());
+        PreparedStatement preparedStatement = connection.prepareStatement(CanzoneQuery.getQueryDoRetrieveCodiciCanzoniPreferite());
         preparedStatement.setString(1,username);
         ArrayList<String> codici = new ArrayList<>();
         ResultSet resultSet = preparedStatement.executeQuery();
@@ -204,7 +215,7 @@ public class CanzoneDAO implements CanzoneAPI {
     @Generated
    public List<Canzone> doRetrieveSongsByPlaylist(String username, String titoloPlaylist) throws SQLException {
 
-            PreparedStatement st = SingletonJDBC.getConnection().prepareStatement(CanzoneQuery.getQueryDoRetrieveSongsByPlaylist());
+            PreparedStatement st = connection.prepareStatement(CanzoneQuery.getQueryDoRetrieveSongsByPlaylist());
             String usernameLike = "%"+username+"%";
             String titoloLike = "%"+titoloPlaylist+"%";
             st.setString(1,usernameLike);
@@ -218,7 +229,7 @@ public class CanzoneDAO implements CanzoneAPI {
     }
     @Generated
    public List<Canzone> doRetrieveSongsByAlbum(String codAlbum) throws SQLException {
-        PreparedStatement st = SingletonJDBC.getConnection().prepareStatement(CanzoneQuery.getQueryDoRetrieveSongsByAlbum());
+        PreparedStatement st = connection.prepareStatement(CanzoneQuery.getQueryDoRetrieveSongsByAlbum());
         String codAlbumLike = "%"+codAlbum+"%";
         st.setString(1,codAlbumLike);
         ResultSet rs = st.executeQuery();
@@ -230,7 +241,7 @@ public class CanzoneDAO implements CanzoneAPI {
     }
     @Generated
    public List<Canzone> doRetrieveSinglesByArtista(String nomeDArte) throws SQLException {
-        PreparedStatement st = SingletonJDBC.getConnection().prepareStatement(CanzoneQuery.getQueryDoRetrieveSinglesByArtista());
+        PreparedStatement st = connection.prepareStatement(CanzoneQuery.getQueryDoRetrieveSinglesByArtista());
         String nomeDArteLike = "%"+nomeDArte+"%";
         st.setString(1,nomeDArteLike);
         ResultSet rs = st.executeQuery();
@@ -244,7 +255,7 @@ public class CanzoneDAO implements CanzoneAPI {
     /**Ritorna le canzoni dell artista*/
     @Generated
    public List<Canzone> doRetrieveSongsByArtista(String nomeDArte) throws SQLException {
-        PreparedStatement st = SingletonJDBC.getConnection().prepareStatement(CanzoneQuery.getQueryDoRetrieveSongsByArtista());
+        PreparedStatement st = connection.prepareStatement(CanzoneQuery.getQueryDoRetrieveSongsByArtista());
         String nomeDArteLike = "%"+nomeDArte+"%";
         st.setString(1,nomeDArteLike);
         ResultSet rs = st.executeQuery();
@@ -258,7 +269,7 @@ public class CanzoneDAO implements CanzoneAPI {
     /**Ritorna le canzoni con piu preferenze*/
     @Generated
    public List<Canzone> doRetrieveCanzonePopular() throws SQLException {
-        PreparedStatement st = SingletonJDBC.getConnection().prepareStatement(CanzoneQuery.getQueryDoRetrieveCanzonePopular());
+        PreparedStatement st = connection.prepareStatement(CanzoneQuery.getQueryDoRetrieveCanzonePopular());
         ResultSet rs = st.executeQuery();
         ArrayList<Canzone> lista = new ArrayList<>();
         while(rs.next())
@@ -270,7 +281,7 @@ public class CanzoneDAO implements CanzoneAPI {
     /** Ritorna la lista di canzoni che hanno quel titolo */
     @Generated
    public List<Canzone> doRetrieveByName(String titolo) throws SQLException {
-        PreparedStatement st = SingletonJDBC.getConnection().prepareStatement("SELECT * FROM canzone CAN WHERE CAN.titolo LIKE ?");
+        PreparedStatement st = connection.prepareStatement("SELECT * FROM canzone CAN WHERE CAN.titolo LIKE ?");
         String titleLike = "%"+titolo+"%";
         st.setString(1,titleLike);
         System.out.println(st.toString());
@@ -287,7 +298,7 @@ public class CanzoneDAO implements CanzoneAPI {
    /** Modifica la canzone */
    @Generated
    public boolean doUpdate(Canzone canzone) throws SQLException {
-        PreparedStatement st = SingletonJDBC.getConnection().prepareStatement(CanzoneQuery.getQueryCanzoneUpdate());
+        PreparedStatement st = connection.prepareStatement(CanzoneQuery.getQueryCanzoneUpdate());
         st.setString(1,canzone.getTitolo());
         st.setInt(2,canzone.getAnno());
         st.setDouble(3,canzone.getDurata());
@@ -299,7 +310,7 @@ public class CanzoneDAO implements CanzoneAPI {
    /** Ritorna tutti le canzoni*/
    @Generated
    public List<Canzone> doRetrieveAllCanzoni() throws SQLException {
-        PreparedStatement st = SingletonJDBC.getConnection().prepareStatement("SELECT * FROM canzone CAN;");
+        PreparedStatement st = connection.prepareStatement("SELECT * FROM canzone CAN;");
         ResultSet rs = st.executeQuery();
         ArrayList<Canzone> lista = new ArrayList<>();
         while(rs.next())
@@ -309,7 +320,7 @@ public class CanzoneDAO implements CanzoneAPI {
    }
     @Generated
    public List<Canzone> doRetrieveAllCanzoni(int offset, int numElements) throws SQLException {
-        PreparedStatement st = SingletonJDBC.getConnection().prepareStatement("SELECT * FROM canzone CAN ORDER BY CAN.titolo LIMIT ?,?;");
+        PreparedStatement st = connection.prepareStatement("SELECT * FROM canzone CAN ORDER BY CAN.titolo LIMIT ?,?;");
         st.setInt(1,offset);
         st.setInt(2,numElements);
         ResultSet rs = st.executeQuery();
@@ -323,7 +334,7 @@ public class CanzoneDAO implements CanzoneAPI {
    /** Ritorna le canzoni del genere passato*/
    @Generated
    public List<Canzone> doRetrieveCanzoneByGenere(String genere) throws SQLException {
-        PreparedStatement ps = SingletonJDBC.getConnection().prepareStatement(CanzoneQuery.getQueryCanzoneByGenere());
+        PreparedStatement ps = connection.prepareStatement(CanzoneQuery.getQueryCanzoneByGenere());
         ps.setString(1,'%'+genere+'%');
         List<Canzone> canzoni = new ArrayList<>();
         ResultSet rs = ps.executeQuery();
@@ -335,7 +346,7 @@ public class CanzoneDAO implements CanzoneAPI {
     @Generated
     public List<Canzone> doRetrieveCanzoneByGenere(String genere, String filterSQL, int offset, int numElements) throws SQLException {
 
-        PreparedStatement preparedStatement = SingletonJDBC.getConnection().prepareStatement(CanzoneQuery.getQueryCanzoneByGenere(filterSQL));
+        PreparedStatement preparedStatement = connection.prepareStatement(CanzoneQuery.getQueryCanzoneByGenere(filterSQL));
         preparedStatement.setString(1,genere);
         preparedStatement.setInt(2,offset);
         preparedStatement.setInt(3,numElements);
@@ -350,7 +361,7 @@ public class CanzoneDAO implements CanzoneAPI {
     /**Ritorna il numero di canzoni nel DB*/
     @Generated
    public int doRetrieveNumCanzoni() throws SQLException {
-       PreparedStatement statement = SingletonJDBC.getConnection().prepareStatement("SELECT COUNT(*) NUM FROM canzone;");
+       PreparedStatement statement = connection.prepareStatement("SELECT COUNT(*) NUM FROM canzone;");
        ResultSet resultSet = statement.executeQuery();
        if(resultSet.next())
            return resultSet.getInt("NUM");
@@ -363,7 +374,7 @@ public class CanzoneDAO implements CanzoneAPI {
     /**Ritorna la somma dei guadagni dalle canzoni acquistate*/
     @Generated
     public double doRetrieveTotaleGuadagno() throws SQLException {
-        PreparedStatement st = SingletonJDBC.getConnection().prepareStatement(CanzoneQuery.getQueryTotaleGuadagni());
+        PreparedStatement st = connection.prepareStatement(CanzoneQuery.getQueryTotaleGuadagni());
         ResultSet rs = st.executeQuery();
         if(!rs.next())
             return 0;
@@ -373,7 +384,7 @@ public class CanzoneDAO implements CanzoneAPI {
     /**Ritorna le canzoni piu acquistate*/
     @Generated
     public List<Canzone> doRetrieveCanzoniTopBuy() throws SQLException {
-        PreparedStatement preparedStatement = SingletonJDBC.getConnection().prepareStatement(CanzoneQuery.getQueryDoRetrieveCanzoniTopBuy());
+        PreparedStatement preparedStatement = connection.prepareStatement(CanzoneQuery.getQueryDoRetrieveCanzoniTopBuy());
         ResultSet resultSet = preparedStatement.executeQuery();
         ArrayList<Canzone> lista = new ArrayList<>();
         while (resultSet.next())
@@ -384,7 +395,7 @@ public class CanzoneDAO implements CanzoneAPI {
     /**Ritorna la canzone con quel codice*/
     @Generated
     public Canzone doRetrieveCanzoneByCodice(String codice) throws SQLException {
-        PreparedStatement preparedStatement = SingletonJDBC.getConnection().prepareStatement(CanzoneQuery.getQueryDoRetrieveAlbumByCodice());
+        PreparedStatement preparedStatement = connection.prepareStatement(CanzoneQuery.getQueryDoRetrieveAlbumByCodice());
         preparedStatement.setString(1,codice);
         ResultSet resultSet = preparedStatement.executeQuery();
         if(resultSet.next())
@@ -395,7 +406,7 @@ public class CanzoneDAO implements CanzoneAPI {
     /**Ritorna la lista di canzoni in base ai codici passati, con la lista artisti*/
     @Generated
     public List<Canzone> doRetrieveCanzoniByCodiciWithArtisti(List<String> codici) throws SQLException {
-        PreparedStatement preparedStatement = SingletonJDBC.getConnection().prepareStatement(CanzoneQuery.getQueryDoRetrieveCanzoniByCodici(codici.size()));
+        PreparedStatement preparedStatement = connection.prepareStatement(CanzoneQuery.getQueryDoRetrieveCanzoniByCodici(codici.size()));
         for(int i=0; i<codici.size(); i++)
             preparedStatement.setString(1+i,codici.get(i));
 

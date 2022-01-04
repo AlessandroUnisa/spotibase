@@ -9,6 +9,7 @@ import data.utils.SingletonJDBC;
 import java.lang.annotation.Documented;
 import java.lang.annotation.Retention;
 import java.lang.annotation.Target;
+import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -17,6 +18,16 @@ import java.util.List;
 
 /**Questa classe gestisce le operazioni sui dati persistenti per la classe Preferenza*/
 public class PreferenzaDAO implements PreferenzaAPI {
+
+    Connection connection;
+    public PreferenzaDAO(){
+        this.connection = SingletonJDBC.getConnection();
+    }
+    public PreferenzaDAO(Connection connection) {
+        this.connection = connection;
+    }
+    
+    
 
     @Override
     /**Questo metodo ritorna la preferenza prelevata dal DB. Può essere usato per controllare se una preferenza si trova nel DB o meno
@@ -27,7 +38,7 @@ public class PreferenzaDAO implements PreferenzaAPI {
         if(chiave == null || !chiave.contains(";"))
             throw new IllegalArgumentException("chiave è null");
         String chiavi[] = chiave.split(";");
-        PreparedStatement preparedStatement = SingletonJDBC.getConnection().prepareStatement("SELECT * FROM preferenza WHERE codiceCanzone =? && usernameUtente=?;");
+        PreparedStatement preparedStatement = connection.prepareStatement("SELECT * FROM preferenza WHERE codiceCanzone =? && usernameUtente=?;");
         preparedStatement.setString(1,chiavi[0]);
         preparedStatement.setString(2,chiavi[1]);
         ResultSet resultSet = preparedStatement.executeQuery();
@@ -41,7 +52,7 @@ public class PreferenzaDAO implements PreferenzaAPI {
     public boolean exist(String codCanzone, String username) throws SQLException {
         if(codCanzone == null || username == null)
             throw new IllegalArgumentException("codCanzone o username sono null");
-        PreparedStatement preparedStatement = SingletonJDBC.getConnection().prepareStatement("SELECT * FROM preferenza WHERE codiceCanzone =? && usernameUtente=?;");
+        PreparedStatement preparedStatement = connection.prepareStatement("SELECT * FROM preferenza WHERE codiceCanzone =? && usernameUtente=?;");
         preparedStatement.setString(1,codCanzone);
         preparedStatement.setString(2, username);
         return preparedStatement.executeQuery().next();
@@ -60,7 +71,7 @@ public class PreferenzaDAO implements PreferenzaAPI {
         if(exist(preferenza.getCodCanzone(), preferenza.getCodUtente()))
             throw new OggettoGiaPresenteException("La preferenza è gia presente");
         else{
-            PreparedStatement preparedStatement = SingletonJDBC.getConnection().prepareStatement("INSERT INTO preferenza VALUES (?,?);");
+            PreparedStatement preparedStatement = connection.prepareStatement("INSERT INTO preferenza VALUES (?,?);");
             preparedStatement.setString(1, preferenza.getCodCanzone());
             preparedStatement.setString(2, preferenza.getCodUtente());
             if (preparedStatement.executeUpdate() != 1)
@@ -78,7 +89,7 @@ public class PreferenzaDAO implements PreferenzaAPI {
             throw new IllegalArgumentException("la chiave è null o non valida");
         String chiavi[] = chiave.split(";");
         if(exist(chiavi[0],chiavi[1])){
-            PreparedStatement preparedStatement = SingletonJDBC.getConnection().prepareStatement("DELETE FROM preferenza WHERE codiceCanzone =? && usernameUtente=?;");
+            PreparedStatement preparedStatement = connection.prepareStatement("DELETE FROM preferenza WHERE codiceCanzone =? && usernameUtente=?;");
             preparedStatement.setString(1,chiavi[0]);
             preparedStatement.setString(2,chiavi[1]);
             if(preparedStatement.executeUpdate()!=1)
@@ -90,7 +101,7 @@ public class PreferenzaDAO implements PreferenzaAPI {
     public List<String> doRetrieveCodiciCanzoniPreferite(String username) throws SQLException {
         if(username == null )
             throw new IllegalArgumentException("username è null");
-        PreparedStatement preparedStatement = SingletonJDBC.getConnection().prepareStatement("SELECT PRE.codiceCanzone FROM preferenza PRE WHERE PRE.usernameUtente=?;");
+        PreparedStatement preparedStatement = connection.prepareStatement("SELECT PRE.codiceCanzone FROM preferenza PRE WHERE PRE.usernameUtente=?;");
         preparedStatement.setString(1,username);
         ArrayList<String> codici = new ArrayList<>();
         ResultSet resultSet = preparedStatement.executeQuery();
