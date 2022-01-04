@@ -12,8 +12,10 @@ import org.junit.*;
 import org.mockito.Mockito;
 import org.springframework.mock.web.*;
 
+import javax.servlet.http.HttpServletRequest;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.TreeSet;
 
 
@@ -107,6 +109,21 @@ public class ServletCarrelloTest {
         assertEquals(1,albumList.size());
     }
 
+    @Test
+    public void acquistoOkTest() throws SQLException{
+        String codCanzone1 = "C01", codCanzone2 = "C02";
+        codiciInCarrello.add(codCanzone1);
+        codiciInCarrello.add(codCanzone2);
+        session.setAttribute("listCart",codiciInCarrello);
+        session.setAttribute("isLogged",true);
+        String username = "pluto";
+        session.setAttribute("username",username);
+        Mockito.doNothing().when(acquistoAPI).doInsertCanzoneAcquistata(username,codCanzone1);
+        Mockito.doNothing().when(acquistoAPI).doInsertCanzoneAcquistata(username,codCanzone2);
+        servletCarrello.acquisto(request,acquistoAPI,albumDAO);
+        assertEquals(0,codiciInCarrello.size());
+
+    }
     @Test
     public void eliminaDalCarrelloTest(){
         String codiceDaEliminare = "C02";
