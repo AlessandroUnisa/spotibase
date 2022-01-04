@@ -9,7 +9,6 @@ import data.DAOCanzone.Canzone;
 import data.DAOCanzone.CanzoneMapper;
 import data.DAOCanzone.CanzoneQuery;
 
-import javax.annotation.processing.Generated;
 import java.lang.annotation.Documented;
 import java.lang.annotation.Retention;
 import java.lang.annotation.Target;
@@ -25,7 +24,11 @@ import static java.lang.annotation.ElementType.TYPE;
 import static java.lang.annotation.RetentionPolicy.RUNTIME;
 
 
-
+@Documented
+@Retention(RUNTIME)
+@Target({TYPE, METHOD})
+@interface Generated {
+}
 public class AcquistoDAO implements AcquistoAPI {
     
     private Connection connection;
@@ -154,6 +157,7 @@ public class AcquistoDAO implements AcquistoAPI {
 
     /**Ritorna le canzoni acquistate dall'utente*/
 
+    @Generated
     public List<Canzone> doRetrieveCanzoniAcquistate(String username) throws SQLException {
         if(username == null){
             throw new IllegalArgumentException("username è null");
