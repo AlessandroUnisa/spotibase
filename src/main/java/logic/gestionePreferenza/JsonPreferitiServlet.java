@@ -17,8 +17,21 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.lang.annotation.Documented;
+import java.lang.annotation.Retention;
+import java.lang.annotation.Target;
 import java.sql.SQLException;
 import java.util.ArrayList;
+
+import static java.lang.annotation.ElementType.METHOD;
+import static java.lang.annotation.ElementType.TYPE;
+import static java.lang.annotation.RetentionPolicy.RUNTIME;
+
+@Documented
+@Retention(RUNTIME)
+@Target({TYPE, METHOD})
+@interface Generated {
+}
 
 @WebServlet(name = "jsonPreferitiServlet", value = "/jsonPreferitiServlet")
 public class JsonPreferitiServlet extends HttpServlet {
@@ -46,7 +59,7 @@ public class JsonPreferitiServlet extends HttpServlet {
             obj.put("action", "aggiunta");
         }
     }
-
+@Generated
     private void setPreferenzaArtista(String username, String codice) throws SQLException {
         JSONObject obj = new JSONObject();
         codice = codice.replace('-',' '); //per i gruppi con piu nomi
@@ -71,7 +84,7 @@ public class JsonPreferitiServlet extends HttpServlet {
         }
 
     }
-
+@Generated
     private void setPreferenzaAlbum(String username, String codice) throws SQLException {
         JSONObject obj = new JSONObject();
         AlbumDAO albumDAO = new AlbumDAO();

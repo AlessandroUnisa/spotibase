@@ -15,9 +15,21 @@ import javax.servlet.*;
 import javax.servlet.http.*;
 import javax.servlet.annotation.*;
 import java.io.IOException;
+import java.lang.annotation.Documented;
+import java.lang.annotation.Retention;
+import java.lang.annotation.Target;
 import java.sql.SQLException;
 import java.util.TreeSet;
 
+import static java.lang.annotation.ElementType.METHOD;
+import static java.lang.annotation.ElementType.TYPE;
+import static java.lang.annotation.RetentionPolicy.RUNTIME;
+
+@Documented
+@Retention(RUNTIME)
+@Target({TYPE, METHOD})
+@interface Generated {
+}
 @WebServlet(name = "ServletPlaylist", value = "/playlist/*")
 public class ServletPlaylist extends HttpServlet {
 
@@ -77,7 +89,7 @@ public class ServletPlaylist extends HttpServlet {
         request.getRequestDispatcher("WEB-INF/views/playlist/playlist.jsp").forward(request,response);
     }
 
-
+@Generated
     private void cancellaPlaylist(HttpServletRequest request) throws SQLException {
         String username = (String) request.getSession(false).getAttribute("username");
         String titolo = request.getParameter("delete");

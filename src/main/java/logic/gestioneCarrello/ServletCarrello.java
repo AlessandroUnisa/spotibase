@@ -12,11 +12,23 @@ import javax.servlet.*;
 import javax.servlet.http.*;
 import javax.servlet.annotation.*;
 import java.io.IOException;
+import java.lang.annotation.Documented;
+import java.lang.annotation.Retention;
+import java.lang.annotation.Target;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.TreeSet;
 
+import static java.lang.annotation.ElementType.METHOD;
+import static java.lang.annotation.ElementType.TYPE;
+import static java.lang.annotation.RetentionPolicy.RUNTIME;
+
+@Documented
+@Retention(RUNTIME)
+@Target({TYPE, METHOD})
+@interface Generated {
+}
 @WebServlet(name = "ServletCarrello", value = "/carrello")
 public class ServletCarrello extends HttpServlet {
 
@@ -61,7 +73,7 @@ public class ServletCarrello extends HttpServlet {
         }
 
     }
-
+@Generated
     public void eliminaDalCarrello(HttpServletRequest request){
         String codice = request.getParameter("del"); //viene settato se viene richiesta la cancellazione di un elemento
         if (codice!=null){
