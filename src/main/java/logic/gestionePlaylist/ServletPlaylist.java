@@ -55,7 +55,7 @@ public class ServletPlaylist extends HttpServlet {
             } catch (SQLException throwables) {
                 throwables.printStackTrace();
             }
-            request.setAttribute("listPlaylist",playlistAPI.doRetrievePlaylistByUtente(username));
+            //request.setAttribute("listPlaylist",playlistAPI.doRetrievePlaylistByUtente(username));
 
         }
 
@@ -108,10 +108,10 @@ public class ServletPlaylist extends HttpServlet {
 
         AttivazioneDAO attivazioneDAO = new AttivazioneDAO();
 
-        int numPlaylist = playlistAPI.doRetrieveNumPlaylistOfUtente(username);
+       // int numPlaylist = playlistAPI.doRetrieveNumPlaylistOfUtente(username);
 
 
-        if(playlistAPI.isPresent(titolo,username)) { //titolo gia presente
+        /*if(playlistAPI.isPresent(titolo,username)) { //titolo gia presente
             response.sendRedirect("../libreria?presentPlay=1");
             throw new IllegalArgumentException("playlist già esistente");
         }
@@ -150,7 +150,7 @@ public class ServletPlaylist extends HttpServlet {
                     response.sendRedirect("../libreria");
                 }
             }
-        }
+        }*/
     }
 
     @Override

@@ -52,7 +52,7 @@ public class ServletIndex extends HttpServlet {
 
             request.setAttribute("listaCanzoniAcquistate", acquistoAPI.doRetrieveCodiciCanzoniAcquistate(username));
 
-            request.setAttribute("listPlaylist", playlistAPI.doRetrievePlaylistByUtente(username));
+           // request.setAttribute("listPlaylist", playlistAPI.doRetrievePlaylistByUtente(username));
         }
 
     }

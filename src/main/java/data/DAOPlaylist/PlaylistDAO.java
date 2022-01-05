@@ -1,5 +1,6 @@
 package data.DAOPlaylist;
 
+import data.DAOCanzone.CanzoneAPI;
 import data.DAOCanzone.CanzoneMapper;
 import data.DAOUtente.UtenteAPI;
 import data.DAOUtente.UtenteDAO;
@@ -30,6 +31,16 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
 public class PlaylistDAO implements PlaylistAPI {
     //metodi documentati per IS-----------------------------------------------------------------------------------------
 
+    private Connection connection;
+    //ciao
+
+    public PlaylistDAO(){
+        this.connection = SingletonJDBC.getConnection();
+    }
+    public PlaylistDAO(Connection connection){
+        this.connection = connection;
+    }
+
     @Override
     /**Questo metodo preleva una playlist dal database
      * @param chiave concatenazione del titolo della plyalist con la username. Esempio: "playRock;pluto"
@@ -40,7 +51,7 @@ public class PlaylistDAO implements PlaylistAPI {
             throw new IllegalArgumentException("la chiave è null o non valida");
 
         String[] chiavi = chiave.split(";");
-        PreparedStatement preparedStatement = SingletonJDBC.getConnection().prepareStatement("SELECT * FROM playlist WHERE titolo=? && username=?");
+        PreparedStatement preparedStatement = connection.prepareStatement("SELECT * FROM playlist PLA WHERE titolo=? && username=?");
         preparedStatement.setString(1,chiavi[0]);
         preparedStatement.setString(2,chiavi[1]);
         ResultSet resultSet = preparedStatement.executeQuery();
@@ -64,12 +75,12 @@ public class PlaylistDAO implements PlaylistAPI {
             doGet(playlist.getTitolo()+";"+playlist.getUsername());
             throw new OggettoGiaPresenteException("La playlist è gia presente");
         }catch (OggettoNonTrovatoException e){
-            PreparedStatement ps = SingletonJDBC.getConnection().prepareStatement(PlaylistQuery.getQueryPlaylistSave());
+            PreparedStatement ps = connection.prepareStatement(PlaylistQuery.getQueryPlaylistSave());
             ps.setString(1, playlist.getTitolo());
             ps.setString(2,playlist.getUsername());
             ps.setString(3, playlist.getNote());
-            ps.setDouble(4, playlist.getDurata());
-            ps.setDate(5, Date.valueOf(playlist.getDataCreazione()));
+            //ps.setDouble(4, playlist.getDurata());
+            //ps.setDate(5, Date.valueOf(playlist.getDataCreazione()));
             if(ps.executeUpdate()!=1)
                 throw new OggettoNonInseritoException("La playlist non è stata inserita");
         }
@@ -86,7 +97,7 @@ public class PlaylistDAO implements PlaylistAPI {
         try{
             doGet(chiave);
             String[] chiavi = chiave.split(";");
-            PreparedStatement st = SingletonJDBC.getConnection().prepareStatement("DELETE FROM playlist WHERE titolo=? AND username=?");
+            PreparedStatement st = connection.prepareStatement("DELETE FROM playlist WHERE titolo=? AND username=?");
             st.setString(1,chiavi[0]);
             st.setString(2,chiavi[1]);
             if(st.executeUpdate()!=1)
@@ -102,15 +113,14 @@ public class PlaylistDAO implements PlaylistAPI {
      * @param username la username dell utente
      * @return lista di playlist dell utente
      * */
-    public List<Playlist> doRetrievePlaylistByUtente(String username) throws SQLException {
+    public List<Playlist> doRetrievePlaylistByUtente(String username, UtenteAPI utenteAPI) throws SQLException {
         if(username == null )
             throw new IllegalArgumentException("username è null");
-
-        UtenteAPI utenteAPI = new UtenteDAO();
+        System.out.println(utenteAPI.findUsers("username",username));
         if(utenteAPI.findUsers("username",username).size()==0)
             throw new OggettoNonTrovatoException("l'utente con username: "+username+" non è stato trovato");
 
-        PreparedStatement preparedStatement = SingletonJDBC.getConnection().prepareStatement(PlaylistQuery.getQueryDoRetrievePlaylistByUtente());
+        PreparedStatement preparedStatement = connection.prepareStatement(PlaylistQuery.getQueryDoRetrievePlaylistByUtente());
         preparedStatement.setString(1,username);
         ResultSet resultSet = preparedStatement.executeQuery();
         ArrayList<Playlist> list = new ArrayList<>();
@@ -125,11 +135,22 @@ public class PlaylistDAO implements PlaylistAPI {
      * @param codCanzone il codice della canzone da inserire
      * @param titoloPlay il titolo della playlist in cui inserire la canzone
      * */
-    public void doInsertSong(String username, String titoloPlay, String codCanzone) throws SQLException {
+    public void doInsertSong(String username, String titoloPlay, String codCanzone, UtenteAPI utenteAPI,
+                            CanzoneAPI canzoneAPI,PlaylistAPI playlistAPI) throws SQLException {
+
         if(username == null || titoloPlay == null || codCanzone == null)
             throw new IllegalArgumentException("username o titolo o codCanzone sono null");
 
-        PreparedStatement preparedStatement = SingletonJDBC.getConnection().prepareStatement(PlaylistQuery.getQueryDoInsertSong());
+        if(!utenteAPI.exist(username))
+            throw new OggettoNonTrovatoException("L'utente non è stato trovato: "+username);
+
+        if(!canzoneAPI.exist(codCanzone))
+            throw new OggettoNonTrovatoException("Canzone non è stata trovata: "+codCanzone);
+
+        if(!playlistAPI.isPresent(titoloPlay,username,utenteAPI))
+            throw new OggettoNonTrovatoException("Playlist non è stato trovato: "+titoloPlay+" "+ "username");
+
+        PreparedStatement preparedStatement = connection.prepareStatement(PlaylistQuery.getQueryDoInsertSong());
         preparedStatement.setString(1,codCanzone);
         preparedStatement.setString(2,titoloPlay);
         preparedStatement.setString(3,username);
@@ -137,17 +158,28 @@ public class PlaylistDAO implements PlaylistAPI {
             throw new OggettoNonInseritoException("La canzone non è stata inserita nella playlist");
     }
 
+
     /**Controlla se la canzone è presente nella playlist
      * @param username la username dell utente
      * @param codiceCanzone il codice della canzone da verificare
      * @param titolo il titolo della playlist
      * @return true se la canzone è presente nella playlist, false altrimenti
      * */
-    public boolean isPresent(String codiceCanzone, String titolo, String username) throws SQLException {
+    public boolean isPresent(String codiceCanzone, String titolo, String username, CanzoneAPI canzoneAPI,
+                             PlaylistAPI playlistAPI, UtenteAPI utenteAPI) throws SQLException {
         if(codiceCanzone == null || titolo == null || username == null)
             throw new IllegalArgumentException("codiceCanzone o titolo o username sono null");
 
-        PreparedStatement preparedStatement = SingletonJDBC.getConnection().prepareStatement(PlaylistQuery.getQueryIsPresent());
+        if(!utenteAPI.exist(username))
+            throw new OggettoNonTrovatoException("L'utente non è stato trovato: "+username);
+
+        if(!canzoneAPI.exist(codiceCanzone))
+            throw new OggettoNonTrovatoException("Canzone non è stata trovata: "+codiceCanzone);
+
+        if(!playlistAPI.isPresent(titolo,username,utenteAPI))
+            throw new OggettoNonTrovatoException("Playlist non è stato trovato: "+titolo+" "+ "username");
+
+        PreparedStatement preparedStatement = connection.prepareStatement(PlaylistQuery.getQueryIsPresent());
         preparedStatement.setString(1,codiceCanzone);
         preparedStatement.setString(2, titolo);
         preparedStatement.setString(3, username);
@@ -160,11 +192,14 @@ public class PlaylistDAO implements PlaylistAPI {
      * @param username username dell'utente
      * @return true se la playlist è presente, false altrimenti
      * */
-    public boolean isPresent(String titolo, String username) throws SQLException {
+    public boolean isPresent(String titolo, String username,UtenteAPI utenteAPI) throws SQLException {
         if(titolo == null || username == null)
             throw  new IllegalArgumentException("titolo o username sono null");
 
-        PreparedStatement preparedStatement = SingletonJDBC.getConnection().prepareStatement(PlaylistQuery.getQueryIsPresentPlaylist());
+        if(!utenteAPI.exist(username))
+            throw new OggettoNonTrovatoException("L'utente non è stato trovato: "+username);
+
+        PreparedStatement preparedStatement = connection.prepareStatement(PlaylistQuery.getQueryIsPresentPlaylist());
         preparedStatement.setString(1, titolo);
         preparedStatement.setString(2, username);
         ResultSet resultSet = preparedStatement.executeQuery(); //se le FK sono violate questo lancia SQLException
@@ -175,13 +210,17 @@ public class PlaylistDAO implements PlaylistAPI {
      * @param username username dell'utente
      * @return numero di playlist
      * */
-    public int doRetrieveNumPlaylistOfUtente(String username) throws SQLException {
+    public int doRetrieveNumPlaylistOfUtente(String username, UtenteAPI utenteAPI) throws SQLException {
         if(username == null)
             throw new IllegalArgumentException("username è null");
 
-        PreparedStatement preparedStatement = SingletonJDBC.getConnection().prepareStatement(PlaylistQuery.getQuerydoRetrieveNumPlaylistOfUtente());
+        if(!utenteAPI.exist(username))
+            throw new OggettoNonTrovatoException("L'utente non è stato trovato: "+username);
+
+        PreparedStatement preparedStatement = connection.prepareStatement(PlaylistQuery.getQuerydoRetrieveNumPlaylistOfUtente());
         preparedStatement.setString(1,username);
         ResultSet resultSet = preparedStatement.executeQuery();
+        resultSet.next();
         return resultSet.getInt("num");
     }
 
@@ -205,7 +244,7 @@ public class PlaylistDAO implements PlaylistAPI {
     /** Ritorna tutti le playlist*/
     @Generated
     public List<Playlist> doRetrieveAllPlaylist() throws SQLException {
-        PreparedStatement st = SingletonJDBC.getConnection().prepareStatement("SELECT * FROM playlist;");
+        PreparedStatement st = connection.prepareStatement("SELECT * FROM playlist;");
         ResultSet rs = st.executeQuery();
         ArrayList<Playlist> lista = new ArrayList<>();
         while(rs.next()){
@@ -217,7 +256,7 @@ public class PlaylistDAO implements PlaylistAPI {
     /** Ritorna la lista di playlist che hanno quel titolo*/
     @Generated
     public ArrayList<Playlist> doRetrieveByTitolo(String titolo) throws SQLException {
-        PreparedStatement st = SingletonJDBC.getConnection().prepareStatement("SELECT * FROM playlist WHERE titolo LIKE ?");
+        PreparedStatement st = connection.prepareStatement("SELECT * FROM playlist WHERE titolo LIKE ?");
         String titoloLike = "%"+titolo+"%";
         st.setString(1,titoloLike);
         System.out.println(st.toString());
@@ -234,7 +273,7 @@ public class PlaylistDAO implements PlaylistAPI {
     /**Rimuove la canzone dalla playlist*/
     @Generated
     public boolean doRemoveSong(String titoloPlaylist, String username, String codice) throws SQLException {
-        PreparedStatement preparedStatement = SingletonJDBC.getConnection().prepareStatement(PlaylistQuery.getQueryDoRemoveSong());
+        PreparedStatement preparedStatement = connection.prepareStatement(PlaylistQuery.getQueryDoRemoveSong());
         preparedStatement.setString(1,titoloPlaylist);
         preparedStatement.setString(2,username);
         preparedStatement.setString(3,codice);
@@ -243,7 +282,7 @@ public class PlaylistDAO implements PlaylistAPI {
     /**Ritorna la playlist con le canzoni*/
     @Generated
     public Playlist doRetrievePlaylistWithSongs(String username, String nome) throws SQLException {
-        PreparedStatement preparedStatement = SingletonJDBC.getConnection().prepareStatement(PlaylistQuery.getQueryDoRetrievePlaylistWithSongs());
+        PreparedStatement preparedStatement = connection.prepareStatement(PlaylistQuery.getQueryDoRetrievePlaylistWithSongs());
         preparedStatement.setString(1,username);
         preparedStatement.setString(2,nome);
         ResultSet resultSet = preparedStatement.executeQuery();
@@ -263,13 +302,13 @@ public class PlaylistDAO implements PlaylistAPI {
     /** Modifica la playlist */
     @Generated
     public void doUpdate(Playlist playlist) throws SQLException {
-        PreparedStatement st = SingletonJDBC.getConnection().prepareStatement(PlaylistQuery.getQueryPlaylistUpdate());
+        PreparedStatement st = connection.prepareStatement(PlaylistQuery.getQueryPlaylistUpdate());
         st.setString(1,playlist.getTitolo());
         st.setString(2,playlist.getNote());
-        st.setDouble(3,playlist.getDurata());
-        st.setDate(4, Date.valueOf(playlist.getDataCreazione()));
-        st.setString(5,playlist.getTitolo());
-        st.setString(6, playlist.getUsername());
+        //st.setDouble(3,playlist.getDurata());
+        //st.setDate(4, Date.valueOf(playlist.getDataCreazione()));
+        st.setString(5,playlist.getTitolo()); //modificare a 3
+        st.setString(6, playlist.getUsername()); //modificare a 4
         if(st.executeUpdate()!=1)
             throw new RuntimeException("delete error");
     }
@@ -284,7 +323,7 @@ public class PlaylistDAO implements PlaylistAPI {
         if(isPresent(playlist.getTitolo(),playlist.getUsername()))
             throw new OggettoGiaPresenteException("La playlist è gia presente");
 
-        PreparedStatement preparedStatement = SingletonJDBC.getConnection().prepareStatement(PlaylistQuery.getQueryDoInsertPlaylist());
+        PreparedStatement preparedStatement = connection.prepareStatement(PlaylistQuery.getQueryDoInsertPlaylist());
         preparedStatement.setString(1,playlist.getTitolo());
         preparedStatement.setString(2,playlist.getUsername());
         preparedStatement.setString(3,playlist.getNote());

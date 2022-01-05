@@ -28,7 +28,7 @@ public class ServletArtisti extends HttpServlet {
 
             request.setAttribute("listaCanzoniAcquistate", new AcquistoDAO().doRetrieveCodiciCanzoniAcquistate(username));
 
-            request.setAttribute("listPlaylist", new PlaylistDAO().doRetrievePlaylistByUtente(username));
+            //request.setAttribute("listPlaylist", new PlaylistDAO().doRetrievePlaylistByUtente(username));
             request.setAttribute("flagPref", new ArtistaDAO().doRetrieveNomiArteArtistiPreferiti(username).contains(nome));
         }
 

@@ -3,6 +3,8 @@ package logic.gestionePlaylist;
 import data.DAOPlaylist.Playlist;
 import data.DAOPlaylist.PlaylistAPI;
 import data.DAOPlaylist.PlaylistDAO;
+import data.DAOUtente.UtenteAPI;
+import data.DAOUtente.UtenteDAO;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mockito;
@@ -33,6 +35,7 @@ public class CreazionePlaylistTest {
     PlaylistAPI playlistAPI;
     MockHttpSession session;
     Playlist playlist;
+    UtenteAPI utenteAPI;
 
     @Before
     public void setUp(){
@@ -42,6 +45,7 @@ public class CreazionePlaylistTest {
         playlistAPI = Mockito.mock(PlaylistDAO.class);
         session = new MockHttpSession();
         playlist = Mockito.mock(Playlist.class);
+        utenteAPI = Mockito.mock(UtenteDAO.class);
     }
 
     @Test
@@ -70,7 +74,7 @@ public class CreazionePlaylistTest {
         request.setParameter("note",note);
 
         Mockito.when(playlistAPI.isValidTitolo(titolo)).thenReturn(true);
-        Mockito.when(playlistAPI.isPresent(titolo,username)).thenReturn(false);
+        Mockito.when(playlistAPI.isPresent(titolo,username,utenteAPI)).thenReturn(false);
 
         assertThrows(IllegalArgumentException.class,() ->servletPlaylist.creaPlaylist(request,response,playlistAPI));
     }
@@ -86,7 +90,7 @@ public class CreazionePlaylistTest {
         request.setParameter("note", note);
 
         Mockito.when(playlistAPI.isValidTitolo(titolo)).thenReturn(true);
-        Mockito.when(playlistAPI.isPresent(titolo, username)).thenReturn(false);
+        Mockito.when(playlistAPI.isPresent(titolo, username,utenteAPI)).thenReturn(false);
         Mockito.when(playlistAPI.isValidNota(note)).thenReturn(true);
         servletPlaylist.creaPlaylist(request,response,playlistAPI);
 

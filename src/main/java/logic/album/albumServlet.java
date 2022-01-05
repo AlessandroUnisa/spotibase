@@ -49,7 +49,7 @@ public class albumServlet extends HttpServlet {
                 throwables.printStackTrace();
             }
             request.setAttribute("albumAcquistatato", new AlbumDAO().doRetrieveCodiciAlbumAcquistati(username).contains(codice));
-            request.setAttribute("listPlaylist",new PlaylistDAO().doRetrievePlaylistByUtente(username));
+            //request.setAttribute("listPlaylist",new PlaylistDAO().doRetrievePlaylistByUtente(username));
         }
 
         request.setAttribute("album",album);

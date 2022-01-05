@@ -9,8 +9,8 @@ public class PlaylistMapper {
         playlist.setTitolo(rs.getString("PLA.titolo"));
         playlist.setUsername(rs.getString("PLA.username"));
         playlist.setNote(rs.getString("PLA.note"));
-        playlist.setDurata(rs.getDouble("PLA.durata"));
-        playlist.setDataCreazione(rs.getDate("PLA.dataCreazione").toLocalDate());
+        //playlist.setDurata(rs.getDouble("PLA.durata"));
+        //playlist.setDataCreazione(rs.getDate("PLA.dataCreazione").toLocalDate());
         return playlist;
     }
 }

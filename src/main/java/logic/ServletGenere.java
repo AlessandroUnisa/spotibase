@@ -27,7 +27,7 @@ public class ServletGenere extends HttpServlet {
 
             request.setAttribute("listaCanzoniAcquistate", new AcquistoDAO().doRetrieveCodiciCanzoniAcquistate(username));
 
-            request.setAttribute("listPlaylist", new PlaylistDAO().doRetrievePlaylistByUtente(username));
+            //request.setAttribute("listPlaylist", new PlaylistDAO().doRetrievePlaylistByUtente(username));
         }
 
         AlbumDAO album= new AlbumDAO();
@@ -46,7 +46,7 @@ public class ServletGenere extends HttpServlet {
         } catch (SQLException throwables) {
             throwables.printStackTrace();
         }
-        request.getRequestDispatcher("WEB-INF/views/genere/genere.jsp").forward(request,response);
+       // request.getRequestDispatcher("WEB-INF/views/genere/genere.jsp").forward(request,response);
 
     }
 

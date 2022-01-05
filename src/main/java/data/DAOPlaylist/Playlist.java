@@ -8,8 +8,8 @@ import java.util.List;
 public class Playlist {
 	private String titolo;
 	private String note;
-	private double durata;
-	private LocalDate dataCreazione;
+	//private double durata;
+	//private LocalDate dataCreazione;
 	private String username;
 	private Utente utente;
 	private List<Canzone> canzoni;
@@ -19,8 +19,6 @@ public class Playlist {
 		return "Playlist{" +
 				"titolo='" + titolo + '\'' +
 				", note='" + note + '\'' +
-				", durata=" + durata +
-				", dataCrezione=" + dataCreazione +
 				", username='" + username + '\'' +
 				", utente=" + utente +
 				", canzoni=" + canzoni +
@@ -63,7 +61,8 @@ public class Playlist {
 	public void setNote(String note) {
 		this.note = note;
 	}
-	public double getDurata() {
+
+	/*public double getDurata() {
 		return durata;
 	}
 	public void setDurata(double durata) {
@@ -74,6 +73,14 @@ public class Playlist {
 	}
 	public void setDataCreazione(LocalDate dataCrezione) {
 		this.dataCreazione = dataCrezione;
+	}*/
+
+	@Override
+	public boolean equals(Object o) {
+		if (this == o) return true;
+		if (!(o instanceof Playlist)) return false;
+		Playlist playlist = (Playlist) o;
+		return titolo.equals(playlist.titolo) && username.equals(playlist.username);
 	}
-	
+
 }

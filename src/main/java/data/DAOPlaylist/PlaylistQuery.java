@@ -2,8 +2,12 @@ package data.DAOPlaylist;
 
 public abstract class PlaylistQuery {
     public static String getQueryPlaylistSave(){
-        return "INSERT INTO playlist(titolo,username,note, durata,dataCreazione) VALUES(?,?,?,?,?);";
+        return "INSERT INTO playlist (titolo,username,note) VALUES(?,?,?);";
     }
+
+   /* public static String getQueryPlaylistSave(){
+        return "INSERT INTO playlist(titolo,username,note, durata,dataCreazione) VALUES(?,?,?,?,?);";
+    }*/
 
     public static String getQueryPlaylistUpdate(){
         return "UPDATE playlist SET titolo=?, note=?, durata=?, dataCreazione=? WHERE titolo=? AND username=?;";

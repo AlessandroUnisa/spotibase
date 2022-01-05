@@ -41,7 +41,7 @@ public class ServletSearch extends HttpServlet {
             } catch (SQLException throwables) {
                 throwables.printStackTrace();
             }
-            request.setAttribute("listPlaylist", new PlaylistDAO().doRetrievePlaylistByUtente(username));
+           // request.setAttribute("listPlaylist", new PlaylistDAO().doRetrievePlaylistByUtente(username));
         }
 
     }
