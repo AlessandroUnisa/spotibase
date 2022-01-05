@@ -73,7 +73,8 @@ public class ServletCarrello extends HttpServlet {
         }
 
     }
-@Generated
+
+    @Generated
     public void eliminaDalCarrello(HttpServletRequest request){
         String codice = request.getParameter("del"); //viene settato se viene richiesta la cancellazione di un elemento
         if (codice!=null){
@@ -83,10 +84,11 @@ public class ServletCarrello extends HttpServlet {
     }
 
     @Override
+    @Generated
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         //visualizzazione carrello
         request.setCharacterEncoding("utf-8");
-        response.setCharacterEncoding("utf-8");
+       // response.setCharacterEncoding("utf-8");
 
         eliminaDalCarrello(request);
 
@@ -100,7 +102,7 @@ public class ServletCarrello extends HttpServlet {
         request.getRequestDispatcher("WEB-INF/views/carrello/carrello.jsp").forward(request,response);
     }
 
-    private void acquisto(HttpServletRequest request, AcquistoAPI acquistoAPI, AlbumDAO albumDAO) throws SQLException {
+    public void acquisto(HttpServletRequest request, AcquistoAPI acquistoAPI, AlbumDAO albumDAO) throws SQLException {
         if(request.getSession(true).getAttribute("isLogged")!=null) {
             TreeSet<String> codici = (TreeSet<String>) request.getSession(false).getAttribute("listCart");
             Iterator iterator = codici.iterator();
@@ -120,10 +122,11 @@ public class ServletCarrello extends HttpServlet {
     }
 
     @Override
+    @Generated
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
        //acquisto
         request.setCharacterEncoding("utf-8");
-        response.setCharacterEncoding("utf-8");
+      //  response.setCharacterEncoding("utf-8");
         try {
             AcquistoAPI acquistoAPI = new AcquistoDAO();
             acquisto(request,acquistoAPI,new AlbumDAO());

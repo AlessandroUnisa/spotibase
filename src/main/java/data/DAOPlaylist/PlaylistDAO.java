@@ -29,6 +29,8 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
 }
 
 public class PlaylistDAO implements PlaylistAPI {
+
+
     //metodi documentati per IS-----------------------------------------------------------------------------------------
 
     private Connection connection;
@@ -79,8 +81,7 @@ public class PlaylistDAO implements PlaylistAPI {
             ps.setString(1, playlist.getTitolo());
             ps.setString(2,playlist.getUsername());
             ps.setString(3, playlist.getNote());
-            //ps.setDouble(4, playlist.getDurata());
-            //ps.setDate(5, Date.valueOf(playlist.getDataCreazione()));
+
             if(ps.executeUpdate()!=1)
                 throw new OggettoNonInseritoException("La playlist non è stata inserita");
         }

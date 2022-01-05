@@ -4,7 +4,9 @@ import data.Album.Album;
 import data.DAOCanzone.Canzone;
 import data.Genere.Genere;
 
+import javax.annotation.processing.Generated;
 import java.util.List;
+import java.util.Objects;
 
 public class Artista {
 	private String codFiscale;
@@ -16,6 +18,19 @@ public class Artista {
 	private List<Album> album;
 	private List<Canzone> canzoni;
 	private List<Genere> generi;
+
+	@Override
+	public boolean equals(Object o) {
+		if (this == o) return true;
+		if (o == null || getClass() != o.getClass()) return false;
+		Artista artista = (Artista) o;
+		return artista.getCodFiscale().equals(codFiscale);
+	}
+
+	@Override
+	public int hashCode() {
+		return Objects.hash(codFiscale);
+	}
 
 	public List<Genere> getGeneri() {
 		return generi;

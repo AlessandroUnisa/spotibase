@@ -7,11 +7,16 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.Target;
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Objects;
 
 import static java.lang.annotation.ElementType.METHOD;
 import static java.lang.annotation.ElementType.TYPE;
 import static java.lang.annotation.RetentionPolicy.RUNTIME;
 
+
+import static java.lang.annotation.ElementType.METHOD;
+import static java.lang.annotation.ElementType.TYPE;
+import static java.lang.annotation.RetentionPolicy.RUNTIME;
 
 public class Playlist {
 	private String titolo;
@@ -21,8 +26,20 @@ public class Playlist {
 	private String username;
 	private Utente utente;
 	private List<Canzone> canzoni;
- @Generated
+
 	@Override
+	@Generated
+	public boolean equals(Object o) {
+		if (this == o) return true;
+		if (o == null || getClass() != o.getClass()) return false;
+		Playlist playlist = (Playlist) o;
+		return playlist.getTitolo().equals(this.titolo) && playlist.getUsername().equals(this.username);
+	}
+
+
+
+	@Override
+	@Generated
 	public String toString() {
 		return "Playlist{" +
 				"titolo='" + titolo + '\'' +
@@ -83,12 +100,6 @@ public class Playlist {
 		this.dataCreazione = dataCrezione;
 	}*/
 
-	@Override
-	public boolean equals(Object o) {
-		if (this == o) return true;
-		if (!(o instanceof Playlist)) return false;
-		Playlist playlist = (Playlist) o;
-		return titolo.equals(playlist.titolo) && username.equals(playlist.username);
-	}
+
 
 }

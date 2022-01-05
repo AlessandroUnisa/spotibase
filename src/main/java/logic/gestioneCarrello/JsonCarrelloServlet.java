@@ -23,6 +23,7 @@ public class JsonCarrelloServlet extends HttpServlet {
     }
 
     @Override
+    @Generated
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         //inserimento elementi nel carrello
         request.setCharacterEncoding("utf-8");
@@ -32,6 +33,7 @@ public class JsonCarrelloServlet extends HttpServlet {
     }
 
     @Override
+    @Generated
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 
     }

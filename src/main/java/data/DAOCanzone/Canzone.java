@@ -4,6 +4,7 @@ import data.Album.Album;
 import data.Artista.Artista;
 
 import java.util.List;
+import java.util.Objects;
 
 public class Canzone {
 	private String codice;
@@ -15,6 +16,20 @@ public class Canzone {
 
 	private Album album;
 	private List<Artista> artisti;
+
+	@Override
+	@Generated
+	public boolean equals(Object o) {
+		if (this == o) return true;
+		if (o == null || getClass() != o.getClass()) return false;
+		Canzone canzone = (Canzone) o;
+		return canzone.getCodice().equals(codice);
+	}
+
+	@Override
+	public int hashCode() {
+		return Objects.hash(codice);
+	}
 
 	public Album getAlbum() { return album; }
 

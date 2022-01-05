@@ -3,6 +3,7 @@ package data.Artista;
 import data.Genere.GenereMapper;
 import data.utils.SingletonJDBC;
 
+import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -11,11 +12,19 @@ import java.util.LinkedHashMap;
 import java.util.List;
 
 public class ArtistaDAO {
+
+    Connection connection;
+    public  ArtistaDAO(){
+        this.connection = SingletonJDBC.getConnection();
+    }
+    public ArtistaDAO(Connection connection) {
+        this.connection = connection;
+    }
     //metodi NON documentati per IS----------------------------------------------------------------------------------------------
 
     /**Ritorna l artista con il nome*/
     public List<Artista> doRetrieveArtistaByNomeArte(String nome) throws SQLException {//ritorna una list perche ci sono i gruppi
-        PreparedStatement statement = SingletonJDBC.getConnection().prepareStatement(ArtistaQuery.getQuerydoRetrieveArtistaByNomeArte());
+        PreparedStatement statement = connection.prepareStatement(ArtistaQuery.getQuerydoRetrieveArtistaByNomeArte());
         statement.setString(1,nome);
         ResultSet resultSet = statement.executeQuery();
         ArrayList<Artista> list = new ArrayList<>();
@@ -28,7 +37,7 @@ public class ArtistaDAO {
 
     /**Ritorna una lista di artisti random*/
     public List<Artista> doRetrieveArtistRandom() throws SQLException {
-        PreparedStatement st = SingletonJDBC.getConnection().prepareStatement(ArtistaQuery.getQueryArtistaRandom());
+        PreparedStatement st = connection.prepareStatement(ArtistaQuery.getQueryArtistaRandom());
         ResultSet rs = st.executeQuery();
         ArrayList<Artista> lista = new ArrayList<>();
         while(rs.next())
@@ -39,7 +48,7 @@ public class ArtistaDAO {
 
     /** Ritorna gli artisti popolari */
     public List<Artista> doRetrieveArtistPopular() throws SQLException {
-        PreparedStatement st = SingletonJDBC.getConnection().prepareStatement(ArtistaQuery.getQueryArtistPopular());
+        PreparedStatement st = connection.prepareStatement(ArtistaQuery.getQueryArtistPopular());
         ResultSet rs = st.executeQuery();
         ArrayList<Artista> lista = new ArrayList<>();
         while(rs.next())
@@ -50,7 +59,7 @@ public class ArtistaDAO {
 
     /** Ritorna la lista di artisti che hanno quel nome */
     public List<Artista> doRetrieveByName(String name) throws SQLException {
-        PreparedStatement st = SingletonJDBC.getConnection().prepareStatement("SELECT * FROM artista ART WHERE ART.nomeDArte LIKE ? GROUP BY nomeDArte;");
+        PreparedStatement st = connection.prepareStatement("SELECT * FROM artista ART WHERE ART.nomeDArte LIKE ? GROUP BY nomeDArte;");
         String nameLike = "%"+name+"%";
         st.setString(1,nameLike);
         ResultSet rs = st.executeQuery();
@@ -63,18 +72,20 @@ public class ArtistaDAO {
 
     /** Salva nel DB l'artista*/
     public void doSave(Artista artista) throws SQLException {
-        PreparedStatement st = SingletonJDBC.getConnection().prepareStatement("INSERT INTO artista VALUES (?,?,?,?)");
+        PreparedStatement st = connection.prepareStatement("INSERT INTO artista VALUES (?,?,?,?,?)");
         st.setString(1,artista.getCodFiscale());
         st.setString(2,artista.getNome());
         st.setString(3,artista.getCognome());
         st.setString(4,artista.getNomeDArte());
+        st.setString(5,artista.getPathImg());
+
         if(st.executeUpdate()!=1)
             throw new RuntimeException("insert error");
     }
 
     /** Elimina l'artista dal DB*/
     public void doDelete(String codFiscale) throws SQLException {
-        PreparedStatement st = SingletonJDBC.getConnection().prepareStatement("DELETE FROM artista WHERE codFiscale=?");
+        PreparedStatement st = connection.prepareStatement("DELETE FROM artista WHERE codFiscale=?");
         st.setString(1,codFiscale);
         if(st.executeUpdate()!=1)
             throw new RuntimeException("delete error");
@@ -82,7 +93,7 @@ public class ArtistaDAO {
 
     /** Modifica l'artista */
     public boolean doUpdate(Artista artista) throws SQLException {
-        PreparedStatement st = SingletonJDBC.getConnection().prepareStatement(ArtistaQuery.getQueryArtistaUpdate());
+        PreparedStatement st = connection.prepareStatement(ArtistaQuery.getQueryArtistaUpdate());
         st.setString(1,artista.getNome());
         st.setString(2,artista.getCognome());
         st.setString(3,artista.getNomeDArte());
@@ -92,7 +103,7 @@ public class ArtistaDAO {
 
     /** Ritorna tutti gli artisti*/
     public List<Artista> doRetrieveAllArtist() throws SQLException {
-        PreparedStatement st = SingletonJDBC.getConnection().prepareStatement("SELECT * FROM artista ART;");
+        PreparedStatement st = connection.prepareStatement("SELECT * FROM artista ART;");
         ResultSet rs = st.executeQuery();
         ArrayList<Artista> lista = new ArrayList<>();
         while(rs.next())
@@ -102,7 +113,7 @@ public class ArtistaDAO {
     }
 
     public List<Artista> doRetrieveAllArtist(int offset, int numElements) throws SQLException {
-        PreparedStatement st = SingletonJDBC.getConnection().prepareStatement("SELECT * FROM artista ART ORDER BY ART.nomeDArte LIMIT ?,?;");
+        PreparedStatement st = connection.prepareStatement("SELECT * FROM artista ART ORDER BY ART.nomeDArte LIMIT ?,?;");
         st.setInt(1,offset);
         st.setInt(2,numElements);
         ResultSet rs = st.executeQuery();
@@ -115,7 +126,7 @@ public class ArtistaDAO {
 
     /**Ritorna la lista degli artisti che hanno composto l'album*/
     public List<Artista> doRetriveArtistaByAlbum(String cod) throws SQLException {
-        PreparedStatement ps = SingletonJDBC.getConnection().prepareStatement(ArtistaQuery.getQueryArtistaByAlbum());
+        PreparedStatement ps = connection.prepareStatement(ArtistaQuery.getQueryArtistaByAlbum());
         ps.setString(1,cod);
         ResultSet rs = ps.executeQuery();
         ArrayList<Artista> lista = new ArrayList<>();
@@ -127,7 +138,7 @@ public class ArtistaDAO {
 
     /** Ritorna gli artisti del genere passato*/
     public List<Artista> doRetrieveArtistaByGenere(String genere) throws SQLException {
-        PreparedStatement ps = SingletonJDBC.getConnection().prepareStatement(ArtistaQuery.getQueryArtistaByGenere());
+        PreparedStatement ps = connection.prepareStatement(ArtistaQuery.getQueryArtistaByGenere());
         ps.setString(1,genere);
         List<Artista> artisti = new ArrayList<>();
         ResultSet rs = ps.executeQuery();
@@ -140,7 +151,7 @@ public class ArtistaDAO {
     /**Ritorna la lista di artisti che hanno scitto la canzone, con la lista generi*/
     public List<Artista> doRetrieveArtistiWithGenereBySong(String codice) throws SQLException {
 
-            PreparedStatement preparedStatement = SingletonJDBC.getConnection().prepareStatement(ArtistaQuery.getQueryArtistiWithGenereBySong());
+            PreparedStatement preparedStatement = connection.prepareStatement(ArtistaQuery.getQueryArtistiWithGenereBySong());
             preparedStatement.setString(1,codice);
             ResultSet resultSet = preparedStatement.executeQuery();
 
@@ -163,7 +174,7 @@ public class ArtistaDAO {
 
     /**Ritorna la lista di artisti che hanno scitto la canzone, con la lista generi*/
     public List<Artista> doRetrieveArtistiWithGenereBySongGroupNomeArte(String codice) throws SQLException {
-        PreparedStatement preparedStatement = SingletonJDBC.getConnection().prepareStatement(ArtistaQuery.getQueryArtistiWithGenereBySongGroupNomeDArte());
+        PreparedStatement preparedStatement = connection.prepareStatement(ArtistaQuery.getQueryArtistiWithGenereBySongGroupNomeDArte());
         preparedStatement.setString(1,codice);
         ResultSet resultSet = preparedStatement.executeQuery();
 
@@ -188,7 +199,7 @@ public class ArtistaDAO {
 
     /**Ritorna il numero di artisti nel DB*/
     public int doRetrieveNumArtisti() throws SQLException {
-       PreparedStatement statement = SingletonJDBC.getConnection().prepareStatement("SELECT COUNT(*) NUM FROM artista;");
+       PreparedStatement statement = connection.prepareStatement("SELECT COUNT(*) NUM FROM artista;");
         ResultSet resultSet = statement.executeQuery();
         if(resultSet.next())
             return resultSet.getInt("NUM");
@@ -197,7 +208,7 @@ public class ArtistaDAO {
 
     /**Ritorna la lista di artisti che hanno scitto la canzone*/
     public List<Artista> doRetrieveArtistiBySong(String codice) throws SQLException {
-        PreparedStatement preparedStatement = SingletonJDBC.getConnection().prepareStatement(ArtistaQuery.getQueryDoRetrieveArtistiBySong());
+        PreparedStatement preparedStatement = connection.prepareStatement(ArtistaQuery.getQueryDoRetrieveArtistiBySong());
         preparedStatement.setString(1,codice);
         ResultSet resultSet = preparedStatement.executeQuery();
         ArrayList<Artista> list = new ArrayList<>();
@@ -209,7 +220,7 @@ public class ArtistaDAO {
 
     /**Ritorna la lista di artisti che hanno scitto la canzone*/
     public List<Artista> doRetrieveArtistiBySongGroupNomeDArte(String codice) throws SQLException {
-        PreparedStatement preparedStatement = SingletonJDBC.getConnection().prepareStatement(ArtistaQuery.getQueryDoRetrieveArtistiBySongGroupNomeDArte());
+        PreparedStatement preparedStatement = connection.prepareStatement(ArtistaQuery.getQueryDoRetrieveArtistiBySongGroupNomeDArte());
         preparedStatement.setString(1,codice);
         ResultSet resultSet = preparedStatement.executeQuery();
         ArrayList<Artista> list = new ArrayList<>();
@@ -220,7 +231,7 @@ public class ArtistaDAO {
     }
 
     public boolean doInsertPreferenza(String username, List<String> codFiscali) throws SQLException {
-        PreparedStatement preparedStatement = SingletonJDBC.getConnection().prepareStatement(ArtistaQuery.getQueryDoInsertPreferenza(codFiscali.size()));
+        PreparedStatement preparedStatement = connection.prepareStatement(ArtistaQuery.getQueryDoInsertPreferenza(codFiscali.size()));
 
         int j=0;
         for(int i=0; i<codFiscali.size(); i++){
@@ -233,7 +244,7 @@ public class ArtistaDAO {
     }
 
     public boolean doRemovePreferenza(String username, List<String> codFiscali) throws SQLException {
-        PreparedStatement preparedStatement = SingletonJDBC.getConnection().prepareStatement(ArtistaQuery.getQueryDoRemovePreferenza(codFiscali.size()));
+        PreparedStatement preparedStatement = connection.prepareStatement(ArtistaQuery.getQueryDoRemovePreferenza(codFiscali.size()));
         preparedStatement.setString(1,username);
         for(int i=2; i<codFiscali.size()+2; i++)
             preparedStatement.setString(i,codFiscali.get(i-2));
@@ -241,7 +252,7 @@ public class ArtistaDAO {
     }
 
     public List<Artista> doRetrieveArtistiPreferiti(String username) throws SQLException {
-        PreparedStatement preparedStatement = SingletonJDBC.getConnection().prepareStatement(ArtistaQuery.getQueryDoRetrieveArtistiPreferiti());
+        PreparedStatement preparedStatement = connection.prepareStatement(ArtistaQuery.getQueryDoRetrieveArtistiPreferiti());
         preparedStatement.setString(1,username);
         ResultSet resultSet = preparedStatement.executeQuery();
         ArrayList<Artista> list = new ArrayList<>();
@@ -252,7 +263,7 @@ public class ArtistaDAO {
     }
 
     public List<String> doRetrieveNomiArteArtistiPreferiti(String username) throws SQLException {
-        PreparedStatement preparedStatement = SingletonJDBC.getConnection().prepareStatement(ArtistaQuery.getQueryDoRetrieveNomiArteArtistiPreferiti());
+        PreparedStatement preparedStatement = connection.prepareStatement(ArtistaQuery.getQueryDoRetrieveNomiArteArtistiPreferiti());
         preparedStatement.setString(1,username);
         ResultSet resultSet = preparedStatement.executeQuery();
         ArrayList<String> list = new ArrayList<>();

@@ -15,8 +15,8 @@ import org.springframework.mock.web.MockHttpSession;
 import java.io.IOException;
 import java.sql.SQLException;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertThrows;
+import static org.junit.Assert.*;
+
 
 /*category partition sui possibili input
 2.3 creazione playlist

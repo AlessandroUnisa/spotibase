@@ -88,7 +88,10 @@ public class CanzoneDAO implements CanzoneAPI {
             preparedStatement.setDouble(3,canzone.getDurata());
             preparedStatement.setString(4,canzone.getTitolo());
             preparedStatement.setDouble(5,canzone.getPrezzo());
-            preparedStatement.setString(6,canzone.getAlbum().getCodice());
+            if(canzone.getAlbum()==null)
+                preparedStatement.setString(6, null);
+            else
+                preparedStatement.setString(6,canzone.getAlbum().getCodice());
             preparedStatement.setString(7,canzone.getPathImg());
             preparedStatement.setString(8,canzone.getPathMP3());
             if(preparedStatement.executeUpdate()!=1)

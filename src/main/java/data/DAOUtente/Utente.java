@@ -9,6 +9,7 @@ import data.DAOPlaylist.Playlist;
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.sql.Connection;
 import java.util.List;
 
 public class Utente {
@@ -24,6 +25,24 @@ public class Utente {
 
 	private List<Album> albumAcquistati;
 	private List<Canzone> canzoniAcquistate;
+
+	@Override
+	@Generated
+	public String toString() {
+		return "Utente{" +
+				"username='" + username + '\'' +
+				", password='" + password + '\'' +
+				", email='" + email + '\'' +
+				", numPlaylistCreate=" + numPlaylistCreate +
+				", attivazioni=" + attivazioni +
+				", artisti=" + artisti +
+				", playlists=" + playlists +
+				", canzoni=" + canzoni +
+				", albums=" + albums +
+				", albumAcquistati=" + albumAcquistati +
+				", canzoniAcquistate=" + canzoniAcquistate +
+				'}';
+	}
 
 	public List<Album> getAlbumAcquistati() {
 		return albumAcquistati;

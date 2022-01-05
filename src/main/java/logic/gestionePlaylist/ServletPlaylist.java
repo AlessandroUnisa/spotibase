@@ -10,6 +10,8 @@ import data.DAOCanzone.CanzoneDAO;
 import data.DAOPlaylist.Playlist;
 import data.DAOPlaylist.PlaylistAPI;
 import data.DAOPlaylist.PlaylistDAO;
+import data.DAOUtente.UtenteAPI;
+import data.DAOUtente.UtenteDAO;
 
 import javax.servlet.*;
 import javax.servlet.http.*;
@@ -33,37 +35,37 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
 @WebServlet(name = "ServletPlaylist", value = "/playlist/*")
 public class ServletPlaylist extends HttpServlet {
 
-    private Playlist showPlaylist(HttpServletRequest request) throws SQLException {
+    @Generated
+    public void cancellaCanzone(HttpServletRequest request,PlaylistAPI playlistAPI) throws SQLException {
+        String codiceDel = request.getParameter("del"); //cancellazione canzone
+        if(codiceDel!=null){
+            String username = (String) request.getSession(true).getAttribute("username");
+            String nomePlaylist = request.getParameter("name");
+            playlistAPI.doRemoveSong(nomePlaylist,username,codiceDel);
+        }
+    }
+
+    public Playlist showPlaylist(HttpServletRequest request,  PlaylistAPI playlistAPI,CanzoneAPI canzoneAPI,AcquistoAPI acquistoAPI,ArtistaDAO artistaDAO) throws SQLException {
         String nomePlaylist = request.getParameter("name");
         String username = (String) request.getSession(true).getAttribute("username");
-        PlaylistAPI playlistAPI = new PlaylistDAO();
-        String codiceDel = request.getParameter("del"); //cancellazione canzone
-        if(codiceDel!=null)
-            playlistAPI.doRemoveSong(nomePlaylist,username,codiceDel); //questo non sta nell'interfaccia
 
         HttpSession session = request.getSession(true);
         if(session.getAttribute("listCart")==null)
             session.setAttribute("listCart", new TreeSet<String>());
 
         if(session.getAttribute("isLogged")!=null){
-
-            CanzoneAPI canzoneAPI = new CanzoneDAO();
             request.setAttribute("listaPreferiti",canzoneAPI.doRetrieveaCodiciCanzoniPreferite(username));
-            try {
-                AcquistoAPI acquistoAPI = new AcquistoDAO();
-                request.setAttribute("listaCanzoniAcquistate", acquistoAPI.doRetrieveCodiciCanzoniAcquistate(username));
-            } catch (SQLException throwables) {
-                throwables.printStackTrace();
-            }
-            //request.setAttribute("listPlaylist",playlistAPI.doRetrievePlaylistByUtente(username));
-
+            request.setAttribute("listaCanzoniAcquistate", acquistoAPI.doRetrieveCodiciCanzoniAcquistate(username));
+            UtenteAPI utenteAPI = new UtenteDAO();
+            request.setAttribute("listPlaylist",playlistAPI.doRetrievePlaylistByUtente(username,utenteAPI));
         }
 
-
-
         Playlist playlist = playlistAPI.doRetrievePlaylistWithSongs(username,nomePlaylist);
-        ArtistaDAO artistaDAO = new ArtistaDAO();
         //prendo gli artisti di ogni canzone
+        System.out.println(nomePlaylist+" "+username);
+
+        System.out.println(playlist);
+        System.out.println(playlist.getCanzoni());
         playlist.getCanzoni().forEach(item-> {
             try {
                 item.setArtisti(artistaDAO.doRetrieveArtistiBySong(item.getCodice()));
@@ -75,21 +77,24 @@ public class ServletPlaylist extends HttpServlet {
     }
 
     @Override
+    @Generated
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
        //mostra la playlist
         request.setCharacterEncoding("utf-8");
         response.setCharacterEncoding("utf-8");
-
-
+        PlaylistAPI playlistAPI = new PlaylistDAO();
+        CanzoneAPI canzoneAPI = new CanzoneDAO();
+        AcquistoAPI acquistoAPI = new AcquistoDAO();
         try {
-            request.setAttribute("playlist", showPlaylist(request));
+            cancellaCanzone(request,playlistAPI);
+            request.setAttribute("playlist", showPlaylist(request,playlistAPI,canzoneAPI,acquistoAPI,new ArtistaDAO()));
         } catch (SQLException throwables) {
             throwables.printStackTrace();
         }
         request.getRequestDispatcher("WEB-INF/views/playlist/playlist.jsp").forward(request,response);
     }
 
-@Generated
+    @Generated
     private void cancellaPlaylist(HttpServletRequest request) throws SQLException {
         String username = (String) request.getSession(false).getAttribute("username");
         String titolo = request.getParameter("delete");
@@ -108,10 +113,11 @@ public class ServletPlaylist extends HttpServlet {
 
         AttivazioneDAO attivazioneDAO = new AttivazioneDAO();
 
-       // int numPlaylist = playlistAPI.doRetrieveNumPlaylistOfUtente(username);
+        UtenteAPI utenteAPI = new UtenteDAO();
+        int numPlaylist = playlistAPI.doRetrieveNumPlaylistOfUtente(username,utenteAPI);
 
 
-        /*if(playlistAPI.isPresent(titolo,username)) { //titolo gia presente
+        if(playlistAPI.isPresent(titolo,username,utenteAPI)) { //titolo gia presente
             response.sendRedirect("../libreria?presentPlay=1");
             throw new IllegalArgumentException("playlist già esistente");
         }
@@ -150,7 +156,7 @@ public class ServletPlaylist extends HttpServlet {
                     response.sendRedirect("../libreria");
                 }
             }
-        }*/
+        }
     }
 
     @Override

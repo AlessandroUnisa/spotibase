@@ -8,6 +8,8 @@ import data.DAOAcquisto.AcquistoDAO;
 import data.DAOCanzone.Canzone;
 import data.DAOCanzone.CanzoneDAO;
 import data.DAOPlaylist.PlaylistDAO;
+import data.DAOUtente.UtenteAPI;
+import data.DAOUtente.UtenteDAO;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -49,7 +51,8 @@ public class albumServlet extends HttpServlet {
                 throwables.printStackTrace();
             }
             request.setAttribute("albumAcquistatato", new AlbumDAO().doRetrieveCodiciAlbumAcquistati(username).contains(codice));
-            //request.setAttribute("listPlaylist",new PlaylistDAO().doRetrievePlaylistByUtente(username));
+            UtenteAPI utenteAPI = new UtenteDAO();
+            request.setAttribute("listPlaylist",new PlaylistDAO().doRetrievePlaylistByUtente(username,utenteAPI));
         }
 
         request.setAttribute("album",album);

@@ -40,6 +40,15 @@ public class UtenteDAO implements UtenteAPI{
     private static final Pattern MAIL_USER = Pattern.compile("^(?:[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*|\"(?:[\\x01-\\x08\\x0b\\x0c\\x0e-\\x1f\\x21\\x23-\\x5b\\x5d-\\x7f]|\\\\[\\x01-\\x09\\x0b\\x0c\\x0e-\\x7f])*\")@(?:(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?|\\[(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?|[a-z0-9-]*[a-z0-9]:(?:[\\x01-\\x08\\x0b\\x0c\\x0e-\\x1f\\x21-\\x5a\\x53-\\x7f]|\\\\[\\x01-\\x09\\x0b\\x0c\\x0e-\\x7f])+)\\])$");
     private static final Pattern USERNAME = Pattern.compile("^[a-zA-Z0-9\\-_]{1,40}$");
 
+    Connection connection;
+    public UtenteDAO(){
+        this.connection = SingletonJDBC.getConnection();
+    }
+    public UtenteDAO(Connection connectionTesting) {
+        this.connection = connectionTesting;
+    }
+
+
     public boolean isValidUsername(String username){
         return USERNAME.matcher(username).matches();
     }
@@ -60,7 +69,7 @@ public class UtenteDAO implements UtenteAPI{
     public Utente doGet(String chiave) throws SQLException {
         if(chiave == null)
             throw new IllegalArgumentException("la chiave è null o non valida");
-        PreparedStatement preparedStatement = SingletonJDBC.getConnection().prepareStatement("SELECT * FROM utente WHERE username=?");
+        PreparedStatement preparedStatement = connection.prepareStatement("SELECT * FROM utente WHERE username=?");
         preparedStatement.setString(1,chiave);
         ResultSet resultSet = preparedStatement.executeQuery();
         if(resultSet.getRow()==0)
@@ -72,7 +81,7 @@ public class UtenteDAO implements UtenteAPI{
     public List<Utente> findUsers(String field, String value) throws SQLException {
         if(field == null || value == null )
             throw new IllegalArgumentException("field o value null");
-        PreparedStatement statement = SingletonJDBC.getConnection().prepareStatement(UtenteQuery.getQueryFindAccountField(field));
+        PreparedStatement statement = connection.prepareStatement(UtenteQuery.getQueryFindAccountField(field));
         statement.setString(1,value);
         ResultSet resultSet = statement.executeQuery();
         ArrayList<Utente> lista = new ArrayList<>();
@@ -87,20 +96,21 @@ public class UtenteDAO implements UtenteAPI{
         if(chiave == null)
             throw new IllegalArgumentException("chiave è null");
 
-        PreparedStatement statement = SingletonJDBC.getConnection().prepareStatement("SELECT * FROM utente WHERE username = ?");
+        PreparedStatement statement = connection.prepareStatement("SELECT * FROM utente WHERE username = ?");
         statement.setString(1, chiave);
         return statement.executeQuery().next();
     }
 
     /** Salva nel DB l'utente nel db */
     public void doSave(Utente utente) throws SQLException {
+        System.out.println(utente+" "+utente.toString());
         if (utente == null || utente.getUsername() == null || utente.getPassword() == null || utente.getEmail() == null)
             throw new IllegalArgumentException("utente è null o qualche campo obbligatorio è null");
 
         if(exist(utente.getUsername()))
             throw new OggettoGiaPresenteException("L'utente è gia presente");
         else{
-            PreparedStatement preparedStatement = SingletonJDBC.getConnection().prepareStatement(UtenteQuery.getQueryUtenteSave());
+            PreparedStatement preparedStatement = connection.prepareStatement(UtenteQuery.getQueryUtenteSave());
             preparedStatement.setString(1, utente.getUsername());
             preparedStatement.setString(2, utente.getPassword());
             preparedStatement.setString(3, utente.getEmail());
@@ -114,7 +124,7 @@ public class UtenteDAO implements UtenteAPI{
     public Utente doGet(String email, String password) throws SQLException {
         if(email == null || password == null )
             throw new IllegalArgumentException("email o password sono null");
-        PreparedStatement statement = SingletonJDBC.getConnection().prepareStatement(UtenteQuery.getQueryFindAccount());
+        PreparedStatement statement = connection.prepareStatement(UtenteQuery.getQueryFindAccount());
         statement.setString(1,email);
         statement.setString(2,password);
         ResultSet resultSet = statement.executeQuery();
@@ -134,7 +144,7 @@ public class UtenteDAO implements UtenteAPI{
             throw new IllegalArgumentException("l'username è null o non valida");
 
         if(exist(username)){
-            PreparedStatement preparedStatement = SingletonJDBC.getConnection().prepareStatement("DELETE FROM utente WHERE username=?");
+            PreparedStatement preparedStatement = connection.prepareStatement("DELETE FROM utente WHERE username=?");
             preparedStatement.setString(1,username);
             if(preparedStatement.executeUpdate()!=1)
                 throw new OggettoNonCancellatoException("L'utente non è stato cancellato");
@@ -150,7 +160,7 @@ public class UtenteDAO implements UtenteAPI{
     /** Ritorna tutti gli utenti*/
     @Generated
     public List<Utente> doRetrieveAllUtenti() throws NoSuchAlgorithmException, SQLException {
-        PreparedStatement st = SingletonJDBC.getConnection().prepareStatement("SELECT * FROM utente;");
+        PreparedStatement st = connection.prepareStatement("SELECT * FROM utente;");
         ResultSet rs = st.executeQuery();
         ArrayList<Utente> lista = new ArrayList<>();
         while(rs.next())
@@ -162,7 +172,7 @@ public class UtenteDAO implements UtenteAPI{
     /** Modifica l'utente */
     @Generated
     public void doUpdate(Utente utente) throws SQLException {
-        PreparedStatement st = SingletonJDBC.getConnection().prepareStatement(UtenteQuery.getQueryUtenteUpdate());
+        PreparedStatement st = connection.prepareStatement(UtenteQuery.getQueryUtenteUpdate());
         st.setString(1,utente.getPassword());
         st.setString(2,utente.getEmail());
         st.setString(3,utente.getUsername());
@@ -174,7 +184,7 @@ public class UtenteDAO implements UtenteAPI{
     /** Ritorna la lista di utenti che hanno quel username */
     @Generated
     public List<Utente> doRetrieveByUsername(String username) throws NoSuchAlgorithmException, SQLException {
-        PreparedStatement st = SingletonJDBC.getConnection().prepareStatement("SELECT * FROM utente WHERE username LIKE ?");
+        PreparedStatement st = connection.prepareStatement("SELECT * FROM utente WHERE username LIKE ?");
         String usernameLike = "%"+username+"%";
         st.setString(1,usernameLike);
         System.out.println(st.toString());
@@ -192,7 +202,7 @@ public class UtenteDAO implements UtenteAPI{
     /**Ritona un Utente con album, artisti e canzoni preferite, playlist e abbonamenti*/
     @Generated
     public Utente fetchUtenteWithSongsAlbumArtistiPrefPlayAbbon(String username) throws SQLException {
-            PreparedStatement st = SingletonJDBC.getConnection().prepareStatement(UtenteQuery.getQueryFetchPrefPlaylistAttByUsername());
+            PreparedStatement st = connection.prepareStatement(UtenteQuery.getQueryFetchPrefPlaylistAttByUsername());
             st.setString(1,username);
             System.out.println(st);
             ResultSet rs = st.executeQuery();

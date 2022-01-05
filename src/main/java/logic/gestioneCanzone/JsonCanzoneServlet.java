@@ -3,8 +3,6 @@ package logic.gestioneCanzone;
 import data.DAOCanzone.Canzone;
 import data.DAOCanzone.CanzoneAPI;
 import data.DAOCanzone.CanzoneDAO;
-import data.DAOPlaylist.PlaylistAPI;
-import data.DAOPlaylist.PlaylistDAO;
 import data.DAOPreferenza.PreferenzaAPI;
 import data.DAOPreferenza.PreferenzaDAO;
 import org.json.simple.JSONObject;
@@ -15,7 +13,21 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.lang.annotation.Documented;
+import java.lang.annotation.Retention;
+import java.lang.annotation.Target;
 import java.sql.SQLException;
+
+import static java.lang.annotation.ElementType.METHOD;
+import static java.lang.annotation.ElementType.TYPE;
+import static java.lang.annotation.RetentionPolicy.RUNTIME;
+
+@Documented
+@Retention(RUNTIME)
+@Target({TYPE, METHOD})
+@interface Generated {
+}
+
 
 @WebServlet(name = "jsonAlbumServlet", value = "/jsonCanzoneServlet")
 public class JsonCanzoneServlet extends HttpServlet {
@@ -39,6 +51,7 @@ public class JsonCanzoneServlet extends HttpServlet {
     }
 
     @Override
+    @Generated
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
        //per il tasto play
         request.setCharacterEncoding("utf-8");
@@ -54,6 +67,7 @@ public class JsonCanzoneServlet extends HttpServlet {
     }
 
     @Override
+    @Generated
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 
     }
