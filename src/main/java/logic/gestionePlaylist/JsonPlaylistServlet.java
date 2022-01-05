@@ -19,7 +19,7 @@ import java.sql.SQLException;
 @WebServlet(name = "jsonPlaylistServlet", value = "/jsonPlaylistServlet")
 public class JsonPlaylistServlet extends HttpServlet {
 
-    private JSONObject insertCanzone(HttpServletRequest request, CanzoneAPI canzoneAPI, PlaylistAPI playlistAPI, UtenteAPI utenteAPI) throws SQLException {
+    public JSONObject insertCanzone(HttpServletRequest request, CanzoneAPI canzoneAPI, PlaylistAPI playlistAPI, UtenteAPI utenteAPI) throws SQLException {
         String codiceCanzone = request.getParameter("codCan");
         String nomePlay = request.getParameter("nomePlay");
         String username = (String) request.getSession(false).getAttribute("username");
