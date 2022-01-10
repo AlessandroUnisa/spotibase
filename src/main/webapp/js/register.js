@@ -12,17 +12,19 @@ function showPwd() {
 }
 
 function testData(modulo){
-   if(!/(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{8,}/.test(modulo.passwd.value)){
+    let flag = true;
+   if(!/(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{8,20}/.test(modulo.passwd.value)){
        document.getElementById("message").style.display = "block";
        alert("Password non valida");
-       return false;
+       flag = false;
    }
 
    if(modulo.passwd.value != modulo.passwdCheck.value){
         alert("Le password non coincidono");
         return false
    }
-    return true;
+
+   return flag && check();
 }
 
     var myInput = document.getElementById("pwd");
@@ -74,11 +76,60 @@ function testData(modulo){
         }
 
         // convalida la lunghezza
-        if(myInput.value.length >= 8) {
+        if(myInput.value.length >= 8 && myInput.value.length <= 20) {
             length.classList.remove("invalid");
             length.classList.add("valid");
-        } else {
+        }else {
             length.classList.remove("valid");
             length.classList.add("invalid");
         }
     }
+
+    function check(){
+        let booleanoUser;
+        if(/^[a-zA-Z0-9\-_]{1,40}$/.test(document.getElementById("user").value)==true){
+            document.getElementById("errorUser").setAttribute("style","visibility=hidden;");
+            booleanoUser = true;
+        }else{
+            document.getElementById("errorUser").setAttribute("style","visibility=visible;");
+            booleanoUser = false;
+        }
+
+        let booleanoMail;
+        if(/^[a-zA-Z0-9.!#$%&'*+\/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$/.test(document.getElementById("email").value)==true){
+            document.getElementById("errorMail").setAttribute("style","visibility=hidden;");
+            booleanoMail = true;
+        }else{
+            document.getElementById("errorMail").setAttribute("style","visibility=visible;");
+            booleanoMail = false;
+        }
+
+        return booleanoUser && booleanoMail;
+    }
+
+  /*  function checkUsername(){
+        const regex = /^[a-zA-Z0-9\-_]{1,40}$/;
+        let text = document.getElementById("user").value;
+        let flag = regex.test(text);
+        if(flag==true){
+            document.getElementById("errorUser").setAttribute("style","visibility=hidden;");
+            return true;
+        }else{
+            document.getElementById("errorUser").setAttribute("style","visibility=visible;");
+            return false;
+        }
+    }
+*/
+    /*function checkMail(){
+        let regex = /^[a-zA-Z0-9.!#$%&'*+\/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$/;
+        let text = document.getElementById("email").value;
+        let flag = regex.test(text);
+        if(flag==true){
+            document.getElementById("errorMail").setAttribute("style","visibility=hidden;");
+            return true;
+        }else{
+            document.getElementById("errorMail").setAttribute("style","visibility=visible;");
+            return false;
+        }
+    }*/
+

@@ -25,7 +25,8 @@
                     <c:if test="${errUsername != null}">
                        <div class="invalidSimple">${errUsername}</div>
                     </c:if>
-                    <input type="text" id="user"name="username" size="28" value="${username}" pattern="^[a-zA-Z0-9\-_]{1,40}$" required >
+                    <span class="invalidSimple" id="errorUser" style="visibility: hidden;">Username non valida</span>
+                    <input type="text" id="user"name="username" size="28" value="${username}">
                 </label><br>
 
 
@@ -34,14 +35,15 @@
                     <c:if test="${errEmail != null}">
                         <div class="invalidSimple">${errEmail}</div>
                     </c:if>
-                    <input type="email" id="email" name="email" size="28" value="${email}"  pattern="^[a-zA-Z0-9.!#$%&'*+\/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$" required>
+                    <span class="invalidSimple" id="errorMail" style="visibility: hidden;">Email non valida</span>
+                    <input type="email" id="email" name="email" size="28" value="${email}">
                 </label><br>
                 <label for="pwd">
                     Password:<img src="./icons/eye.svg" onclick="showPwd()"><br>
                     <c:if test="${errPasswd != null}">
                         <div class="invalidSimple"> ${errPasswd}</div>
                     </c:if>
-                    <input type="password" id="pwd" name="passwd" size="28" value="${passwd}" pattern ="^(?=.*\\d)(?=.*[a-z])(?=.*[A-Z]).{8,20}$"  required>
+                    <input type="password" id="pwd" name="passwd" size="28" value="${passwd}">
 
                 </label><br>
                 <label for="pwd2">
@@ -49,7 +51,7 @@
                     <c:if test="${errPasswdNE != null}">
                         <div class="invalidSimple">${errPasswdNE}</div>
                     </c:if>
-                    <input type="password" id="pwd2" name="passwdCheck" size="28" value="${passwdCheck}" required >
+                    <input type="password" id="pwd2" name="passwdCheck" size="28" value="${passwdCheck}" >
                 </label><br>
 
                 <button class="btn primary" value="submit" >Registrati</button>
