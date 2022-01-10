@@ -69,9 +69,10 @@ public class UtenteDAO implements UtenteAPI{
     public Utente doGet(String chiave) throws SQLException {
         if(chiave == null)
             throw new IllegalArgumentException("la chiave è null o non valida");
-        PreparedStatement preparedStatement = connection.prepareStatement("SELECT * FROM utente WHERE username=?");
+        PreparedStatement preparedStatement = connection.prepareStatement("SELECT * FROM utente UTE WHERE username=?");
         preparedStatement.setString(1,chiave);
         ResultSet resultSet = preparedStatement.executeQuery();
+        resultSet.next();
         if(resultSet.getRow()==0)
             throw new OggettoNonTrovatoException("L'utente non è stato trovato: "+chiave);
        UtenteMapper mapper = new UtenteMapper();
@@ -103,7 +104,6 @@ public class UtenteDAO implements UtenteAPI{
 
     /** Salva nel DB l'utente nel db */
     public void doSave(Utente utente) throws SQLException {
-        System.out.println(utente+" "+utente.toString());
         if (utente == null || utente.getUsername() == null || utente.getPassword() == null || utente.getEmail() == null)
             throw new IllegalArgumentException("utente è null o qualche campo obbligatorio è null");
 

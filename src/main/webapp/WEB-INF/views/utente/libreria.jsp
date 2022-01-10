@@ -8,6 +8,7 @@
         <jsp:param name="controlBtn" value="true"/>
         <jsp:param name="footer" value="true"/>
         <jsp:param name="style" value="libreriaUtente.css"/>
+        <jsp:param name="script" value="playlist.js"/>
     </jsp:include>
     <link href="./css/artistiPreferiti.css" rel="stylesheet">
     <script src="./js/popup.js" defer></script>
@@ -61,12 +62,14 @@
             <div class="modal">
                 <div class="modal-content">
                     <span class="close">&times;</span>
-                    <form method="post" action="./playlist/crea">
+                    <form method="post" action="./playlist/crea" onsubmit="return checkNote() && checkTitolo()">
                         <label for="titolo">Titolo</label><br>
-                        <input type="text" id="titolo" name="titolo" required><br>
+                        <span class="invalidSimple" style="opacity: 0;" id="errorTitolo">Campo titolo non valido</span>
+                        <input type="text" id="titolo" name="titolo"><br>
                         <label for="note">Note</label><br>
-                        <textarea cols="10" rows="10" name="note" id="note"></textarea><br>
-                        <button type="submit" class="btn primary">Invia</button><br>
+                        <span class="invalidSimple" style="opacity: 0;" id="errorNote">Campo note non valido</span>
+                        <textarea cols="10" rows="10" name="note" id="note" ></textarea><br>
+                        <button type="submit" class="btn primary" >Invia</button><br>
                     </form>
                 </div>
             </div>

@@ -3,6 +3,7 @@ package logic.gestioneAutenticazione;
 import data.DAOUtente.Utente;
 import data.DAOUtente.UtenteAPI;
 import data.DAOUtente.UtenteDAO;
+import data.Exceptions.OggettoNonTrovatoException;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -22,23 +23,28 @@ public class Login extends HttpServlet {
         utenteTemp.setEmail(request.getParameter("email"));
         utenteTemp.setPassword(request.getParameter("passwd"));  //per criptare la password
 
+        Utente utente;
+        try{
+            utente = utenteAPI.doGet(utenteTemp.getEmail(), utenteTemp.getPassword());  //cerco l utente nel db
+        }catch (OggettoNonTrovatoException e){
+            utente=null;
+        }
 
-            Utente utente = utenteAPI.doGet(utenteTemp.getEmail(), utenteTemp.getPassword());  //cerco l utente nel db
-            if (utente != null && utenteAPI.isAdminEmail(utente.getEmail())) {  //amministratore
-                HttpSession session = request.getSession(true);
-                session.setAttribute("isLogged", true);
-                session.setAttribute("username", "admin");
-                response.sendRedirect("./admin/dashboard");
-            } else if (utente != null ) {  //utente
-                HttpSession session = request.getSession(true);
-                session.setAttribute("isLogged", true);
-                session.setAttribute("username", utente.getUsername());
-                response.sendRedirect("./index.html");
-                //sendRedirect invece del forward perche poi il browser fa request sbagliati
-            } else {
-                request.setAttribute("errCredenziali", "Credenziali errate");
-                request.getRequestDispatcher("./WEB-INF/views/utente/login.jsp").forward(request, response);
-            }
+        if (utente != null && utenteAPI.isAdminEmail(utente.getEmail())) {  //amministratore
+            HttpSession session = request.getSession(true);
+            session.setAttribute("isLogged", true);
+            session.setAttribute("username", "admin");
+            response.sendRedirect("./admin/dashboard");
+        } else if (utente != null ) {  //utente
+            HttpSession session = request.getSession(true);
+            session.setAttribute("isLogged", true);
+            session.setAttribute("username", utente.getUsername());
+            response.sendRedirect("./index.html");
+            //sendRedirect invece del forward perche poi il browser fa request sbagliati
+        } else {
+            request.setAttribute("errCredenziali", "Credenziali errate");
+            request.getRequestDispatcher("./WEB-INF/views/utente/login.jsp").forward(request, response);
+        }
 
     }
 

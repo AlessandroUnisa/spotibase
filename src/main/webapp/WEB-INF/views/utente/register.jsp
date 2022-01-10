@@ -25,7 +25,7 @@
                     <c:if test="${errUsername != null}">
                        <div class="invalidSimple">${errUsername}</div>
                     </c:if>
-                    <input type="text" id="user"name="username" size="28" value="${username}" required >
+                    <input type="text" id="user"name="username" size="28" value="${username}" pattern="^[a-zA-Z0-9\-_]{1,40}$" required >
                 </label><br>
 
 
@@ -34,14 +34,14 @@
                     <c:if test="${errEmail != null}">
                         <div class="invalidSimple">${errEmail}</div>
                     </c:if>
-                    <input type="email" id="email" name="email" size="28" value="${email}" required>
+                    <input type="email" id="email" name="email" size="28" value="${email}"  pattern="^[a-zA-Z0-9.!#$%&'*+\/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$" required>
                 </label><br>
                 <label for="pwd">
                     Password:<img src="./icons/eye.svg" onclick="showPwd()"><br>
                     <c:if test="${errPasswd != null}">
                         <div class="invalidSimple"> ${errPasswd}</div>
                     </c:if>
-                    <input type="password" id="pwd" name="passwd" size="28" value="${passwd}" required>
+                    <input type="password" id="pwd" name="passwd" size="28" value="${passwd}" pattern ="^(?=.*\\d)(?=.*[a-z])(?=.*[A-Z]).{8,20}$"  required>
 
                 </label><br>
                 <label for="pwd2">

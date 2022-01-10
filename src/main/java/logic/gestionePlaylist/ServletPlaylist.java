@@ -62,17 +62,14 @@ public class ServletPlaylist extends HttpServlet {
 
         Playlist playlist = playlistAPI.doRetrievePlaylistWithSongs(username,nomePlaylist);
         //prendo gli artisti di ogni canzone
-        System.out.println(nomePlaylist+" "+username);
 
-        System.out.println(playlist);
-        System.out.println(playlist.getCanzoni());
-        playlist.getCanzoni().forEach(item-> {
-            try {
-                item.setArtisti(artistaDAO.doRetrieveArtistiBySong(item.getCodice()));
-            } catch (SQLException throwables) {
-                throwables.printStackTrace();
-            }
-        });
+            playlist.getCanzoni().forEach(item-> {
+                try {
+                    item.setArtisti(artistaDAO.doRetrieveArtistiBySong(item.getCodice()));
+                } catch (SQLException throwables) {
+                    throwables.printStackTrace();
+                }
+            });
         return playlist;
     }
 
@@ -87,6 +84,7 @@ public class ServletPlaylist extends HttpServlet {
         AcquistoAPI acquistoAPI = new AcquistoDAO();
         try {
             cancellaCanzone(request,playlistAPI);
+            System.out.println(showPlaylist(request,playlistAPI,canzoneAPI,acquistoAPI,new ArtistaDAO())+"*************");
             request.setAttribute("playlist", showPlaylist(request,playlistAPI,canzoneAPI,acquistoAPI,new ArtistaDAO()));
         } catch (SQLException throwables) {
             throwables.printStackTrace();

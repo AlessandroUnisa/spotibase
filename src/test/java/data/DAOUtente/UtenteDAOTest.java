@@ -100,12 +100,12 @@ public class UtenteDAOTest {
     }
 
 
-    @Test
+  /*  @Test
     public void doSaveWithUtenteNull(){
         Utente utente=null;
         assertThrows(IllegalArgumentException.class,()->utenteDAO.doSave(utente));
     }
-
+*/
 
     @Test
     public void doSaveWithUsernameUtenteNull() throws NoSuchAlgorithmException {

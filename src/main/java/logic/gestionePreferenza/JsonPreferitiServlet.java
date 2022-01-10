@@ -94,6 +94,7 @@ public class JsonPreferitiServlet extends HttpServlet {
     }
 
     @Override
+    @Generated
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         //setta la preferenza per canzone, album e artista
         request.setCharacterEncoding("utf-8");

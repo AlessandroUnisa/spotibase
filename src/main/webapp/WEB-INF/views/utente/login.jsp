@@ -24,7 +24,7 @@
             <form method="post">
                 <label for="email">
                     *Email:<br>
-                    <input type="email" id="email" name="email" required><br>
+                    <input type="email" id="email" name="email" oninvalid="alert('Compila il campo email')" pattern="^[a-zA-Z0-9.!#$%&'*+\/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$" required><br>
                 </label>
 
                 <label for="pwd">
