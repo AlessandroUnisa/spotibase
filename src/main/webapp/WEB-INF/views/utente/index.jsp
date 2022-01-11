@@ -25,7 +25,7 @@
 
 <main class="app grid-x justify-center">
         <section class="grid-x justify-center">
-            <h1 class="w100">Canzoni con più preferenze</h1>
+            <h1 class="w100">Alcune canzoni</h1>
 
         <c:forEach items="${canzoni}" var="canzone">
             <jsp:include page="../partials/cardCanzone.jsp">
@@ -86,17 +86,7 @@
             </jsp:include>
         </c:forEach>
     </section>
-    <section class="grid-x justify-center">
-        <h1 class="w100">Canzoni</h1>
-        <c:forEach items="${canzoniCasuali}" var="canzone">
-            <jsp:include page="../partials/cardCanzone.jsp">
-                <jsp:param name="srcImg" value="${canzone.pathImg}"/>
-                <jsp:param name="titolo" value="${canzone.titolo}"/>
-                <jsp:param name="codiceCanzone" value="${canzone.codice}"/>
-                <jsp:param name="url" value="${canzone.pathMP3}"/>
-            </jsp:include>
-        </c:forEach>
-    </section>
+
 
     <section class="grid-x justify-center">
         <h1 class="w100">Canzoni nuove uscite</h1>

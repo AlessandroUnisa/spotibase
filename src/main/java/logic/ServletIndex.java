@@ -8,6 +8,8 @@ import data.DAOCanzone.CanzoneAPI;
 import data.DAOCanzone.CanzoneDAO;
 import data.DAOPlaylist.PlaylistAPI;
 import data.DAOPlaylist.PlaylistDAO;
+import data.DAOUtente.UtenteAPI;
+import data.DAOUtente.UtenteDAO;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -39,12 +41,13 @@ public class ServletIndex extends HttpServlet {
         CanzoneAPI canzoneAPI = new CanzoneDAO();
         ArtistaDAO artisti= new ArtistaDAO();
         AlbumDAO album = new AlbumDAO();
-        request.setAttribute("canzoni",canzoneAPI.doRetrivePopularSongsWithArtista());
+        //request.setAttribute("canzoni",canzoneAPI.doRetrivePopularSongsWithArtista());
+        request.setAttribute("canzoni",canzoneAPI.doRetrieveCanzoneRandom());
         request.setAttribute("artisti",artisti.doRetrieveArtistPopular());
         request.setAttribute("albums",album.doRetrieveAlbumPopular());
         request.setAttribute("artistiCasuali",artisti.doRetrieveArtistRandom());
         request.setAttribute("albumCasuali",album.doRetrieveAlbumRandom());
-        request.setAttribute("canzoniCasuali",canzoneAPI.doRetrieveCanzoneRandom());
+
         request.setAttribute("canzoniNew",canzoneAPI.doRetrieveCanzoniUltimeUscite());
         request.setAttribute("albumNew",album.doRetrieveAlbumUltimeUscite());
         request.setAttribute("canzoniTopBuy",canzoneAPI.doRetrieveCanzoniTopBuy());
@@ -64,7 +67,8 @@ public class ServletIndex extends HttpServlet {
 
             request.setAttribute("listaCanzoniAcquistate", acquistoAPI.doRetrieveCodiciCanzoniAcquistate(username));
 
-           // request.setAttribute("listPlaylist", playlistAPI.doRetrievePlaylistByUtente(username));
+            UtenteAPI utenteAPI = new UtenteDAO();
+            request.setAttribute("listPlaylist", playlistAPI.doRetrievePlaylistByUtente(username,utenteAPI));
         }
 
     }

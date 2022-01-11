@@ -1,7 +1,12 @@
+
+function check(){
+    return checkNote() && checkTitolo();
+}
+
 function checkNote(){
-    var regex = /^[a-zA-Z0-9_.-. ]{0,100}\w|^$$/;
-    var text = document.getElementById("note").value;
-    var flag = regex.test(text);
+    let regex = /^[a-zA-Z0-9_.-. ]{0,100}\w|^$$/;
+    let text = document.getElementById("note").value;
+    let flag = regex.test(text);
     if(flag==true){
         document.getElementById("errorNote").setAttribute("style","opacity=0;");
         return true;
@@ -12,9 +17,9 @@ function checkNote(){
 }
 
 function checkTitolo(){
-    var regex = /^[a-zA-Z0-9_.-. ]{0,100}\w$/;
-    var text = document.getElementById("titolo").value;
-    var flag = regex.test(text);
+    let regex = /^[a-zA-Z0-9_.-. ]{0,100}\w$/;
+    let text = document.getElementById("titolo").value;
+    let flag = regex.test(text);
     if(flag==true){
         document.getElementById("errorTitolo").setAttribute("style","opacity=0;");
         return true;

@@ -87,20 +87,26 @@ function testData(modulo){
 
     function check(){
         let booleanoUser;
+        console.log(document.getElementById("user").value);
         if(/^[a-zA-Z0-9\-_]{1,40}$/.test(document.getElementById("user").value)==true){
             document.getElementById("errorUser").setAttribute("style","visibility=hidden;");
+            console.log("true username")
             booleanoUser = true;
         }else{
             document.getElementById("errorUser").setAttribute("style","visibility=visible;");
+            console.log("false username")
             booleanoUser = false;
         }
 
         let booleanoMail;
-        if(/^[a-zA-Z0-9.!#$%&'*+\/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$/.test(document.getElementById("email").value)==true){
+        console.log(document.getElementById("email").value);
+        if(/^[a-zA-Z0-9.!#$%&'*+\/=?^_`{|}~-]{1,63}@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$/.test(document.getElementById("email").value)==true){
             document.getElementById("errorMail").setAttribute("style","visibility=hidden;");
+            console.log("true email")
             booleanoMail = true;
         }else{
             document.getElementById("errorMail").setAttribute("style","visibility=visible;");
+            console.log("false email")
             booleanoMail = false;
         }
 

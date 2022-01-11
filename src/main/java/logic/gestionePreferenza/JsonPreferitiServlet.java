@@ -9,6 +9,7 @@ import data.DAOPreferenza.PreferenzaDAO;
 import data.Exceptions.OggettoGiaPresenteException;
 import data.Exceptions.OggettoNonCancellatoException;
 import data.Exceptions.OggettoNonInseritoException;
+import data.Exceptions.OggettoNonTrovatoException;
 import org.json.simple.JSONObject;
 
 import javax.servlet.ServletException;
@@ -41,7 +42,7 @@ public class JsonPreferitiServlet extends HttpServlet {
         System.out.println(username);
         System.out.println(codice);
         System.out.println(preferenzaAPI.doRetrieveCodiciCanzoniPreferite(username));
-        if(preferenzaAPI.doRetrieveCodiciCanzoniPreferite(username).contains(codice)){
+        if(!preferenzaAPI.doRetrieveCodiciCanzoniPreferite(username).contains(codice)){
             try {
                 preferenzaAPI.doSave(new Preferenza(codice,username));
                 obj.put("flag",true);
@@ -53,15 +54,14 @@ public class JsonPreferitiServlet extends HttpServlet {
             try {
                 preferenzaAPI.doDelete(codice+";"+username);
                 obj.put("flag",true);
-            } catch (OggettoNonCancellatoException | IllegalArgumentException e) {
+            } catch (OggettoNonCancellatoException | IllegalArgumentException | OggettoNonTrovatoException e) {
                 obj.put("flag",false);
             }
             obj.put("action", "aggiunta");
         }
     }
 @Generated
-    private void setPreferenzaArtista(String username, String codice) throws SQLException {
-        JSONObject obj = new JSONObject();
+    private void setPreferenzaArtista(String username, String codice, JSONObject obj) throws SQLException {
         codice = codice.replace('-',' '); //per i gruppi con piu nomi
         ArtistaDAO artistaDAO = new ArtistaDAO();
         ArrayList<Artista> listPref = (ArrayList<Artista>) artistaDAO.doRetrieveArtistiPreferiti(username);
@@ -85,8 +85,7 @@ public class JsonPreferitiServlet extends HttpServlet {
 
     }
 @Generated
-    private void setPreferenzaAlbum(String username, String codice) throws SQLException {
-        JSONObject obj = new JSONObject();
+    private void setPreferenzaAlbum(String username, String codice, JSONObject obj) throws SQLException {
         AlbumDAO albumDAO = new AlbumDAO();
         if(albumDAO.doRetrieveaCodiciAlbumPreferiti(username).contains(codice))
             obj.put("flag", albumDAO.doRemovePreferenza(codice,username));
@@ -104,10 +103,9 @@ public class JsonPreferitiServlet extends HttpServlet {
         String username = (String) request.getSession(false).getAttribute("username");
 
 
-
+        JSONObject obj = new JSONObject();
         if(tipo==1){//canzone
             try {
-                JSONObject obj= new JSONObject();
                 PreferenzaAPI preferenzaAPI=new PreferenzaDAO();
                 setPreferenzaCanzone(username,codice,preferenzaAPI,obj);
             } catch (SQLException throwables) {
@@ -115,18 +113,18 @@ public class JsonPreferitiServlet extends HttpServlet {
             }
         }else if(tipo==2){//artista, in questo caso codice = nomeDArte
             try {
-                setPreferenzaArtista(username,codice);
+                setPreferenzaArtista(username,codice,obj);
             } catch (SQLException throwables) {
                 throwables.printStackTrace();
             }
         }else if(tipo==3){//album
             try {
-                setPreferenzaAlbum(username,codice);
+                setPreferenzaAlbum(username,codice,obj);
             } catch (SQLException throwables) {
                 throwables.printStackTrace();
             }
         }
-
+        response.getWriter().println(obj.toString());
     }
 
 

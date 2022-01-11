@@ -229,14 +229,19 @@ public class PlaylistDAO implements PlaylistAPI {
     private static final Pattern NOTA = Pattern.compile("^[a-zA-Z0-9_.-. ]{0,100}\\w$");
 
     @Override
-    public boolean isValidTitolo(String titolo) throws SQLException {
+    public boolean isValidTitolo(String titolo){
         return TITLE.matcher(titolo).matches();
     }
 
     @Override
-    public boolean isValidNota(String nota) throws SQLException {
-        if(nota == null)
+    public boolean isValidNota(String nota){
+        if(nota == null || nota.length()==0)
             return true;
+        if(nota.charAt(nota.length()-1)==' ')
+            nota+="_";
+
+        System.out.println("nota : --"+nota+"--");
+
         return NOTA.matcher(nota).matches();
     }
 

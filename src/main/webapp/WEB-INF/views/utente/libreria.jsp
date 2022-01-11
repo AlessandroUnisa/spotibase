@@ -62,7 +62,7 @@
             <div class="modal">
                 <div class="modal-content">
                     <span class="close">&times;</span>
-                    <form method="post" action="./playlist/crea" onsubmit="return checkNote() && checkTitolo()">
+                    <form method="post" action="./playlist/crea" onsubmit="return check()">
                         <label for="titolo">Titolo</label><br>
                         <span class="invalidSimple" style="opacity: 0;" id="errorTitolo">Campo titolo non valido</span>
                         <input type="text" id="titolo" name="titolo"><br>

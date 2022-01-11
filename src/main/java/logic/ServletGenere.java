@@ -39,6 +39,7 @@ public class ServletGenere extends HttpServlet {
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        System.out.println("PIPPO ");
         request.setCharacterEncoding("utf-8");
         response.setCharacterEncoding("utf-8");
         try {
@@ -46,7 +47,7 @@ public class ServletGenere extends HttpServlet {
         } catch (SQLException throwables) {
             throwables.printStackTrace();
         }
-       // request.getRequestDispatcher("WEB-INF/views/genere/genere.jsp").forward(request,response);
+        request.getRequestDispatcher("WEB-INF/views/genere/genere.jsp").forward(request,response);
 
     }
 
