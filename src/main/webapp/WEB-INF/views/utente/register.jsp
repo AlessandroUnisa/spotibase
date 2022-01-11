@@ -43,6 +43,7 @@
                     <c:if test="${errPasswd != null}">
                         <div class="invalidSimple"> ${errPasswd}</div>
                     </c:if>
+                    <span class="invalidSimple" id="errorPasswd" style="visibility: hidden;">Password non valida</span>
                     <input type="password" id="pwd" name="passwd" size="28" value="${passwd}">
 
                 </label><br>
@@ -51,6 +52,7 @@
                     <c:if test="${errPasswdNE != null}">
                         <div class="invalidSimple">${errPasswdNE}</div>
                     </c:if>
+                    <span class="invalidSimple" id="errorPasswd2" style="visibility: hidden;">Password non valida</span>
                     <input type="password" id="pwd2" name="passwdCheck" size="28" value="${passwdCheck}" >
                 </label><br>
 

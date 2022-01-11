@@ -13,18 +13,21 @@ function showPwd() {
 
 function testData(modulo){
     let flag = true;
-   if(!/(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{8,20}/.test(modulo.passwd.value)){
-       document.getElementById("message").style.display = "block";
-       alert("Password non valida");
-       flag = false;
-   }
+
 
    if(modulo.passwd.value != modulo.passwdCheck.value){
-        alert("Le password non coincidono");
-        return false
+        document.getElementById("errorPasswd2").setAttribute("style","visibility:visible;");
+        flag = false;
    }
 
-   return flag && check();
+   flag = flag && check();
+
+    if(!/(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{8,20}/.test(modulo.passwd.value)){
+        document.getElementById("message").style.display = "block";
+        document.getElementById("errorPasswd").setAttribute("style","visibility:visible;");
+        flag = false;
+    }
+    return flag;
 }
 
     var myInput = document.getElementById("pwd");
