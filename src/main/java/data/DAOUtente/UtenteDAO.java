@@ -32,12 +32,16 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
 @interface Generated {
 }
 
+/**Questa classe permette  di gestire le operazioni relative ai dati persistenti dell’utente.
+ * @version 1.0
+ * @see UtenteAPI interfacci della classe
+ * */
 public class UtenteDAO implements UtenteAPI{
     //Metodi documentati per IS---------------------------------------------------------------------------------
 
     //private static final Pattern MAIL_USER = Pattern.compile("^[a-zA-Z0-9.!#$%&’*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\\.[a-zA-Z0-9-]+)*$");
     private static final Pattern PASSWD = Pattern.compile("^(?=.*\\d)(?=.*[a-z])(?=.*[A-Z]).{8,}$");
-    private static final Pattern MAIL_USER = Pattern.compile("^(?:[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*|\"(?:[\\x01-\\x08\\x0b\\x0c\\x0e-\\x1f\\x21\\x23-\\x5b\\x5d-\\x7f]|\\\\[\\x01-\\x09\\x0b\\x0c\\x0e-\\x7f])*\")@(?:(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?|\\[(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?|[a-z0-9-]*[a-z0-9]:(?:[\\x01-\\x08\\x0b\\x0c\\x0e-\\x1f\\x21-\\x5a\\x53-\\x7f]|\\\\[\\x01-\\x09\\x0b\\x0c\\x0e-\\x7f])+)\\])$");
+    private static final Pattern MAIL_USER = Pattern.compile("^[a-zA-Z0-9.!#$%&'*+\\/=?^_`{|}~-]{1,63}@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$");
     private static final Pattern USERNAME = Pattern.compile("^[a-zA-Z0-9\\-_]{1,40}$");
 
     Connection connection;
@@ -49,21 +53,43 @@ public class UtenteDAO implements UtenteAPI{
     }
 
 
+    /**Questo metodo serve per convalidare lo username dell'utente secondo la regex
+     * <p><b>pre: </b> lo username != null </p>
+     * @param username username dell'utente per verificare la sua correttezza
+     * @return true se l'username è falido, false altrimenti
+     * */
     public boolean isValidUsername(String username){
+
         return USERNAME.matcher(username).matches();
     }
 
+
+    /** Questo metodo consente di validare l’email dell’utente secondo la regex
+     * <p><b>pre: </b>email != null</p>
+     * @param email email dell'utente da convalidare
+     * @return true se l'email rispetta la regex false altrimenti
+     * */
     public boolean isValidEmail(String email){
        return MAIL_USER.matcher(email).matches();
     }
 
+
+    /** Questo metodo consente di validare la password dell’utente secondo la regex
+     * <p><b>pre: </b>password != null</p>
+     * @param passwd password dell'utente da convalidare
+     * @return true se la password rispetta la regex, false altrimenti
+     * */
     public boolean isValidPasswd(String passwd){
         return PASSWD.matcher(passwd).matches();
     }
 
-    @Override
+
     /**Questo metodo permette di prelevare un utente dal db
-     * @param chiave la username dell'utente
+     * <p><b>pre: </b>chiave != null, chiave.contains(;) == true e l'utente deve esistere nel db</p>
+     * @param chiave l'username dell'utente
+     * @throws SQLException Un'eccezione che fornisce informazioni su un errore di accesso al database o altri errori.
+     * @throws IllegalArgumentException  Un'eccezione che viene lanciata quando la chiave è null o non valida
+     * @throws OggettoNonTrovatoException Un'eccezione che viene lanciata quando l'utente non è stato trovato nel db
      * @return l'oggetto utente
      * */
     public Utente doGet(String chiave) throws SQLException {
@@ -78,7 +104,15 @@ public class UtenteDAO implements UtenteAPI{
        UtenteMapper mapper = new UtenteMapper();
        return  mapper.map(resultSet);
     }
-    /**Cerca gli utente che hanno field = value*/
+
+    /**Cerca gli utente che hanno field = value
+     * <p><b>pre: </b> field != null e value != null</p>
+     * @param field parametro della query attraverso il quale si effettua la ricerca dell'utente
+     * @param value valore passato al parametro per la ricerca dell'utente
+     * @throws SQLException Un'eccezione che fornisce informazioni su un errore di accesso al database o altri errori.
+     * @throws IllegalArgumentException  Un'eccezione che viene lanciata quando field o value dell'utente è null o non valido
+     * @return lista di utenti
+     * */
     public List<Utente> findUsers(String field, String value) throws SQLException {
         if(field == null || value == null )
             throw new IllegalArgumentException("field o value null");
@@ -92,7 +126,13 @@ public class UtenteDAO implements UtenteAPI{
         return lista;
     }
 
-    @Override
+    /**Questo metodo consente di verificare l’acquisto all’interno del database
+     * <p><b>pre: </b>chiave != null</p>
+     * @param chiave rappresenta lo username dell'utente
+     * @throws SQLException Un'eccezione che fornisce informazioni su un errore di accesso al database o altri errori.
+     * @throws IllegalArgumentException  Un'eccezione che viene lanciata quando la chiave è null o non valida
+     * @return true se l'utente esiste, false altrimenti
+     */
     public boolean exist(String chiave) throws SQLException {
         if(chiave == null)
             throw new IllegalArgumentException("chiave è null");
@@ -102,7 +142,15 @@ public class UtenteDAO implements UtenteAPI{
         return statement.executeQuery().next();
     }
 
-    /** Salva nel DB l'utente nel db */
+    /** Salva nel DB l'utente nel db
+     * <p><b>pre: </b>utente deve essere diverso da null e non esistere nel db, email!= null, password != null e l'username != null<br>
+     *    <b>post: </b>l'utente è presente nel db</p>
+     * @param utente l'oggetto da salvare
+     * @throws SQLException Un'eccezione che fornisce informazioni su un errore di accesso al database o altri errori.
+     * @throws IllegalArgumentException  Un'eccezione che viene lanciata quando l'utente o l'username dell'utente o la password oppure l'email sono null o non validi
+     * @throws OggettoGiaPresenteException  Un'eccezione che viene lanciata quando l'utente è già presente nel db
+     * @throws OggettoNonInseritoException Un'eccezione che viene lanciata quando l'utente non è stato inserito
+     * */
     public void doSave(Utente utente) throws SQLException {
         if (utente == null || utente.getUsername() == null || utente.getPassword() == null || utente.getEmail() == null)
             throw new IllegalArgumentException("utente è null o qualche campo obbligatorio è null");
@@ -120,7 +168,15 @@ public class UtenteDAO implements UtenteAPI{
         }
     }
 
-    /**Cerca un utente per email e password*/
+    /**Cerca un utente per email e password
+     * <p><b>pre: </b>email != null,password != null e la loro corrispondenza deve esistere nel db</p>
+     * @param email email dell'utente
+     * @param password password dell'utente
+     * @throws SQLException Un'eccezione che fornisce informazioni su un errore di accesso al database o altri errori.
+     * @throws IllegalArgumentException  Un'eccezione che viene lanciata quando l'email o password dell'utente sono null o non valide
+     * @throws OggettoNonTrovatoException Un'eccezione che viene lanciata quando l'utente non è stato trovato nel db
+     * @return un oggetto utente
+     * */
     public Utente doGet(String email, String password) throws SQLException {
         if(email == null || password == null )
             throw new IllegalArgumentException("email o password sono null");
@@ -136,8 +192,13 @@ public class UtenteDAO implements UtenteAPI{
     }
 
     /** Elimina l'utente dal DB
-     *  @param username la username dell'utente da eliminare
-     * @return true se l'utente è stato eliminato, false altrimenti
+     * <p><b>pre: </b>username != null e presente nel db<br>
+     *    <b>post: </b>utente eliminato dal db </p>
+     * @param username la username dell'utente da eliminare
+     * @throws SQLException Un'eccezione che fornisce informazioni su un errore di accesso al database o altri errori.
+     * @throws IllegalArgumentException  Un'eccezione che viene lanciata quando l'username è null o non valida
+     * @throws OggettoNonCancellatoException  Un'eccezione che viene lanciata quando l'utente non è stato cancellato nel db
+     * @throws OggettoNonTrovatoException Un'eccezione che viene lanciata quando l'utente non è stato trovato nel db
      * */
     public void doDelete(String username) throws SQLException {
         if(username == null)

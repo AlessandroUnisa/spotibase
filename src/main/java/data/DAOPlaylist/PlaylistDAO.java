@@ -28,6 +28,11 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
 @interface Generated {
 }
 
+/** Questa classe contine i metodi per la gestione della playlsit specificati nel ODD
+ *
+ * @version 1.0
+ * @see PlaylistAPI interfaccia della classe
+ */
 public class PlaylistDAO implements PlaylistAPI {
 
 
@@ -43,9 +48,12 @@ public class PlaylistDAO implements PlaylistAPI {
         this.connection = connection;
     }
 
-    @Override
     /**Questo metodo preleva una playlist dal database
+     * <p><b>pre: </b>chiave != null, chiave.contains(;) == true, il titolo della playlist deve essere presente anche l'username != null</p>
      * @param chiave concatenazione del titolo della plyalist con la username. Esempio: "playRock;pluto"
+     * @throws SQLException Un'eccezione che fornisce informazioni su un errore di accesso al database o altri errori.
+     * @throws IllegalArgumentException  Un'eccezione che viene lanciata quando la chiave è null o non valida
+     * @throws OggettoNonTrovatoException  Un'eccezione che viene lanciata quando la playlist non è stata trovata
      * @return l'oggetto playlist
      * */
     public Playlist doGet(String chiave) throws SQLException {
@@ -66,10 +74,15 @@ public class PlaylistDAO implements PlaylistAPI {
         }
     }
 
-    @Override
     /** Questo metodo salva nel DB la playlist
+     *  <p><b>pre: </b>playlist !=null, Titolo della playlist != null, Username dell'utente che ha creato la playlist != null e l'utente non deve avere una playlist con quel titolo<br>
+     *     <b>post: </b>la playlist è aggiunta nel db per quel relativo utente</p>
      *  @param playlist la playlist da salvare con i campi titolo e username
+     *  @throws SQLException Un'eccezione che fornisce informazioni su un errore di accesso al database o altri errori.
+     *  @throws IllegalArgumentException  Un'eccezione che viene lanciata quando la playlist è null o non valida
+     *  @throws OggettoNonInseritoException Un'eccezione che viene lanciata quando la playlist non è stata inserita all'interno del db
      * */
+
     public void doSave(Playlist playlist) throws SQLException {
         if(playlist == null || playlist.getTitolo() == null || playlist.getUsername() == null)
             throw new IllegalArgumentException("playlist è null o qualche campo obbligatorio è null");
@@ -89,7 +102,12 @@ public class PlaylistDAO implements PlaylistAPI {
 
 
     /** Elimina la playlist dal DB
+     * <p><b>pre: </b>chiave != null, chiave.contains(;) == true e la chiave deve essere presente nel db<br>
+     *    <b>post: </b>la playlist non deve essere più presente nel db</p>
      * @param chiave concatenazione del titolo della plyalist con la username. Esempio: "playRock;pluto"
+     * @throws SQLException Un'eccezione che fornisce informazioni su un errore di accesso al database o altri errori.
+     * @throws IllegalArgumentException  Un'eccezione che viene lanciata quando la chiave è null o non valida
+     * @throws OggettoNonCancellatoException Un'eccezione che viene lanciata quando la playlist non è stata cancellata dal db
      * */
     public void doDelete(String chiave) throws SQLException {
         if(chiave == null || !chiave.contains(";"))
@@ -111,7 +129,12 @@ public class PlaylistDAO implements PlaylistAPI {
 
 
     /**Questo metodo prende le playlist di un utente
+     * <p><b>pre: </b>username != null</p>
      * @param username la username dell utente
+     * @param utenteAPI l'interfaccia dell'utente
+     * @throws SQLException Un'eccezione che fornisce informazioni su un errore di accesso al database o altri errori.
+     * @throws IllegalArgumentException  Un'eccezione che viene lanciata quando l'username è null o non valida
+     * @throws OggettoNonTrovatoException Un'eccezione che viene lanciata quando l'utente non è stato trovato nel db
      * @return lista di playlist dell utente
      * */
     public List<Playlist> doRetrievePlaylistByUtente(String username, UtenteAPI utenteAPI) throws SQLException {
@@ -131,10 +154,20 @@ public class PlaylistDAO implements PlaylistAPI {
         return list;
     }
 
-    /**Inserisce una canzone nella playlist
+    /**Inserisce una canzone nella playlist di un utente
+     * <p><b>pre: </b>username!=null e deve esistere nel db, titoloPlaylist != null e deve esistere nel db, codCanzone != null e deve esistere nel db e deve esistere la playlist di quel dato utente<br>
+     *    <b>post: </b>canzone inserita nel db</p>
      * @param username la username dell utente
-     * @param codCanzone il codice della canzone da inserire
      * @param titoloPlay il titolo della playlist in cui inserire la canzone
+     * @param codCanzone il codice della canzone da inserire
+     * @param utenteAPI interfaccia dell'utente
+     * @param canzoneAPI interfaccia della canzone
+     * @param playlistAPI interfaccia della playlist
+     * @throws SQLException Un'eccezione che fornisce informazioni su un errore di accesso al database o altri errori.
+     * @throws IllegalArgumentException  Un'eccezione che viene lanciata quando l'username o titolo o playlist sono null o non valide
+     * @throws OggettoNonTrovatoException Un'eccezione che viene lanciata quando l'utente non è stato trovato nel db
+     * @throws OggettoNonTrovatoException Un'eccezione che viene lanciata quando la canzone non è stata trovata nel db
+     * @throws OggettoNonTrovatoException Un'eccezione che viene lanciata quando la playlist dell'utente non è stata trovata nel db
      * */
     public void doInsertSong(String username, String titoloPlay, String codCanzone, UtenteAPI utenteAPI,
                             CanzoneAPI canzoneAPI,PlaylistAPI playlistAPI) throws SQLException {
@@ -161,9 +194,18 @@ public class PlaylistDAO implements PlaylistAPI {
 
 
     /**Controlla se la canzone è presente nella playlist
-     * @param username la username dell utente
+     * <p><b>pre: </b>username!=null e deve esistere nel db, titoloPlaylist != null e deve esistere nel db, codCanzone != null e deve esistere nel db e deve esistere la playlist di quel dato utente</p>
      * @param codiceCanzone il codice della canzone da verificare
      * @param titolo il titolo della playlist
+     * @param username la username dell utente
+     * @param canzoneAPI interfaccia della canzone
+     * @param playlistAPI interfaccia della playlist
+     * @param utenteAPI interfaccia dell'utente
+     * @throws SQLException Un'eccezione che fornisce informazioni su un errore di accesso al database o altri errori.
+     * @throws IllegalArgumentException  Un'eccezione che viene lanciata quando l'username o titolo o playlist sono null o non valide
+     * @throws OggettoNonTrovatoException Un'eccezione che viene lanciata quando l'utente non è stato trovato nel db
+     * @throws OggettoNonTrovatoException Un'eccezione che viene lanciata quando la canzone non è stata trovata nel db
+     * @throws OggettoNonTrovatoException Un'eccezione che viene lanciata quando la playlist dell'utente non è stata trovata nel d
      * @return true se la canzone è presente nella playlist, false altrimenti
      * */
     public boolean isPresent(String codiceCanzone, String titolo, String username, CanzoneAPI canzoneAPI,
@@ -189,8 +231,13 @@ public class PlaylistDAO implements PlaylistAPI {
     }
 
     /**Questo metodo controlla se l'utente ha la playlist con quel titolo
+     * <p><b>pre: </b>username!=null e deve esistere nel db, titoloPlaylist != null e deve esistere nel db</p>
      * @param titolo il titolo della playlist da verificare
      * @param username username dell'utente
+     * @param utenteAPI interfaccia dell'utente
+     * @throws SQLException Un'eccezione che fornisce informazioni su un errore di accesso al database o altri errori.
+     * @throws IllegalArgumentException  Un'eccezione che viene lanciata quando l'username o titolo sono null o non valide
+     * @throws OggettoNonTrovatoException Un'eccezione che viene lanciata quando l'utente non è stato trovato nel db
      * @return true se la playlist è presente, false altrimenti
      * */
     public boolean isPresent(String titolo, String username,UtenteAPI utenteAPI) throws SQLException {
@@ -208,7 +255,12 @@ public class PlaylistDAO implements PlaylistAPI {
     }
 
     /**Questo metodo preleva il numero di playlist di un utente
+     * <p><b>pre: </b>username!=null e deve esistere nel db</p>
      * @param username username dell'utente
+     * @param utenteAPI interfaccia dell'utente
+     * @throws SQLException Un'eccezione che fornisce informazioni su un errore di accesso al database o altri errori.
+     * @throws IllegalArgumentException  Un'eccezione che viene lanciata quando l'username è null o non valido
+     * @throws OggettoNonTrovatoException Un'eccezione che viene lanciata quando l'utente non è stato trovato nel db
      * @return numero di playlist
      * */
     public int doRetrieveNumPlaylistOfUtente(String username, UtenteAPI utenteAPI) throws SQLException {
@@ -225,26 +277,33 @@ public class PlaylistDAO implements PlaylistAPI {
         return resultSet.getInt("num");
     }
 
-    private static final Pattern TITLE = Pattern.compile("^[a-zA-Z0-9_.-. ]{0,100}\\w$");
-    private static final Pattern NOTA = Pattern.compile("^[a-zA-Z0-9_.-. ]{0,100}\\w$");
 
-    @Override
+    /** Questo metodo verifica se il titolo è valido secondo la regex
+     * <p><b>pre: </b>titolo != null</p>
+     * @param titolo titolo della playlsit
+     * @return true se è valido secondo la regex, folse altrimenti
+     */
     public boolean isValidTitolo(String titolo){
         return TITLE.matcher(titolo).matches();
     }
 
-    @Override
+    /** Questo metodo verifica se la nota è valido secondo la regex
+     * <p><b>pre: </b>nota != spazio bianco</p>
+     * @param nota della playlsit
+     * @return true se è valida secondo la regex, folse altrimenti
+     */
     public boolean isValidNota(String nota){
         if(nota == null || nota.length()==0)
             return true;
-        if(nota.charAt(nota.length()-1)==' ')
-            nota+="_";
+        /*if(nota.charAt(nota.length()-1)==' ')
+            nota+="_";*/
 
         System.out.println("nota : --"+nota+"--");
 
         return NOTA.matcher(nota).matches();
     }
-
+    private static final Pattern TITLE = Pattern.compile("^[a-zA-Z0-9_.-. ]{0,100}\\w$");
+    private static final Pattern NOTA = Pattern.compile("^[a-zA-Z0-9_.-. ]{0,100}\\w|^$$");
 
     //metodi non documentati per IS-----------------------------------------------------------------------------------------
     /** Ritorna tutti le playlist*/

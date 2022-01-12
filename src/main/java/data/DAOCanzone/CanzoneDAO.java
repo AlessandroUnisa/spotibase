@@ -29,7 +29,10 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
 @Target({TYPE, METHOD})
 @interface Generated {
 }
-
+/**Questa classe permette  di gestire le operazioni relative ai dati persistenti della canzone.
+ * @version 1.0
+ * @see CanzoneAPI interfaccia della classe
+ * */
 public class CanzoneDAO implements CanzoneAPI {
     
     Connection connection;
@@ -41,7 +44,14 @@ public class CanzoneDAO implements CanzoneAPI {
     }
     //metodi documentati per IS----------------------------------------------------------------------------------------------
 
-    @Override
+
+    /**Questo metodo consente di verificare se la canzone è all’interno del database
+     * <p><b>pre: </b>codice != null </p>
+     * @param codCanzone codice della canzone
+     * @throws SQLException Un'eccezione che fornisce informazioni su un errore di accesso al database o altri errori.
+     * @throws IllegalArgumentException  Un'eccezione che viene lanciata quando il codice della canzone è null o non valido
+     * @return true se la canzone esiste, false altrimenti
+     */
     public boolean exist(String codice) throws SQLException {
         if(codice == null)
             throw new IllegalArgumentException("codice è null");
@@ -50,9 +60,13 @@ public class CanzoneDAO implements CanzoneAPI {
         return preparedStatement.executeQuery().next();
     }
 
-    @Override
+
     /**Questo metodo preleva una canzone salvata nel db
-     * @param chiavi la primary key della canzone
+     * <p><b>pre:</b> la chiave != null e presente nel db</p>
+     * @param chiave la primary key della canzone
+     * @throws SQLException Un'eccezione che fornisce informazioni su un errore di accesso al database o altri errori.
+     * @throws IllegalArgumentException  Un'eccezione che viene lanciata quando la chiave è null o non valida
+     * @throws OggettoNonTrovatoException Un'eccezione che viene lanciata quando la canzone non è stata trovata nel db
      * @return oggetto canzone
      * */
     public Canzone doGet(String chiave) throws SQLException {
@@ -72,7 +86,13 @@ public class CanzoneDAO implements CanzoneAPI {
     }
 
     /** Salva nel DB la canzone
+     * <p><b>pre: </b>canzone != null e non deve esistere nel db, il codice della canzone!= null e titolo != null<br>
+     *    <b>post: </b>canzone presente nel db</p>
      * @param canzone la canzone da salvare. Con titolo e codice settati
+     * @throws SQLException Un'eccezione che fornisce informazioni su un errore di accesso al database o altri errori.
+     * @throws IllegalArgumentException  Un'eccezione che viene lanciata quando la canzone o il codice della canzone oppure il titolo della canzone sono null o non validi
+     * @throws OggettoGiaPresenteException  Un'eccezione che viene lanciata quando la canzone  è già presente nel db
+     * @throws OggettoNonInseritoException Un'eccezione che viene lanciata quando la canzone non è stata inserita
      * */
     public void doSave(Canzone canzone) throws SQLException {
         if(canzone == null || canzone.getTitolo() == null || canzone.getCodice() == null)
@@ -101,7 +121,12 @@ public class CanzoneDAO implements CanzoneAPI {
 
 
     /** Elimina la canzone dal DB
+     * <p><b>pre: </b>codice della canzone != null e già presente nel db<br>
+     *    <b>post: </b>canzone eliminata dal db</p>
      * @param codCanzone codice della canzone da eliminare
+     * @throws SQLException Un'eccezione che fornisce informazioni su un errore di accesso al database o altri errori.
+     * @throws IllegalArgumentException  Un'eccezione che viene lanciata quando il codice della canzone è null o non valida
+     * @throws OggettoNonCancellatoException  Un'eccezione che viene lanciata quando la canzone non è stata cancellata nel db
      * */
     public void doDelete(String codCanzone) throws SQLException {
         if(codCanzone == null)
@@ -121,8 +146,12 @@ public class CanzoneDAO implements CanzoneAPI {
 
 
     /**Ritorna la canzone con la lista degli artisti
+     * <p><b>pre: </b>codice della canzone!= null </p>
      * @param codiceCanzone il codice della canzone da prelevare
-     * @return la canzone con all'interno ache la lista degli artisti
+     * @throws SQLException Un'eccezione che fornisce informazioni su un errore di accesso al database o altri errori.
+     * @throws IllegalArgumentException  Un'eccezione che viene lanciata quando il codice della canzone è null o non valido
+     * @throws OggettoNonTrovatoException Un'eccezione che viene lanciata quando la canzone non è stata trovata nel db
+     * @return la canzone con all'interno anche la lista degli artisti
      * */
     public Canzone doRetrieveCanzoneWithArtisti(String codiceCanzone) throws SQLException {
         if(codiceCanzone == null)

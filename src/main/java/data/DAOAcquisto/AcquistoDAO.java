@@ -1,5 +1,6 @@
 package data.DAOAcquisto;
 
+import data.DAOPlaylist.PlaylistAPI;
 import data.Exceptions.OggettoGiaPresenteException;
 import data.Exceptions.OggettoNonCancellatoException;
 import data.Exceptions.OggettoNonInseritoException;
@@ -29,6 +30,11 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
 @Target({TYPE, METHOD})
 @interface Generated {
 }
+/** Questa classe permette  di gestire le operazioni relative ai dati persistenti degli acquisti
+ *
+ * @version 1.0
+ * @see AcquistoAPI interfaccia della classe
+ */
 public class AcquistoDAO implements AcquistoAPI {
     
     private Connection connection;
@@ -44,9 +50,13 @@ public class AcquistoDAO implements AcquistoAPI {
     }
 
 
-    @Override
+
     /**Questo metodo ritorna l'acquisto prelevato dal DB. Può essere usato per controllare se un acquisto si trova nel DB o meno
+     * <p><b>pre: </b>chiave != null, chiave.contains(;) == true e l'acquisto deve esistere nel db</p>
      * @param chiave la concatenazione della username e del codice canzone. Esempio: "pluto;C94"
+     * @throws SQLException Un'eccezione che fornisce informazioni su un errore di accesso al database o altri errori.
+     * @throws IllegalArgumentException  Un'eccezione che viene lanciata quando la chiave è null o non valida
+     * @throws OggettoNonTrovatoException Un'eccezione che viene lanciata quando l'acquisto non è stato trovato nel db
      * @return un oggetto Acquisto
      * */
     public Acquisto doGet(String chiave) throws SQLException {
@@ -63,10 +73,15 @@ public class AcquistoDAO implements AcquistoAPI {
         return new Acquisto(resultSet.getString("username"),resultSet.getString("codCanzone"));
     }
 
-    @Override
+
     /**Questo metodo salva un acquisto nel DB
+     * <p><b>pre: </b>acquisto deve essere diverso da null e non esistere nel db, il codice della canzone != null e l'username != null<br>
+     *    <b>post: </b>Acquisto è presente nel db</p>
      * @param acquisto l'oggetto da salvare. Prima di invocare il metodo bisogna settare la username e il codCanzone all'interno dell oggetto
-     * @return true se il salvataggio avviene correttamente, false altrimenti
+     * @throws SQLException Un'eccezione che fornisce informazioni su un errore di accesso al database o altri errori.
+     * @throws IllegalArgumentException  Un'eccezione che viene lanciata quando acquisto o il codice della canzone oppure l'username dell'utente sono null o non validi
+     * @throws OggettoGiaPresenteException  Un'eccezione che viene lanciata quando l'acquisto  è già presente nel db
+     * @throws OggettoNonInseritoException Un'eccezione che viene lanciata quando l'acquisto non è stato inserito
      * */
     public void doSave(Acquisto acquisto) throws SQLException {
 
@@ -84,11 +99,19 @@ public class AcquistoDAO implements AcquistoAPI {
         }
     }
 
-    @Override
+
     /**Questo metodo cancella un acquisto dal DB
-     * @param chiave la concatenazione della username e del codice canzone. Esempio: "pluto;C94"e
-     * @return void
+     * <p><b>pre:</b> chiave != null, chiave.contains(;) == true e l'acquisto deve esistere nel db <br>
+     *    <b>post:</b> Acquisto non presente nel db</p>
+     * @param chiave la concatenazione della username e del codice canzone. Esempio: "pluto;C94"
+     * @throws SQLException Un'eccezione che fornisce informazioni su un errore di accesso al database o altri errori.
+     * @throws IllegalArgumentException  Un'eccezione che viene lanciata quando la chiave è null o non valida
+     * @throws OggettoNonCancellatoException  Un'eccezione che viene lanciata quando l'acquisto non è stato cancellato nel db
+     * @throws OggettoNonTrovatoException Un'eccezione che viene lanciata quando l'acquisto non è stato trovato nel db
+     *
+     *
      * */
+
     public void doDelete(String chiave) throws SQLException {
         if(chiave == null || !chiave.contains(";"))
             throw new IllegalArgumentException("la chiave è null o non valida");
@@ -106,10 +129,16 @@ public class AcquistoDAO implements AcquistoAPI {
             throw new OggettoNonTrovatoException("Acquisto non trovato");
     }
 
-    @Override
+
     /**Questo metodo inserisce una canzone negli acquisti
-     * @param chiave la concatenazione della username e del codice canzone. Esempio: "pluto;C94"e
-     * @return void
+     * <p><b>pre: </b>il codice della canzone != null e l'username != null e non deve esistere esistere la corrispondenza tra username e codice della canzone <br>
+     *    <b>post: </b>deve esistere esistere la corrispondenza tra username e codice della canzone</p>
+     * @param username contiene la username dell'utente che acquista una canzone
+     * @param codice codice della canzone che viene acquistata dall'utente
+     * @throws SQLException Un'eccezione che fornisce informazioni su un errore di accesso al database o altri errori.
+     * @throws IllegalArgumentException  Un'eccezione che viene lanciata quando acquisto o il codice della canzone oppure l'username dell'utente sono null o non validi
+     * @throws OggettoGiaPresenteException  Un'eccezione che viene lanciata quando l'acquisto è già presente nel db
+     * @throws OggettoNonInseritoException Un'eccezione che viene lanciata quando la canzone non viene acquistata
      * */
     public void doInsertCanzoneAcquistata(String username, String codice) throws SQLException {
         if(username == null || codice == null)
@@ -126,7 +155,14 @@ public class AcquistoDAO implements AcquistoAPI {
         }
     }
 
-    /**Ritorna la lista delle canzoni acquistate dall utente*/
+
+    /**Ritorna la lista delle canzoni acquistate dall utente
+     * <p><b>pre: </b> username != null e deve esistere nel db</p>
+     * @param username username dell'utente che ha acquistato una serie di canzoni
+     * @throws SQLException Un'eccezione che fornisce informazioni su un errore di accesso al database o altri errori.
+     * @throws IllegalArgumentException  Un'eccezione che viene lanciata quando username dell'utente è null o non valido
+     * @return una lista di codici delle canzoni acquistate
+     * */
     public List<String> doRetrieveCodiciCanzoniAcquistate(String username) throws SQLException {
         if(username == null){
             throw new IllegalArgumentException("username è null");
@@ -141,7 +177,14 @@ public class AcquistoDAO implements AcquistoAPI {
         return codici;
     }
 
-    @Override
+    /**Questo metodo consente di verificare l’acquisto all’interno del database
+     * <p><b>pre: </b>codice != null e username != null</p>
+     * @param username username dell'utente che ha effettuato l'acquisto
+     * @param codCanzone codice della canzone acquistata ddll'utente
+     * @throws SQLException Un'eccezione che fornisce informazioni su un errore di accesso al database o altri errori.
+     * @throws IllegalArgumentException  Un'eccezione che viene lanciata quando il codice della canzone oppure l'username dell'utente sono null o non validi
+     * @return true se l'acquisto esiste, false altrimenti
+     */
     public boolean exist(String username, String codCanzone) throws SQLException {
         if(username == null || codCanzone == null)
             throw new IllegalArgumentException("username o codCanzone sono null");
