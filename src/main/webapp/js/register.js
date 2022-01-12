@@ -1,4 +1,5 @@
 function showPwd() {
+
     var input = document.getElementById('pwd');
     var input2 = document.getElementById('pwd2');
 
@@ -14,7 +15,6 @@ function showPwd() {
 function testData(modulo){
     let flag = true;
 
-
    if(modulo.passwd.value != modulo.passwdCheck.value){
         document.getElementById("errorPasswd2").setAttribute("style","visibility:visible;");
         flag = false;
@@ -24,7 +24,7 @@ function testData(modulo){
 
     if(!/(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{8,20}/.test(modulo.passwd.value)){
         document.getElementById("message").style.display = "block";
-        document.getElementById("errorPasswd").setAttribute("style","visibility:visible;");
+        document.getElementById("errorPasswd").style.visibility ="visible";
         flag = false;
     }
     return flag;
@@ -89,30 +89,26 @@ function testData(modulo){
     }
 
     function check(){
+
         let booleanoUser;
         console.log(document.getElementById("user").value);
         if(/^[a-zA-Z0-9\-_]{1,40}$/.test(document.getElementById("user").value)==true){
-            document.getElementById("errorUser").setAttribute("style","visibility=hidden;");
-            console.log("true username")
+            document.getElementById("errorUser").style.visibility ="hidden";
             booleanoUser = true;
         }else{
-            document.getElementById("errorUser").setAttribute("style","visibility=visible;");
-            console.log("false username")
+            document.getElementById("errorUser").style.visibility ="visible";
             booleanoUser = false;
         }
 
         let booleanoMail;
         console.log(document.getElementById("email").value);
         if(/^[a-zA-Z0-9.!#$%&'*+\/=?^_`{|}~-]{1,63}@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$/.test(document.getElementById("email").value)==true){
-            document.getElementById("errorMail").setAttribute("style","visibility=hidden;");
-            console.log("true email")
+            document.getElementById("errorMail").style.visibility ="hidden";
             booleanoMail = true;
         }else{
-            document.getElementById("errorMail").setAttribute("style","visibility=visible;");
-            console.log("false email")
+            document.getElementById("errorMail").style.visibility ="visible";
             booleanoMail = false;
         }
-
         return booleanoUser && booleanoMail;
     }
 

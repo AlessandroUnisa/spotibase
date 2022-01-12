@@ -15,9 +15,24 @@ import java.io.IOException;
 import java.security.NoSuchAlgorithmException;
 import java.sql.SQLException;
 
+/**Questa classe permette di effettuare l'accesso alla piattaforma
+ * @see HttpServlet fornisce l'interfaccia per creare una servlet
+ * @version 1.0
+ */
+
 @WebServlet(name = "Login", value = "/login")
 public class Login extends HttpServlet {
 
+    /**
+     *
+     * @param request
+     * @param response
+     * @param utenteAPI
+     * @throws SQLException
+     * @throws NoSuchAlgorithmException
+     * @throws IOException
+     * @throws ServletException
+     */
     public void login(HttpServletRequest request, HttpServletResponse response,UtenteAPI utenteAPI) throws SQLException, NoSuchAlgorithmException, IOException, ServletException {
         Utente utenteTemp = new Utente();
         utenteTemp.setEmail(request.getParameter("email"));
@@ -48,7 +63,13 @@ public class Login extends HttpServlet {
 
     }
 
-
+    /**
+     *
+     * @param request
+     * @param response
+     * @throws ServletException
+     * @throws IOException
+     */
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         request.setCharacterEncoding("utf-8");
@@ -60,6 +81,13 @@ public class Login extends HttpServlet {
 
     }
 
+    /**
+     *
+     * @param request
+     * @param response
+     * @throws ServletException
+     * @throws IOException
+     */
     @Override
     @Generated
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {

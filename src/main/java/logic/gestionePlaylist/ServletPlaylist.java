@@ -12,6 +12,7 @@ import data.DAOPlaylist.PlaylistAPI;
 import data.DAOPlaylist.PlaylistDAO;
 import data.DAOUtente.UtenteAPI;
 import data.DAOUtente.UtenteDAO;
+import data.Exceptions.OggettoGiaPresenteException;
 
 import javax.servlet.*;
 import javax.servlet.http.*;
@@ -117,8 +118,10 @@ public class ServletPlaylist extends HttpServlet {
 
         if(playlistAPI.isPresent(titolo,username,utenteAPI)) { //titolo gia presente
             response.sendRedirect("../libreria?presentPlay=1");
-            throw new IllegalArgumentException("playlist già esistente");
+            //throw new IllegalArgumentException("playlist già esistente");
+            //throw new OggettoGiaPresenteException("playlist gia esistente");
         }
+
         else {
             boolean flag = false;
             if (numPlaylist > 3) {
@@ -160,6 +163,8 @@ public class ServletPlaylist extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         String path = request.getPathInfo();
+        request.setCharacterEncoding("utf-8");
+        response.setCharacterEncoding("utf-8");
         switch (path){
             case "/cancella": {
                 //cancellazione playlist

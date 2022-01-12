@@ -31,7 +31,7 @@ public class Registrazione extends HttpServlet {
         //se l email non è valida oppure ci sono gia utenti con quella mail (la lista ne conterra al massimo uno)
         System.out.println(utenteAPI.isValidEmail(email)+" "+email);
         if(!utenteAPI.isValidEmail(email) || utenteAPI.findUsers("email",email).size()!=0){ //check mail
-            request.setAttribute("errEmail","L'email inserita non è valida");
+            request.setAttribute("errEmail","Email non valida");
             flag++;
         }
         if(!passwd.equals(passwdCheck)){ //check passwd uguali

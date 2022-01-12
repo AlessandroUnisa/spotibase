@@ -36,19 +36,19 @@
                         <div class="invalidSimple">${errEmail}</div>
                     </c:if>
                     <span class="invalidSimple" id="errorMail" style="visibility: hidden;">Email non valida</span>
-                    <input type="email" id="email" name="email" size="28" value="${email}">
+                    <input type="text" id="email" name="email" size="28" value="${email}">
                 </label><br>
                 <label for="pwd">
                     Password:<img src="./icons/eye.svg" onclick="showPwd()"><br>
                     <c:if test="${errPasswd != null}">
-                        <div class="invalidSimple"> ${errPasswd}</div>
+                        <div class="invalidSimple"></div>
                     </c:if>
                     <span class="invalidSimple" id="errorPasswd" style="visibility: hidden;">Password non valida</span>
                     <input type="password" id="pwd" name="passwd" size="28" value="${passwd}">
 
                 </label><br>
                 <label for="pwd2">
-                    Conferma Password:
+                    Conferma Password: <br>
                     <c:if test="${errPasswdNE != null}">
                         <div class="invalidSimple">${errPasswdNE}</div>
                     </c:if>
