@@ -62,12 +62,14 @@
             <div class="modal">
                 <div class="modal-content">
                     <span class="close">&times;</span>
-                    <form method="post" action="./playlist/crea" onsubmit="return check()">
+                    <form method="post" action="./playlist/crea" onsubmit="return checkPlay()">
                         <label for="titolo">Titolo</label><br>
-                        <span class="invalidSimple" style="opacity: 0;" id="errorTitolo">Campo titolo non valido</span>
+                        <span class="invalidSimple" style="display: none;" id="errorTitolo">Campo titolo non valido</span><br>
+                        <span class="invalidSimple" style="display: none;" id="errorTitoloPresente">Titolo già presente</span>
+
                         <input type="text" id="titolo" name="titolo"><br>
                         <label for="note">Note</label><br>
-                        <span class="invalidSimple" style="opacity: 0;" id="errorNote">Campo note non valido</span>
+                        <span class="invalidSimple" style="display:none;" id="errorNote">Campo note non valido</span>
                         <textarea cols="10" rows="10" name="note" id="note" ></textarea><br>
                         <button type="submit" class="btn primary" >Invia</button><br>
                     </form>

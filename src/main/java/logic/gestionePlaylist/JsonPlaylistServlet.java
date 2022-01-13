@@ -67,13 +67,23 @@ public class JsonPlaylistServlet extends HttpServlet {
         response.setCharacterEncoding("utf-8");
 
         response.setContentType("application/json");
-        try {
-            CanzoneAPI canzoneAPI = new CanzoneDAO();
-            PlaylistAPI playlistAPI = new PlaylistDAO();
-            UtenteAPI utenteAPI = new UtenteDAO();
-            response.getWriter().println(insertCanzone(request,canzoneAPI,playlistAPI, utenteAPI));
-        } catch (SQLException throwables) {
-            throwables.printStackTrace();
+
+        PlaylistAPI playlistAPI = new PlaylistDAO();
+        if(request.getParameter("cod") != null && request.getParameter("cod").equals("check")){
+            try {
+                response.getWriter().println(checkTitoloGiaPresente(request,playlistAPI));
+            } catch (SQLException throwables) {
+                throwables.printStackTrace();
+            }
+        }
+        else{
+            try {
+                CanzoneAPI canzoneAPI = new CanzoneDAO();
+                UtenteAPI utenteAPI = new UtenteDAO();
+                response.getWriter().println(insertCanzone(request,canzoneAPI,playlistAPI, utenteAPI));
+            } catch (SQLException throwables) {
+                throwables.printStackTrace();
+            }
         }
     }
 
@@ -81,5 +91,27 @@ public class JsonPlaylistServlet extends HttpServlet {
     @Generated
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 
+    }
+
+    /** Questo metodo viene utilizzato dal front-end per sapere se l'utente ha gia una playlist con quel titolo
+     *
+     * @param request contiene il titolo della playlist
+     * @throws SQLException Un'eccezione che fornisce informazioni su un errore di accesso al database o altri errori.
+     * @return l'oggetto json che contiene un flag, flag=true se la playlist è presente, flag=false altrimenti
+     */
+    public JSONObject checkTitoloGiaPresente(HttpServletRequest request, PlaylistAPI playlistAPI) throws SQLException {
+        String username = (String) request.getSession(false).getAttribute("username");
+        JSONObject object = new JSONObject();
+        UtenteAPI utenteAPI = new UtenteDAO();
+        String titolo = request.getParameter("titolo");
+        System.out.println(titolo+"-  -"+ username);
+        if(playlistAPI.isPresent(titolo, username, utenteAPI)){
+            System.out.println("--true");
+            object.put("checkT", true);
+        }else{
+            System.out.println("--false");
+            object.put("checkT", false);
+        }
+        return  object;
     }
 }
