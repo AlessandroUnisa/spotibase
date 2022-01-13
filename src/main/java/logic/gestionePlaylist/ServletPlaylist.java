@@ -115,7 +115,7 @@ public class ServletPlaylist extends HttpServlet {
         request.getRequestDispatcher("WEB-INF/views/playlist/playlist.jsp").forward(request,response);
     }
 
-    /** Questo metodo viene utilizzare per cancellare la playlist
+    /** Questo metodo viene utilizzato per cancellare la playlist
      * @param request per prendere lo username dalla sessione e la canzone da canellare
      * @throws SQLException Un'eccezione che fornisce informazioni su un errore di accesso al database o altri errori.
      */
@@ -196,7 +196,6 @@ public class ServletPlaylist extends HttpServlet {
     }
 
     /** Questo metodo in base alla path si cancella o crea una playlist
-     *
      * @param request utilizzata per prenere la path
      * @param response utilizzata per creaPlaylist
      * @throws IOException Un' eccezione che viene lanciata quando c'è un errore di I/O

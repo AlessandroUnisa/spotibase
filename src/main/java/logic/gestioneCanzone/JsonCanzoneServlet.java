@@ -28,10 +28,21 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
 @interface Generated {
 }
 
-
+/**Questa classe modella l'interfaccia delle canzoni a seconda della tipologia di utente
+ * @see HttpServlet fornisce l'interfaccia per creare una servlet
+ * @version 1.0
+ */
 @WebServlet(name = "jsonAlbumServlet", value = "/jsonCanzoneServlet")
 public class JsonCanzoneServlet extends HttpServlet {
 
+    /**
+     * Il metodo permette di creare un JsonObject di una canzone
+     * @param request oggetto della servlet che consente di prelevare il codice della canzone
+     * @param canzoneAPI interfaccia di CanzoneDAO
+     * @param preferenzaAPI interfaccia di PreferenzaDAO
+     * @return JSONObject oggetto Json che rappresenta la canzone
+     * @throws SQLException Un'eccezione che fornisce informazioni su un errore di accesso al database o altri errori.
+     */
     public JSONObject getCanzone(HttpServletRequest request, CanzoneAPI canzoneAPI, PreferenzaAPI preferenzaAPI) throws SQLException {
         String code = request.getParameter("cod");
         JSONObject obj = new JSONObject();
@@ -50,6 +61,14 @@ public class JsonCanzoneServlet extends HttpServlet {
         return obj;
     }
 
+    /**
+     * Il metodo ereditato dalla classe HttpServlet che esplicita i parametri della request e che preleva la canzone
+     * e che modifica l'interfaccia
+     * @param request oggetto della servlet che permette di settare la codifica dei caratteri della richiesta
+     * @param response oggetto della servlet che permette di settare la codifica dei caratteri della risposta,l'oggetto json
+     * @throws ServletException Un'eccezione lanciata quando si verifica un errore nella servlet
+     * @throws IOException Un'eccezione lanciata quando si verifica un errore I/O
+     */
     @Override
     @Generated
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {

@@ -14,10 +14,25 @@ import java.io.IOException;
 import java.security.NoSuchAlgorithmException;
 import java.sql.SQLException;
 
+/**
+ * Questa classe permette di registrarsi alla piattaforma
+ * @see HttpServlet fornisce l'interfaccia per creare una servlet
+ * @version 1.0
+ */
 @WebServlet(name = "register", value = "/register")
 public class Registrazione extends HttpServlet {
 
-
+    /**
+     * Il metodo permette ad un utente non registrato di registrarsi
+     * @param request oggetti della servlet che permette di prelevare i parametri username, email, passwd e passwdCheck
+     *               dalla richiesta e settare i messaggi di errore
+     * @param response oggetto della servlet, che contiene i parametri della risposta
+     * @param utenteAPI interfaccia di UtenteDAO
+     * @throws SQLException
+     * @throws NoSuchAlgorithmException
+     * @throws IOException
+     * @throws ServletException
+     */
     public void register(HttpServletRequest request, HttpServletResponse response, UtenteAPI utenteAPI) throws SQLException, NoSuchAlgorithmException, IOException, ServletException {
         String username = request.getParameter("username");
         System.out.println(username+"**********");
@@ -80,7 +95,14 @@ public class Registrazione extends HttpServlet {
     }
 
 
-
+    /**
+     * Il metodo ereditato dalla classe HttpServlet che esplicita i parametri della request e permette di accedere
+     * alla pagina di registrazione nel caso in cui l'utente non sia gia in sessione, altrimenti alla home
+     * @param request permette di settare la codifica dei caratteri della richiesta, verificare che l'utente sia loggato
+     * @param response permette di settare la codifica dei caratteri della risposta
+     * @throws SQLException Un'eccezione che fornisce informazioni su un errore di accesso al database o altri errori.
+     * @throws IOException Un'eccezione lanciata quando si verifica un errore I/O
+     */
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         request.setCharacterEncoding("utf-8");
@@ -92,6 +114,15 @@ public class Registrazione extends HttpServlet {
 
     }
 
+    /**
+     * Il metodo ereditato dalla classe HttpServlet che chiama il metodo login
+     * @param request permette di settare la codifica dei caratteri della richiesta
+     * @param response permette di settare la codifica dei caratteri della risposta
+     * @throws ServletException Un'eccezione lanciata quando si verifica un errore nella servlet
+     * @throws IOException Un'eccezione lanciata quando si verifica un errore I/O
+     * @throws  SQLException Un'eccezione che fornisce informazioni su un errore di accesso al database o altri errori.
+     * @throws NoSuchAlgorithmException Un'eccezione lanciata quando è richiesto un particolare algoritmo ma che non e disponibile
+     */
     @Override
     @Generated
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {

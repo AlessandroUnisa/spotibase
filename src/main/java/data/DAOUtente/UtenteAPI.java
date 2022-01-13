@@ -6,10 +6,20 @@ import java.security.NoSuchAlgorithmException;
 import java.sql.SQLException;
 import java.util.List;
 
+/**
+ * @se
+ */
 public interface UtenteAPI extends Dao<Utente> {
+
     Utente doGet(String email, String password)  throws SQLException;
     List<Utente> findUsers(String field, String value) throws SQLException;
     boolean exist(String chiave) throws SQLException;
+
+    /**
+     *
+     * @param username
+     * @return
+     */
     boolean isValidUsername(String username);
     public boolean isValidEmail(String email);
 

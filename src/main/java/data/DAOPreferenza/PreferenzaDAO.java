@@ -36,7 +36,7 @@ public class PreferenzaDAO implements PreferenzaAPI {
 
     /**Questo metodo ritorna la preferenza prelevata dal DB. Può essere usato per controllare se una preferenza si trova nel DB o meno
      * <p><b>pre:</b> chiave != null, chiave.contains(;) == true e la preferenza deve esistere nel db</p>
-     * @param chiavi la concatenzaione del codice canzone e della username. Esempio: "C94;pluto"
+     * @param chiave la concatenzaione del codice canzone e della username. Esempio: "C94;pluto"
      * @throws SQLException Un'eccezione che fornisce informazioni su un errore di accesso al database o altri errori.
      * @throws IllegalArgumentException  Un'eccezione che viene lanciata quando la chiave è null o non valida
      * @throws OggettoNonTrovatoException Un'eccezione che viene lanciata quando la preferenza non è stata trovata nel db

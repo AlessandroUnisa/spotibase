@@ -47,7 +47,7 @@ public class CanzoneDAO implements CanzoneAPI {
 
     /**Questo metodo consente di verificare se la canzone è all’interno del database
      * <p><b>pre: </b>codice != null </p>
-     * @param codCanzone codice della canzone
+     * @param codice codice della canzone
      * @throws SQLException Un'eccezione che fornisce informazioni su un errore di accesso al database o altri errori.
      * @throws IllegalArgumentException  Un'eccezione che viene lanciata quando il codice della canzone è null o non valido
      * @return true se la canzone esiste, false altrimenti

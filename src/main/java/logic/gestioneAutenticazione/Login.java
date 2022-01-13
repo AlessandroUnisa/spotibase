@@ -24,14 +24,14 @@ import java.sql.SQLException;
 public class Login extends HttpServlet {
 
     /**
-     *
-     * @param request
-     * @param response
-     * @param utenteAPI
-     * @throws SQLException
-     * @throws NoSuchAlgorithmException
-     * @throws IOException
-     * @throws ServletException
+     * Il metodo consente all'utente di accedere alla home della piattaforma nel caso sia gia registrato
+     * @param request oggetto della servlet, che contiene i parametri email e password dell'utente, la sessione corrente
+     * @param response oggetto della servlet, che contiene i parametri della risposta
+     * @param utenteAPI interfaccia  di utenteDAO
+     * @throws SQLException Un'eccezione che fornisce informazioni su un errore di accesso al database o altri errori.
+     * @throws NoSuchAlgorithmException Un'eccezione lanciata quando è richiesto un particolare algoritmo ma che non e disponibile
+     * @throws IOException Un'eccezione lanciata quando si verifica un errore I/O
+     * @throws ServletException Un'eccezione lanciata quando si verifica un errore nella servlet
      */
     public void login(HttpServletRequest request, HttpServletResponse response,UtenteAPI utenteAPI) throws SQLException, NoSuchAlgorithmException, IOException, ServletException {
         Utente utenteTemp = new Utente();
@@ -64,11 +64,13 @@ public class Login extends HttpServlet {
     }
 
     /**
-     *
-     * @param request
-     * @param response
-     * @throws ServletException
-     * @throws IOException
+     * Il metodo ereditato dalla classe HttpServlet che esplicita i parametri della request e permette di accedere
+     * alla pagina di login nel caso in cui l'utente non sia loggato, altrimenti alla home
+     * @param request oggetto della servlet che permette di settare la codifica dei caratteri della richiesta, verificare
+     *                che l'utente sia loggato
+     * @param response oggetto della servlet che permette di settare la codifica dei caratteri della risposta
+     * @throws ServletException Un'eccezione lanciata quando si verifica un errore nella servlet
+     * @throws IOException Un'eccezione lanciata quando si verifica un errore I/O
      */
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
@@ -82,11 +84,13 @@ public class Login extends HttpServlet {
     }
 
     /**
-     *
-     * @param request
-     * @param response
-     * @throws ServletException
-     * @throws IOException
+     * Il metodo ereditato dalla classe HttpServlet che chiama il metodo login
+     * @param request oggetto della servlet permette di settare la codifica dei caratteri della richiesta
+     * @param response oggetto della servlet che permette di settare la codifica dei caratteri della risposta
+     * @throws ServletException Un'eccezione lanciata quando si verifica un errore nella servlet
+     * @throws IOException Un'eccezione lanciata quando si verifica un errore I/O
+     * @throws  SQLException Un'eccezione che fornisce informazioni su un errore di accesso al database o altri errori.
+     * @throws NoSuchAlgorithmException Un'eccezione lanciata quando è richiesto un particolare algoritmo ma che non e disponibile
      */
     @Override
     @Generated

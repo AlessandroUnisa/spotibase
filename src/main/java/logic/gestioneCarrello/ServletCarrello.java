@@ -29,11 +29,25 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
 @Target({TYPE, METHOD})
 @interface Generated {
 }
+
+/**Questa classe permette di compiere operazioni sul carrello
+ * @see HttpServlet fornisce l'interfaccia per creare una servlet
+ * @version 1.0
+ */
 @WebServlet(name = "ServletCarrello", value = "/carrello")
 public class ServletCarrello extends HttpServlet {
 
-
+    /**
+     * Il metodo permette di visualizzare il carrello con il totale, le canzoni e album inseriti
+     * @param request oggetto della servlet che permette di prelevare la sessione e settare totale, canzoni e album del
+     *                carrello
+     * @param canzoneAPI interfaccia di CanzoneDAO
+     * @param acquistoAPI interfaccia di AcquistoDAO
+     * @param albumDAO interfaccia di AlbumDAO
+     * @throws SQLException Un'eccezione che fornisce informazioni su un errore di accesso al database o altri errori.
+     */
     public void visualizzaCarrello(HttpServletRequest request, CanzoneAPI canzoneAPI, AcquistoAPI acquistoAPI, AlbumDAO albumDAO) throws SQLException {
+
         HttpSession session = request.getSession(true);
 
         if(session.getAttribute("listCart")==null)
@@ -74,6 +88,11 @@ public class ServletCarrello extends HttpServlet {
 
     }
 
+    /**
+     * Il metodo consente di eliminare un oggetto dal carrello, identificato da un codice
+     * @param request oggetto della servlet che consente di prelevare il codice della canzone da eliminare e la
+     *                sessione corrente
+     */
     @Generated
     public void eliminaDalCarrello(HttpServletRequest request){
         String codice = request.getParameter("del"); //viene settato se viene richiesta la cancellazione di un elemento
@@ -83,6 +102,14 @@ public class ServletCarrello extends HttpServlet {
         }
     }
 
+    /**
+     * Il metodo ereditato dalla classe HttpServlet che esplicita i parametri della request e permette di visualizzare
+     * il carrello
+     * @param request oggetto della servlet che permette di settare la codifica dei caratteri
+     * @param response oggetto della servlet che contiene la risposta
+     * @throws ServletException Un'eccezione lanciata quando si verifica un errore nella servlet
+     * @throws IOException Un'eccezione lanciata quando si verifica un errore I/O
+     */
     @Override
     @Generated
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
@@ -102,6 +129,14 @@ public class ServletCarrello extends HttpServlet {
         request.getRequestDispatcher("WEB-INF/views/carrello/carrello.jsp").forward(request,response);
     }
 
+    /**
+     * Il metodo consente di effettuare un acquisto
+     * @param request oggetto della servlet che preleva la sessione , la username e l'oggetto carrello per eliminarne
+     *                gli elementi
+     * @param acquistoAPI interfaccia Dao di Acquisto
+     * @param albumDAO interfaccia Dao di Album
+     * @throws SQLException Un'eccezione che fornisce informazioni su un errore di accesso al database o altri errori
+     */
     public void acquisto(HttpServletRequest request, AcquistoAPI acquistoAPI, AlbumDAO albumDAO) throws SQLException {
         if(request.getSession(true).getAttribute("isLogged")!=null) {
             TreeSet<String> codici = (TreeSet<String>) request.getSession(false).getAttribute("listCart");
@@ -121,12 +156,19 @@ public class ServletCarrello extends HttpServlet {
 
     }
 
+    /**
+     * Il metodo ereditato dalla classe HttpServlet che chiama il metodo acquisto
+     * @param request oggetto della servlet permette di settare la codifica dei caratteri della richiesta
+     * @param response oggetto della servlet che permette di settare la codifica dei caratteri della risposta
+     * @throws ServletException Un'eccezione lanciata quando si verifica un errore nella servlet
+     * @throws IOException Un'eccezione lanciata quando si verifica un errore I/O
+     */
     @Override
     @Generated
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
        //acquisto
         request.setCharacterEncoding("utf-8");
-      //  response.setCharacterEncoding("utf-8");
+      //response.setCharacterEncoding("utf-8");
         try {
             AcquistoAPI acquistoAPI = new AcquistoDAO();
             acquisto(request,acquistoAPI,new AlbumDAO());

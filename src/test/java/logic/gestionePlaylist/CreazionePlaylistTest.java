@@ -78,7 +78,6 @@ public class CreazionePlaylistTest {
         Mockito.when(playlistAPI.isPresent(titolo,username,utenteAPI)).thenReturn(true);
 
         assertThrows(IllegalArgumentException.class,() ->servletPlaylist.creaPlaylist(request,response,playlistAPI));
-        //assertEquals(true,playlistAPI.isPresent(titolo,username,utenteAPI));
     }
 
     @Test
