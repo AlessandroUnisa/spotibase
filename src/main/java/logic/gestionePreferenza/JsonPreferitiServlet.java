@@ -34,9 +34,25 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
 @interface Generated {
 }
 
+/**Questa classe viene utilizzata per aggiungere o rimuovere una preferenza
+ * @version 1.0
+ * @see HttpServlet fornisce l'interfaccia per creare una servlet
+ */
 @WebServlet(name = "jsonPreferitiServlet", value = "/jsonPreferitiServlet")
 public class JsonPreferitiServlet extends HttpServlet {
 
+    /** Questo metodo si occupa di settare la preferenza per una canzone e anche rimuoverla nel caso già ci sia
+     * @param username username dell'utente che ha espresso la preferenza alla canzone
+     * @param codice codice della canzone
+     * @param preferenzaAPI viene utilizzato per verificare se per quella canzone è stata già espressa la preferenza
+     * @param obj oggetto json per aggiornare in tempo reale l'icona per notificare la presenza o assenza della canzone
+     * @throws SQLException Un'eccezione che fornisce informazioni su un errore di accesso al database o altri errori.
+     * @throws OggettoGiaPresenteException Un'eccezine che viene lancita quando l'oggetto già è presente
+     * @throws IllegalArgumentException  Un'eccezione che viene lanciata quando la preferenza è null o non valida
+     * @throws OggettoNonInseritoException Un'eccezione che viene lanciata quando l'oggetto preferenza non è stato inserito
+     * @throws OggettoNonCancellatoException Un'eccezione che viene lanciata quando l'oggetto non può essere cancellato
+     * @throws OggettoNonTrovatoException Un'eccezione che viene lanciata quando l'acquisto non è stato trovato nel db
+     */
     public void setPreferenzaCanzone(String username, String codice,PreferenzaAPI preferenzaAPI, JSONObject obj) throws SQLException {
 
         System.out.println(username);
@@ -92,6 +108,13 @@ public class JsonPreferitiServlet extends HttpServlet {
         else obj.put("flag", albumDAO.doInsertPreferenza(codice,username));
     }
 
+    /** Questo metodo viene utilizzato per prendere i parametri dalla request e capire che tipo di preferenza è stata espressa, se per una canzone o album o artista
+     * @param request viene utilizzata per prendere i parametri tipo della preferenza e il codice della canzone e anche dalla session l'username dell'utente
+     * @param response viene utilizzata per inoltrare l'oggetto json
+     * @throws ServletException Un'eccezione lanciata quando c'è un problema nella servlet
+     * @throws IOException Un' eccezione che viene lanciata quando c'è un errore di I/O
+     * @throws SQLException Un'eccezione che fornisce informazioni su un errore di accesso al database o altri errori.
+     */
     @Override
     @Generated
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {

@@ -35,7 +35,12 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
 }
 @WebServlet(name = "ServletPlaylist", value = "/playlist/*")
 public class ServletPlaylist extends HttpServlet {
-
+    /** Questo metodo viene utilizzato per cancellare una canzone dalla playlist
+     *
+     * @param request contiene il codice della canzone da cancellare, nome della playlist e dalla sessione lo username dell'utente
+     * @param playlistAPI interfaccia di playlistDAO
+     * @throws SQLException Un'eccezione che fornisce informazioni su un errore di accesso al database o altri errori.
+     */
     @Generated
     public void cancellaCanzone(HttpServletRequest request,PlaylistAPI playlistAPI) throws SQLException {
         String codiceDel = request.getParameter("del"); //cancellazione canzone
@@ -46,6 +51,16 @@ public class ServletPlaylist extends HttpServlet {
         }
     }
 
+    /** Questo metodo mostra la playlist dell'utente
+     *
+     * @param request serve per prendere i parametri come il nome della playlist e dalla sessione verificare se l'utente è loggato oppure no
+     * @param playlistAPI interfaccia di playlistDAO
+     * @param canzoneAPI interfaccia di canzoneDAO
+     * @param acquistoAPI interfaccia di acquistoDAO
+     * @param artistaDAO interfaccia di artistaDAO
+     * @return oggetto playlist
+     * @throws SQLException Un'eccezione che fornisce informazioni su un errore di accesso al database o altri errori.
+     */
     public Playlist showPlaylist(HttpServletRequest request,  PlaylistAPI playlistAPI,CanzoneAPI canzoneAPI,AcquistoAPI acquistoAPI,ArtistaDAO artistaDAO) throws SQLException {
         String nomePlaylist = request.getParameter("name");
         String username = (String) request.getSession(true).getAttribute("username");
@@ -74,6 +89,13 @@ public class ServletPlaylist extends HttpServlet {
         return playlist;
     }
 
+    /** Questo metodo viene utilizzato per visualizzare la jsp della playlist
+     * @param request viene passata la metodo showPlaylist e cnacella canzone
+     * @param response  viene passata per effettuare il forward
+     * @throws ServletException Un'eccezione lanciata quando c'è un problema nella servlet
+     * @throws IOException Un' eccezione che viene lanciata quando c'è un errore di I/O
+     * @throws SQLException Un'eccezione che fornisce informazioni su un errore di accesso al database o altri errori.
+     */
     @Override
     @Generated
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
@@ -93,6 +115,10 @@ public class ServletPlaylist extends HttpServlet {
         request.getRequestDispatcher("WEB-INF/views/playlist/playlist.jsp").forward(request,response);
     }
 
+    /** Questo metodo viene utilizzare per cancellare la playlist
+     * @param request per prendere lo username dalla sessione e la canzone da canellare
+     * @throws SQLException Un'eccezione che fornisce informazioni su un errore di accesso al database o altri errori.
+     */
     @Generated
     private void cancellaPlaylist(HttpServletRequest request) throws SQLException {
         String username = (String) request.getSession(false).getAttribute("username");
@@ -101,6 +127,15 @@ public class ServletPlaylist extends HttpServlet {
         playlistAPI.doDelete(titolo+";"+username);
     }
 
+    /** Questo metodo viene utilizzato per creare una nuova playlist
+     *
+     * @param request viene utilizzata per prendere lo username dell'utente e il titolo della playlist
+     * @param response per fare la redirect nel caso di errore oppure in caso di successo
+     * @param playlistAPI interfaccia di playlistDAO
+     * @throws IOException Un' eccezione che viene lanciata quando c'è un errore di I/O
+     * @throws SQLException Un'eccezione che fornisce informazioni su un errore di accesso al database o altri errori.
+     * @throws IllegalArgumentException  Un'eccezione che viene lanciata quando il titolo o la nota è null o non valida
+     */
     public void creaPlaylist(HttpServletRequest request, HttpServletResponse response,PlaylistAPI playlistAPI) throws SQLException, IOException {
         String username = (String) request.getSession(false).getAttribute("username");
         String titolo = request.getParameter("titolo");
@@ -160,6 +195,14 @@ public class ServletPlaylist extends HttpServlet {
         }
     }
 
+    /** Questo metodo in base alla path si cancella o crea una playlist
+     *
+     * @param request utilizzata per prenere la path
+     * @param response utilizzata per creaPlaylist
+     * @throws IOException Un' eccezione che viene lanciata quando c'è un errore di I/O
+     * @throws ServletException Un'eccezione lanciata quando c'è un problema nella servlet
+     * @throws SQLException Un'eccezione che fornisce informazioni su un errore di accesso al database o altri errori.
+     */
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         String path = request.getPathInfo();
