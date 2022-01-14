@@ -5,7 +5,9 @@ import data.utils.Dao;
 import java.security.NoSuchAlgorithmException;
 import java.sql.SQLException;
 import java.util.List;
-
+/**Questa classe rappresenta l'interfaccia utlizzata dall'utenteDAO e implementata per rispettare il facade pattern
+ *
+ */
 /**
  * @se
  */

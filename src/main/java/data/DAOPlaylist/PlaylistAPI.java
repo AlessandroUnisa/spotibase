@@ -7,7 +7,9 @@ import data.utils.Dao;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
-
+/**Questa classe rappresenta l'interfaccia utlizzata dalla playlist e implementata per rispettare il facade pattern
+ *
+ */
 public interface PlaylistAPI extends Dao<Playlist> {
     List<Playlist> doRetrievePlaylistByUtente(String username, UtenteAPI utenteAPI) throws SQLException;
     void doInsertSong(String username, String titoloPlay, String codCanzone, UtenteAPI utenteAPI, CanzoneAPI canzoneAPI,

@@ -1,5 +1,7 @@
 package data.DAOPreferenza;
-
+/**Questa classe rappresenta il bean della preferenza
+ *
+ */
 public class Preferenza {
     private String codCanzone, codUtente;
 

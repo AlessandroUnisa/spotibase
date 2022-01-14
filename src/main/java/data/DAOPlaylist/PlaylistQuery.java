@@ -1,5 +1,7 @@
 package data.DAOPlaylist;
-
+/**Questa classe contiene le query rigurdante le playlist
+ *
+ */
 public abstract class PlaylistQuery {
     public static String getQueryPlaylistSave(){
         return "INSERT INTO playlist (titolo,username,note) VALUES(?,?,?);";

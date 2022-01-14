@@ -1,7 +1,9 @@
 package data.DAOUtente;
 
 import java.util.regex.Pattern;
-
+/**Questa classe permette di validare l'email e password di un utente tramite le regex
+ *
+ */
 public class Validator {
     private static final Pattern MAIL_ADMIN = Pattern.compile("^[a-zA-Z0-9.!#$%&’*+/=?^_`{|}~-]+@spotibase.it");
     private static final Pattern MAIL_USER = Pattern.compile("^[a-zA-Z0-9.!#$%&’*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\\.[a-zA-Z0-9-]+)*$");

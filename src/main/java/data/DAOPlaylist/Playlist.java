@@ -17,7 +17,9 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
 import static java.lang.annotation.ElementType.METHOD;
 import static java.lang.annotation.ElementType.TYPE;
 import static java.lang.annotation.RetentionPolicy.RUNTIME;
-
+/**Questa classe rappresenta il bean della playlist
+ *
+ */
 public class Playlist {
 	private String titolo;
 	private String note;

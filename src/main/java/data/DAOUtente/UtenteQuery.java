@@ -1,5 +1,7 @@
 package data.DAOUtente;
-
+/**Questa classe contiene le query rigurdante l'utente
+ *
+ */
 public abstract class UtenteQuery {
     public static String getQueryFetchPrefPlaylistAttByUsername(){
         return "SELECT ALB.*, CAN.*, ART.*, PLA.*, ATT.* FROM " +

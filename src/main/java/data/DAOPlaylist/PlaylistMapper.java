@@ -2,7 +2,9 @@ package data.DAOPlaylist;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
-
+/**Questa classe prelevare i campi dal db e creare l'oggetto playlist
+ *
+ */
 public class PlaylistMapper {
     public Playlist map(ResultSet rs) throws SQLException {
         Playlist playlist = new Playlist();

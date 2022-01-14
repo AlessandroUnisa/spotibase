@@ -12,6 +12,9 @@ import java.security.NoSuchAlgorithmException;
 import java.sql.Connection;
 import java.util.List;
 
+/**Questa classe rappresenta il bean l'utente
+ *
+ */
 public class Utente {
 	private String username;
 	private String password;
