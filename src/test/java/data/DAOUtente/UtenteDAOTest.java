@@ -198,24 +198,39 @@ public class UtenteDAOTest {
         truncateUtente();
     }
 
-
+/*va fatto test black box sui metodi isValid, guardando la category partition*/
     @Test
-    public void isValidUsernameNotOK(){assertEquals(false,utenteDAO.isValidUsername(""));}
+    public void isValidUsernameEmpty(){assertEquals(false,utenteDAO.isValidUsername(" "));}
     @Test
     public void isValidUsernameOK(){assertEquals(true,utenteDAO.isValidUsername("Umberto"));}
 
-    @Test
-    public void isValidEmailNotOK(){assertEquals(false,utenteDAO.isValidEmail(""));}
-    @Test
-    public void isValidEmailOK(){assertEquals(true,utenteDAO.isValidEmail("umberto.dellamonica@gmail.com"));}
+
 
     @Test
-    public void isValidPasswdNotOK(){assertEquals(false,utenteDAO.isValidPasswd(""));}
+    public void isValidEmailEmpty(){assertEquals(false, utenteDAO.isValidEmail(" "));}
+    @Test
+    public void isValidEmailEmptyPrefix(){assertEquals(false, utenteDAO.isValidEmail("@gmail.com"));}
+    @Test
+    public void isValidEmailPrefix(){assertEquals(false, utenteDAO.isValidEmail("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa@gmail.com"));}
+    @Test
+    public void isValidEmailEmptyPostfix(){assertEquals(false, utenteDAO.isValidEmail("marioRossi@"));}
+    @Test
+    public void isValidEmailEmptyPostfixLenght(){assertEquals(false, utenteDAO.isValidEmail("antonio73@aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa.com"));}
+    @Test
+    public void isValidEmailNoChiocciola(){assertEquals(false, utenteDAO.isValidEmail("antonio73gmail.com"));}
+
+
+
+    @Test
+    public void isValidPasswdNoLetteraMaiuscola(){assertEquals(false,utenteDAO.isValidPasswd("dddd9dddd"));}
     @Test
     public void isValidPasswdOK(){assertEquals(true,utenteDAO.isValidPasswd("umBerto9"));}
-
-
-
+    @Test
+    public void isValidPasswdNoNumero(){assertEquals(false,utenteDAO.isValidPasswd("umBerto"));}
+    @Test
+    public void isValidPasswdNoLenght(){assertEquals(false,utenteDAO.isValidPasswd("pippo"));}
+    @Test
+    public void isValidPasswdNoMinuscola(){assertEquals(false,utenteDAO.isValidPasswd("PLUTO"));}
 
     private Utente insertUtente() throws NoSuchAlgorithmException {
         Utente user=new Utente();
@@ -224,11 +239,6 @@ public class UtenteDAOTest {
         user.setPassword("ciao2");
         return user;
     }
-
-
-
-
-
 
     @After
     public void tearDown() throws SQLException {

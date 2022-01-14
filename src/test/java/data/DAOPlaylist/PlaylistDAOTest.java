@@ -268,8 +268,8 @@ public class PlaylistDAOTest {
     }
 
     @Test
-    public void isValidTitoloNullTest() throws SQLException{
-        assertEquals(false, playlistDAO.isValidTitolo(""));
+    public void isValidTitoloEpty() throws SQLException{
+        assertEquals(false, playlistDAO.isValidTitolo(" "));
     }
 
     @Test
@@ -282,7 +282,10 @@ public class PlaylistDAOTest {
     public void isValidNotaNullTest() throws SQLException{
         assertEquals(true, playlistDAO.isValidNota(null));
     }
-
+    @Test
+    public void isValidNotaEmpty() throws SQLException{
+        assertEquals(false, playlistDAO.isValidNota("  "));
+    }
     @Test
     public void isValidNotaOkTest() throws SQLException{
         assertEquals(true, playlistDAO.isValidNota("nota"));

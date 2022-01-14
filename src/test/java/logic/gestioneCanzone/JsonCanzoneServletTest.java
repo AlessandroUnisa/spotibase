@@ -100,16 +100,7 @@ public class JsonCanzoneServletTest {
 
     @After
     public void tearDown(){
-        jsonCanzoneServlet = null;
-        request = null;
-        response = null;
-        session = null;
-        codCanzoni = null;
-        artisti = null;
-        preferenzaAPI = null;
-        canzoneAPI = null;
-        canzone = null;
-        code = null;
+
     }
 
 }
