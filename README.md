@@ -3,7 +3,9 @@
 ## Introduzione
 Spotibase è una piattaforma per la riproduzione di brani, inoltre permette l'acquisto di canzoni e la gestione delle playlist. 
 
-
+## Documentation
+ - Il javadoc del progetto è presente al seguente link - [JavaDoc](https://gagliardenicolapio.github.io/spotibase/javadoc/)
+ - Il report di JaCoco è presente al seguente link - [Jacoco](https://gagliardenicolapio.github.io/spotibase/jacoco/) 
 ## Autori
  - Gagliarde Nicolapio - [GagliardeNicolapio](https://github.com/GagliardeNicolapio).
  - Alessandro Aquino - [AlessandroUnisa](https://github.com/AlessandroUnisa).
