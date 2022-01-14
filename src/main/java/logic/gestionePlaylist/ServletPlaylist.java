@@ -94,7 +94,6 @@ public class ServletPlaylist extends HttpServlet {
      * @param response  viene passata per effettuare il forward
      * @throws ServletException Un'eccezione lanciata quando c'è un problema nella servlet
      * @throws IOException Un' eccezione che viene lanciata quando c'è un errore di I/O
-     * @throws SQLException Un'eccezione che fornisce informazioni su un errore di accesso al database o altri errori.
      */
     @Override
     @Generated
@@ -200,7 +199,6 @@ public class ServletPlaylist extends HttpServlet {
      * @param response utilizzata per creaPlaylist
      * @throws IOException Un' eccezione che viene lanciata quando c'è un errore di I/O
      * @throws ServletException Un'eccezione lanciata quando c'è un problema nella servlet
-     * @throws SQLException Un'eccezione che fornisce informazioni su un errore di accesso al database o altri errori.
      */
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {

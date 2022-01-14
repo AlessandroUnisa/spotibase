@@ -89,8 +89,6 @@ public class Login extends HttpServlet {
      * @param response oggetto della servlet che permette di settare la codifica dei caratteri della risposta
      * @throws ServletException Un'eccezione lanciata quando si verifica un errore nella servlet
      * @throws IOException Un'eccezione lanciata quando si verifica un errore I/O
-     * @throws  SQLException Un'eccezione che fornisce informazioni su un errore di accesso al database o altri errori.
-     * @throws NoSuchAlgorithmException Un'eccezione lanciata quando è richiesto un particolare algoritmo ma che non e disponibile
      */
     @Override
     @Generated

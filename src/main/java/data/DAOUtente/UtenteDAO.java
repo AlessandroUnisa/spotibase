@@ -221,7 +221,7 @@ public class UtenteDAO implements UtenteAPI{
     /** Ritorna tutti gli utenti*/
     @Generated
     public List<Utente> doRetrieveAllUtenti() throws NoSuchAlgorithmException, SQLException {
-        PreparedStatement st = connection.prepareStatement("SELECT * FROM utente;");
+        PreparedStatement st = connection.prepareStatement("SELECT * FROM utente UTE;");
         ResultSet rs = st.executeQuery();
         ArrayList<Utente> lista = new ArrayList<>();
         while(rs.next())

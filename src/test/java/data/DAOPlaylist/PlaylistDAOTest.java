@@ -280,7 +280,7 @@ public class PlaylistDAOTest {
 
     @Test
     public void isValidNotaNullTest() throws SQLException{
-        assertEquals(false, playlistDAO.isValidNota(""));
+        assertEquals(true, playlistDAO.isValidNota(null));
     }
 
     @Test

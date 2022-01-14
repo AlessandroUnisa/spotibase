@@ -113,7 +113,6 @@ public class JsonPreferitiServlet extends HttpServlet {
      * @param response viene utilizzata per inoltrare l'oggetto json
      * @throws ServletException Un'eccezione lanciata quando c'è un problema nella servlet
      * @throws IOException Un' eccezione che viene lanciata quando c'è un errore di I/O
-     * @throws SQLException Un'eccezione che fornisce informazioni su un errore di accesso al database o altri errori.
      */
     @Override
     @Generated

@@ -100,7 +100,6 @@ public class Registrazione extends HttpServlet {
      * alla pagina di registrazione nel caso in cui l'utente non sia gia in sessione, altrimenti alla home
      * @param request permette di settare la codifica dei caratteri della richiesta, verificare che l'utente sia loggato
      * @param response permette di settare la codifica dei caratteri della risposta
-     * @throws SQLException Un'eccezione che fornisce informazioni su un errore di accesso al database o altri errori.
      * @throws IOException Un'eccezione lanciata quando si verifica un errore I/O
      */
     @Override
@@ -120,8 +119,6 @@ public class Registrazione extends HttpServlet {
      * @param response permette di settare la codifica dei caratteri della risposta
      * @throws ServletException Un'eccezione lanciata quando si verifica un errore nella servlet
      * @throws IOException Un'eccezione lanciata quando si verifica un errore I/O
-     * @throws  SQLException Un'eccezione che fornisce informazioni su un errore di accesso al database o altri errori.
-     * @throws NoSuchAlgorithmException Un'eccezione lanciata quando è richiesto un particolare algoritmo ma che non e disponibile
      */
     @Override
     @Generated

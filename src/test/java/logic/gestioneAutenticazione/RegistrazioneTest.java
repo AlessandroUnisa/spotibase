@@ -52,7 +52,7 @@ public class RegistrazioneTest {
         registrazione.register(request,response,utenteAPI);
 
         assertParametersRequest(email,username,passwd,passwdCheck);
-        assertEquals("L'email inserita non è valida",request.getAttribute("errEmail"));
+        assertEquals("Email non valida",request.getAttribute("errEmail"));
     }
     @Test
     public void registerUsernameNonRispettaFormatoTest() throws SQLException, NoSuchAlgorithmException, ServletException, IOException {

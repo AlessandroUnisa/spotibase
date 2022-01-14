@@ -8,9 +8,7 @@ import java.util.List;
 /**Questa classe rappresenta l'interfaccia utlizzata dall'utenteDAO e implementata per rispettare il facade pattern
  *
  */
-/**
- * @se
- */
+
 public interface UtenteAPI extends Dao<Utente> {
 
     Utente doGet(String email, String password)  throws SQLException;

@@ -57,7 +57,6 @@ public class JsonPlaylistServlet extends HttpServlet {
      * @param response utlizzata per mandare i dati relativi in output di insetCanzone
      * @throws ServletException Un'eccezione lanciata quando c'è un problema nella servlet
      * @throws IOException Un' eccezione che viene lanciata quando c'è un errore di I/O
-     * @throws SQLException Un'eccezione che fornisce informazioni su un errore di accesso al database o altri errori.
      */
     @Override
     @Generated
@@ -67,11 +66,11 @@ public class JsonPlaylistServlet extends HttpServlet {
         response.setCharacterEncoding("utf-8");
 
         response.setContentType("application/json");
-
+        UtenteAPI utenteAPI = new UtenteDAO();
         PlaylistAPI playlistAPI = new PlaylistDAO();
         if(request.getParameter("cod") != null && request.getParameter("cod").equals("check")){
             try {
-                response.getWriter().println(checkTitoloGiaPresente(request,playlistAPI));
+                response.getWriter().println(checkTitoloGiaPresente(request,playlistAPI,utenteAPI));
             } catch (SQLException throwables) {
                 throwables.printStackTrace();
             }
@@ -79,7 +78,7 @@ public class JsonPlaylistServlet extends HttpServlet {
         else{
             try {
                 CanzoneAPI canzoneAPI = new CanzoneDAO();
-                UtenteAPI utenteAPI = new UtenteDAO();
+
                 response.getWriter().println(insertCanzone(request,canzoneAPI,playlistAPI, utenteAPI));
             } catch (SQLException throwables) {
                 throwables.printStackTrace();
@@ -99,10 +98,10 @@ public class JsonPlaylistServlet extends HttpServlet {
      * @throws SQLException Un'eccezione che fornisce informazioni su un errore di accesso al database o altri errori.
      * @return l'oggetto json che contiene un flag, flag=true se la playlist è presente, flag=false altrimenti
      */
-    public JSONObject checkTitoloGiaPresente(HttpServletRequest request, PlaylistAPI playlistAPI) throws SQLException {
+    public JSONObject checkTitoloGiaPresente(HttpServletRequest request, PlaylistAPI playlistAPI,  UtenteAPI utenteAPI) throws SQLException {
         String username = (String) request.getSession(false).getAttribute("username");
         JSONObject object = new JSONObject();
-        UtenteAPI utenteAPI = new UtenteDAO();
+
         String titolo = request.getParameter("titolo");
         System.out.println(titolo+"-  -"+ username);
         if(playlistAPI.isPresent(titolo, username, utenteAPI)){
