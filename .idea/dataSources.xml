@@ -1,12 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="DataSourceManagerImpl" format="xml" multifile-model="true">
-    <data-source source="LOCAL" name="spotibase@localhost" uuid="df77abee-112d-4b41-8190-63bf660bb9d1">
+    <data-source source="LOCAL" name="spotibasetesting@localhost" uuid="f96bfffa-c020-4403-960e-36535bf5455c">
       <driver-ref>mysql.8</driver-ref>
       <synchronize>true</synchronize>
       <jdbc-driver>com.mysql.cj.jdbc.Driver</jdbc-driver>
-      <jdbc-url>jdbc:mysql://localhost:3306/spotibase</jdbc-url>
+      <jdbc-url>jdbc:mysql://localhost:3306/spotibasetesting</jdbc-url>
       <working-dir>$ProjectFileDir$</working-dir>
+      <driver-properties>
+        <property name="serverTimezone" value="UTC" />
+      </driver-properties>
     </data-source>
   </component>
 </project>

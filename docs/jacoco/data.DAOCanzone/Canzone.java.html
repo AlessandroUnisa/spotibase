@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="it"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>Canzone.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">spotibase4</a> &gt; <a href="index.source.html" class="el_package">data.DAOCanzone</a> &gt; <span class="el_source">Canzone.java</span></div><h1>Canzone.java</h1><pre class="source lang-java linenums">package data.DAOCanzone;
+
+import data.Album.Album;
+import data.Artista.Artista;
+
+import java.util.List;
+import java.util.Objects;
+
+<span class="fc" id="L9">public class Canzone {</span>
+	private String codice;
+	private String titolo;
+	private double durata;
+	private int anno;
+	private double prezzo;
+	private String pathImg, pathMP3;
+
+	private Album album;
+	private List&lt;Artista&gt; artisti;
+
+	@Override
+	@Generated
+	public boolean equals(Object o) {
+		if (this == o) return true;
+		if (o == null || getClass() != o.getClass()) return false;
+		Canzone canzone = (Canzone) o;
+		return canzone.getCodice().equals(codice);
+	}
+
+	@Override
+	public int hashCode() {
+<span class="nc" id="L31">		return Objects.hash(codice);</span>
+	}
+
+<span class="fc" id="L34">	public Album getAlbum() { return album; }</span>
+
+<span class="fc" id="L36">	public void setAlbum(Album album) { this.album = album; }</span>
+<span class="fc" id="L37">	public List&lt;Artista&gt; getArtisti() {return artisti;}</span>
+
+<span class="fc" id="L39">	public void setArtisti(List&lt;Artista&gt; artisti) {this.artisti = artisti;}</span>
+
+	public String getPathImg() {
+<span class="fc" id="L42">		return pathImg;</span>
+	}
+
+	public void setPathImg(String pathImg) {
+<span class="fc" id="L46">		this.pathImg = pathImg;</span>
+<span class="fc" id="L47">	}</span>
+
+	public String getPathMP3() {
+<span class="fc" id="L50">		return pathMP3;</span>
+	}
+
+	public void setPathMP3(String pathMP3) {
+<span class="fc" id="L54">		this.pathMP3 = pathMP3;</span>
+<span class="fc" id="L55">	}</span>
+
+	public String getCodice() {
+<span class="fc" id="L58">		return codice;</span>
+	}
+
+	public void setCodice(String codice) {
+<span class="fc" id="L62">		this.codice = codice;</span>
+<span class="fc" id="L63">	}</span>
+
+	public String getTitolo() {
+<span class="fc" id="L66">		return titolo;</span>
+	}
+
+	public void setTitolo(String titolo) {
+<span class="fc" id="L70">		this.titolo = titolo;</span>
+<span class="fc" id="L71">	}</span>
+
+	public double getDurata() {
+<span class="fc" id="L74">		return durata;</span>
+	}
+
+	public void setDurata(double durata) {
+<span class="fc" id="L78">		this.durata = durata;</span>
+<span class="fc" id="L79">	}</span>
+
+	public int getAnno() {
+<span class="fc" id="L82">		return anno;</span>
+	}
+
+	public void setAnno(int anno) {
+<span class="fc" id="L86">		this.anno = anno;</span>
+<span class="fc" id="L87">	}</span>
+
+	public double getPrezzo() {
+<span class="fc" id="L90">		return prezzo;</span>
+	}
+
+	public void setPrezzo(double prezzo) {
+<span class="fc" id="L94">		this.prezzo = prezzo;</span>
+<span class="fc" id="L95">	}</span>
+
+	@Override
+	public String toString() {
+<span class="fc" id="L99">		return &quot;Canzone{&quot; +</span>
+				&quot;codice='&quot; + codice + '\'' +
+				&quot;, titolo='&quot; + titolo + '\'' +
+				&quot;, durata=&quot; + durata +
+				&quot;, anno=&quot; + anno +
+				&quot;, prezzo=&quot; + prezzo +
+				&quot;, pathImg='&quot; + pathImg + '\'' +
+				&quot;, pathMP3='&quot; + pathMP3 + '\'' +
+				&quot;, album=&quot; + album +
+				&quot;, artisti=&quot; + artisti +
+				'}';
+	}
+
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.2.201808211720</span></div></body></html>

@@ -1,0 +1,485 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="it"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>CanzoneDAO.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">spotibase4</a> &gt; <a href="index.source.html" class="el_package">data.DAOCanzone</a> &gt; <span class="el_source">CanzoneDAO.java</span></div><h1>CanzoneDAO.java</h1><pre class="source lang-java linenums">package data.DAOCanzone;
+
+
+import data.Exceptions.OggettoGiaPresenteException;
+import data.Exceptions.OggettoNonCancellatoException;
+import data.Exceptions.OggettoNonInseritoException;
+import data.Exceptions.OggettoNonTrovatoException;
+import data.utils.SingletonJDBC;
+import data.Artista.Artista;
+import data.Artista.ArtistaMapper;
+
+import java.lang.annotation.Documented;
+import java.lang.annotation.Retention;
+import java.lang.annotation.Target;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
+import java.util.List;
+
+import static java.lang.annotation.ElementType.METHOD;
+import static java.lang.annotation.ElementType.TYPE;
+import static java.lang.annotation.RetentionPolicy.RUNTIME;
+
+@Documented
+@Retention(RUNTIME)
+@Target({TYPE, METHOD})
+@interface Generated {
+}
+/**Questa classe permette  di gestire le operazioni relative ai dati persistenti della canzone.
+ * @version 1.0
+ * @see CanzoneAPI interfaccia della classe
+ * */
+public class CanzoneDAO implements CanzoneAPI {
+    
+    Connection connection;
+<span class="nc" id="L39">    public CanzoneDAO(){</span>
+<span class="nc" id="L40">        this.connection = SingletonJDBC.getConnection();</span>
+<span class="nc" id="L41">    }</span>
+<span class="fc" id="L42">    public CanzoneDAO(Connection connection) {</span>
+<span class="fc" id="L43">        this.connection = connection;</span>
+<span class="fc" id="L44">    }</span>
+    //metodi documentati per IS----------------------------------------------------------------------------------------------
+
+
+    /**Questo metodo consente di verificare se la canzone è all’interno del database
+     * &lt;p&gt;&lt;b&gt;pre: &lt;/b&gt;codice != null &lt;/p&gt;
+     * @param codice codice della canzone
+     * @throws SQLException Un'eccezione che fornisce informazioni su un errore di accesso al database o altri errori.
+     * @throws IllegalArgumentException  Un'eccezione che viene lanciata quando il codice della canzone è null o non valido
+     * @return true se la canzone esiste, false altrimenti
+     */
+    public boolean exist(String codice) throws SQLException {
+<span class="fc bfc" id="L56" title="All 2 branches covered.">        if(codice == null)</span>
+<span class="fc" id="L57">            throw new IllegalArgumentException(&quot;codice è null&quot;);</span>
+<span class="fc" id="L58">        PreparedStatement preparedStatement = connection.prepareStatement(&quot;SELECT * FROM canzone CAN WHERE CAN.codice = ?&quot;);</span>
+<span class="fc" id="L59">        preparedStatement.setString(1, codice);</span>
+<span class="fc" id="L60">        return preparedStatement.executeQuery().next();</span>
+    }
+
+
+    /**Questo metodo preleva una canzone salvata nel db
+     * &lt;p&gt;&lt;b&gt;pre:&lt;/b&gt; la chiave != null e presente nel db&lt;/p&gt;
+     * @param chiave la primary key della canzone
+     * @throws SQLException Un'eccezione che fornisce informazioni su un errore di accesso al database o altri errori.
+     * @throws IllegalArgumentException  Un'eccezione che viene lanciata quando la chiave è null o non valida
+     * @throws OggettoNonTrovatoException Un'eccezione che viene lanciata quando la canzone non è stata trovata nel db
+     * @return oggetto canzone
+     * */
+    public Canzone doGet(String chiave) throws SQLException {
+<span class="fc bfc" id="L73" title="All 2 branches covered.">        if(chiave == null)</span>
+<span class="fc" id="L74">            throw new IllegalArgumentException(&quot;chiave è null&quot;);</span>
+
+<span class="fc" id="L76">        PreparedStatement preparedStatement = connection.prepareStatement(&quot;SELECT * FROM canzone CAN WHERE CAN.codice = ?&quot;);</span>
+<span class="fc" id="L77">        preparedStatement.setString(1,chiave);</span>
+<span class="fc" id="L78">        ResultSet resultSet = preparedStatement.executeQuery();</span>
+
+<span class="fc" id="L80">        resultSet.next();</span>
+<span class="fc bfc" id="L81" title="All 2 branches covered.">        if(resultSet.getRow() == 0)</span>
+<span class="fc" id="L82">            throw new OggettoNonTrovatoException(&quot;canzone non trovata nel db&quot;);</span>
+
+<span class="fc" id="L84">        CanzoneMapper mapper = new CanzoneMapper();</span>
+<span class="fc" id="L85">        return mapper.map(resultSet);</span>
+    }
+
+    /** Salva nel DB la canzone
+     * &lt;p&gt;&lt;b&gt;pre: &lt;/b&gt;canzone != null e non deve esistere nel db, il codice della canzone!= null e titolo != null&lt;br&gt;
+     *    &lt;b&gt;post: &lt;/b&gt;canzone presente nel db&lt;/p&gt;
+     * @param canzone la canzone da salvare. Con titolo e codice settati
+     * @throws SQLException Un'eccezione che fornisce informazioni su un errore di accesso al database o altri errori.
+     * @throws IllegalArgumentException  Un'eccezione che viene lanciata quando la canzone o il codice della canzone oppure il titolo della canzone sono null o non validi
+     * @throws OggettoGiaPresenteException  Un'eccezione che viene lanciata quando la canzone  è già presente nel db
+     * @throws OggettoNonInseritoException Un'eccezione che viene lanciata quando la canzone non è stata inserita
+     * */
+    public void doSave(Canzone canzone) throws SQLException {
+<span class="fc bfc" id="L98" title="All 6 branches covered.">        if(canzone == null || canzone.getTitolo() == null || canzone.getCodice() == null)</span>
+<span class="fc" id="L99">            throw new IllegalArgumentException(&quot;canzone o titolo o codice sono null&quot;);</span>
+
+        try{
+<span class="fc" id="L102">            doGet(canzone.getCodice());</span>
+<span class="fc" id="L103">            throw new OggettoGiaPresenteException(&quot;La canzone è gia presente&quot;);</span>
+<span class="fc" id="L104">        }catch (OggettoNonTrovatoException e){</span>
+<span class="fc" id="L105">            PreparedStatement preparedStatement = connection.prepareStatement(&quot;INSERT INTO canzone VALUES (?,?,?,?,?,?,?,?)&quot;);</span>
+<span class="fc" id="L106">            preparedStatement.setString(1,canzone.getCodice());</span>
+<span class="fc" id="L107">            preparedStatement.setInt(2,canzone.getAnno());</span>
+<span class="fc" id="L108">            preparedStatement.setDouble(3,canzone.getDurata());</span>
+<span class="fc" id="L109">            preparedStatement.setString(4,canzone.getTitolo());</span>
+<span class="fc" id="L110">            preparedStatement.setDouble(5,canzone.getPrezzo());</span>
+<span class="fc bfc" id="L111" title="All 2 branches covered.">            if(canzone.getAlbum()==null)</span>
+<span class="fc" id="L112">                preparedStatement.setString(6, null);</span>
+            else
+<span class="fc" id="L114">                preparedStatement.setString(6,canzone.getAlbum().getCodice());</span>
+<span class="fc" id="L115">            preparedStatement.setString(7,canzone.getPathImg());</span>
+<span class="fc" id="L116">            preparedStatement.setString(8,canzone.getPathMP3());</span>
+<span class="pc bpc" id="L117" title="1 of 2 branches missed.">            if(preparedStatement.executeUpdate()!=1)</span>
+<span class="nc" id="L118">                throw new OggettoNonInseritoException(&quot;La canzone non è stata inserita&quot;);</span>
+        }
+<span class="fc" id="L120">    }</span>
+
+
+    /** Elimina la canzone dal DB
+     * &lt;p&gt;&lt;b&gt;pre: &lt;/b&gt;codice della canzone != null e già presente nel db&lt;br&gt;
+     *    &lt;b&gt;post: &lt;/b&gt;canzone eliminata dal db&lt;/p&gt;
+     * @param codCanzone codice della canzone da eliminare
+     * @throws SQLException Un'eccezione che fornisce informazioni su un errore di accesso al database o altri errori.
+     * @throws IllegalArgumentException  Un'eccezione che viene lanciata quando il codice della canzone è null o non valida
+     * @throws OggettoNonCancellatoException  Un'eccezione che viene lanciata quando la canzone non è stata cancellata nel db
+     * */
+    public void doDelete(String codCanzone) throws SQLException {
+<span class="fc bfc" id="L132" title="All 2 branches covered.">        if(codCanzone == null)</span>
+<span class="fc" id="L133">            throw new IllegalArgumentException(&quot;codCanzone è null&quot;);</span>
+
+        try{
+<span class="fc" id="L136">            doGet(codCanzone);</span>
+<span class="fc" id="L137">            PreparedStatement preparedStatement = connection.prepareStatement(&quot;DELETE FROM canzone WHERE codice=?&quot;);</span>
+<span class="fc" id="L138">            preparedStatement.setString(1,codCanzone);</span>
+<span class="pc bpc" id="L139" title="1 of 2 branches missed.">            if(preparedStatement.executeUpdate()!=1)</span>
+<span class="nc" id="L140">                throw new OggettoNonCancellatoException(&quot;La canzone non è stata cancellata&quot;);</span>
+<span class="fc" id="L141">        }catch (OggettoNonTrovatoException e){</span>
+<span class="fc" id="L142">            throw e;</span>
+<span class="fc" id="L143">        }</span>
+<span class="fc" id="L144">    }</span>
+
+
+
+    /**Ritorna la canzone con la lista degli artisti
+     * &lt;p&gt;&lt;b&gt;pre: &lt;/b&gt;codice della canzone!= null &lt;/p&gt;
+     * @param codiceCanzone il codice della canzone da prelevare
+     * @throws SQLException Un'eccezione che fornisce informazioni su un errore di accesso al database o altri errori.
+     * @throws IllegalArgumentException  Un'eccezione che viene lanciata quando il codice della canzone è null o non valido
+     * @throws OggettoNonTrovatoException Un'eccezione che viene lanciata quando la canzone non è stata trovata nel db
+     * @return la canzone con all'interno anche la lista degli artisti
+     * */
+    public Canzone doRetrieveCanzoneWithArtisti(String codiceCanzone) throws SQLException {
+<span class="fc bfc" id="L157" title="All 2 branches covered.">        if(codiceCanzone == null)</span>
+<span class="fc" id="L158">            throw new IllegalArgumentException(&quot;codiceCanzone è null&quot;);</span>
+
+        try{
+<span class="fc" id="L161">            System.out.println(codiceCanzone+&quot;-----------------------&quot;);</span>
+<span class="nc" id="L162">            doGet(codiceCanzone);</span>
+<span class="nc" id="L163">            PreparedStatement statement = connection.prepareStatement(CanzoneQuery.getQueryDoRetrieveCanzoneWithArtisti());</span>
+<span class="nc" id="L164">            statement.setString(1,codiceCanzone);</span>
+<span class="nc" id="L165">            ResultSet resultSet = statement.executeQuery();</span>
+<span class="nc" id="L166">            Canzone canzone=null;</span>
+<span class="nc bnc" id="L167" title="All 2 branches missed.">            if(resultSet.next()){</span>
+<span class="nc" id="L168">                canzone = new CanzoneMapper().map(resultSet);</span>
+<span class="nc" id="L169">                canzone.setArtisti(new ArrayList&lt;&gt;());</span>
+<span class="nc" id="L170">                canzone.getArtisti().add(new ArtistaMapper().map(resultSet));</span>
+<span class="nc bnc" id="L171" title="All 2 branches missed.">                while (resultSet.next())</span>
+<span class="nc" id="L172">                    canzone.getArtisti().add(new ArtistaMapper().map(resultSet));</span>
+            }
+<span class="nc" id="L174">            return canzone;</span>
+<span class="fc" id="L175">        }catch (OggettoNonTrovatoException e){</span>
+<span class="fc" id="L176">            throw e;</span>
+        }
+    }
+
+
+
+
+    //metodi NON documentati per IS----------------------------------------------------------------------------------------------
+
+    /**Ritorna le ultime uscite*/
+    @Generated
+    public List&lt;Canzone&gt; doRetrieveCanzoniUltimeUscite() throws SQLException {
+            PreparedStatement st = connection.prepareStatement(CanzoneQuery.getQueryDoRetriveCanzoniUltimeUscite());
+            ResultSet rs = st.executeQuery();
+            ArrayList&lt;Canzone&gt; lista = new ArrayList&lt;&gt;();
+            while(rs.next())
+                lista.add(new CanzoneMapper().map(rs));
+
+            return lista;
+    }
+
+    /**Ritorna le canzoni con piu preferenze con la lista degli artisti*/
+    @Generated
+    public List&lt;Canzone&gt; doRetrivePopularSongsWithArtista() throws SQLException {
+        PreparedStatement st = connection.prepareStatement(CanzoneQuery.getQueryDoRetrievePopularSongsWithArtista());
+        ResultSet resultSet= st.executeQuery();
+        LinkedHashMap&lt;String,Canzone&gt; mappaCanzone= new LinkedHashMap&lt;&gt;();
+        CanzoneMapper canzoneMapper= new CanzoneMapper();
+        Canzone canzone;
+        ArtistaMapper artistaMapper= new ArtistaMapper();
+        while(resultSet.next()){
+            canzone= canzoneMapper.map(resultSet);
+            if(!mappaCanzone.containsKey(canzone.getCodice())){
+                mappaCanzone.put(canzone.getCodice(),canzone);
+                canzone.setArtisti(new ArrayList&lt;Artista&gt;());
+                canzone.getArtisti().add(artistaMapper.map(resultSet));
+            }else
+                mappaCanzone.get(canzone.getCodice()).getArtisti().add(artistaMapper.map(resultSet));
+
+
+        }
+        return new ArrayList&lt;&gt;(mappaCanzone.values());
+
+    }
+
+    /**Ritorna una lista di canzoni random*/
+    @Generated
+    public List&lt;Canzone&gt; doRetrieveCanzoneRandom() throws SQLException {
+        PreparedStatement st = connection.prepareStatement(CanzoneQuery.getQueryDoRetriveCanzoneRandom());
+        ResultSet rs = st.executeQuery();
+        ArrayList&lt;Canzone&gt; lista = new ArrayList&lt;&gt;();
+        while(rs.next())
+            lista.add(new CanzoneMapper().map(rs));
+
+        return lista;
+    }
+
+
+
+    /**Ritorna i codici delle canzoni preferite dall utente*/
+    @Generated
+    public List&lt;String&gt; doRetrieveaCodiciCanzoniPreferite(String username) throws SQLException {
+        PreparedStatement preparedStatement = connection.prepareStatement(CanzoneQuery.getQueryDoRetrieveCodiciCanzoniPreferite());
+        preparedStatement.setString(1,username);
+        ArrayList&lt;String&gt; codici = new ArrayList&lt;&gt;();
+        ResultSet resultSet = preparedStatement.executeQuery();
+        while (resultSet.next())
+            codici.add(resultSet.getString(&quot;PRE.codiceCanzone&quot;));
+        return codici;
+    }
+
+    @Generated
+   public List&lt;Canzone&gt; doRetrieveSongsByPlaylist(String username, String titoloPlaylist) throws SQLException {
+
+            PreparedStatement st = connection.prepareStatement(CanzoneQuery.getQueryDoRetrieveSongsByPlaylist());
+            String usernameLike = &quot;%&quot;+username+&quot;%&quot;;
+            String titoloLike = &quot;%&quot;+titoloPlaylist+&quot;%&quot;;
+            st.setString(1,usernameLike);
+            st.setString(2,titoloLike);
+            ResultSet rs = st.executeQuery();
+            ArrayList&lt;Canzone&gt; lista = new ArrayList&lt;&gt;();
+            while(rs.next())
+                lista.add(new CanzoneMapper().map(rs));
+
+            return lista;
+    }
+    @Generated
+   public List&lt;Canzone&gt; doRetrieveSongsByAlbum(String codAlbum) throws SQLException {
+        PreparedStatement st = connection.prepareStatement(CanzoneQuery.getQueryDoRetrieveSongsByAlbum());
+        String codAlbumLike = &quot;%&quot;+codAlbum+&quot;%&quot;;
+        st.setString(1,codAlbumLike);
+        ResultSet rs = st.executeQuery();
+        ArrayList&lt;Canzone&gt; lista = new ArrayList&lt;&gt;();
+        while(rs.next())
+            lista.add(new CanzoneMapper().map(rs));
+
+        return lista;
+    }
+    @Generated
+   public List&lt;Canzone&gt; doRetrieveSinglesByArtista(String nomeDArte) throws SQLException {
+        PreparedStatement st = connection.prepareStatement(CanzoneQuery.getQueryDoRetrieveSinglesByArtista());
+        String nomeDArteLike = &quot;%&quot;+nomeDArte+&quot;%&quot;;
+        st.setString(1,nomeDArteLike);
+        ResultSet rs = st.executeQuery();
+        ArrayList&lt;Canzone&gt; lista = new ArrayList&lt;&gt;();
+        while (rs.next())
+            lista.add(new CanzoneMapper().map(rs));
+
+        return lista;
+    }
+
+    /**Ritorna le canzoni dell artista*/
+    @Generated
+   public List&lt;Canzone&gt; doRetrieveSongsByArtista(String nomeDArte) throws SQLException {
+        PreparedStatement st = connection.prepareStatement(CanzoneQuery.getQueryDoRetrieveSongsByArtista());
+        String nomeDArteLike = &quot;%&quot;+nomeDArte+&quot;%&quot;;
+        st.setString(1,nomeDArteLike);
+        ResultSet rs = st.executeQuery();
+        ArrayList&lt;Canzone&gt; lista = new ArrayList&lt;&gt;();
+        while (rs.next())
+            lista.add(new CanzoneMapper().map(rs));
+
+        return lista;
+    }
+
+    /**Ritorna le canzoni con piu preferenze*/
+    @Generated
+   public List&lt;Canzone&gt; doRetrieveCanzonePopular() throws SQLException {
+        PreparedStatement st = connection.prepareStatement(CanzoneQuery.getQueryDoRetrieveCanzonePopular());
+        ResultSet rs = st.executeQuery();
+        ArrayList&lt;Canzone&gt; lista = new ArrayList&lt;&gt;();
+        while(rs.next())
+            lista.add(new CanzoneMapper().map(rs));
+
+        return lista;
+    }
+
+    /** Ritorna la lista di canzoni che hanno quel titolo */
+    @Generated
+   public List&lt;Canzone&gt; doRetrieveByName(String titolo) throws SQLException {
+        PreparedStatement st = connection.prepareStatement(&quot;SELECT * FROM canzone CAN WHERE CAN.titolo LIKE ?&quot;);
+        String titleLike = &quot;%&quot;+titolo+&quot;%&quot;;
+        st.setString(1,titleLike);
+        System.out.println(st.toString());
+        ResultSet rs = st.executeQuery();
+        ArrayList&lt;Canzone&gt; lista = new ArrayList&lt;&gt;();
+        while (rs.next())
+            lista.add(new CanzoneMapper().map(rs));
+
+        return lista;
+   }
+
+
+
+   /** Modifica la canzone */
+   @Generated
+   public boolean doUpdate(Canzone canzone) throws SQLException {
+        PreparedStatement st = connection.prepareStatement(CanzoneQuery.getQueryCanzoneUpdate());
+        st.setString(1,canzone.getTitolo());
+        st.setInt(2,canzone.getAnno());
+        st.setDouble(3,canzone.getDurata());
+        st.setDouble(4,canzone.getPrezzo());
+        st.setString(5,canzone.getCodice());
+        return st.executeUpdate()==1;
+   }
+
+   /** Ritorna tutti le canzoni*/
+   @Generated
+   public List&lt;Canzone&gt; doRetrieveAllCanzoni() throws SQLException {
+        PreparedStatement st = connection.prepareStatement(&quot;SELECT * FROM canzone CAN;&quot;);
+        ResultSet rs = st.executeQuery();
+        ArrayList&lt;Canzone&gt; lista = new ArrayList&lt;&gt;();
+        while(rs.next())
+            lista.add(new CanzoneMapper().map(rs));
+
+        return lista;
+   }
+    @Generated
+   public List&lt;Canzone&gt; doRetrieveAllCanzoni(int offset, int numElements) throws SQLException {
+        PreparedStatement st = connection.prepareStatement(&quot;SELECT * FROM canzone CAN ORDER BY CAN.titolo LIMIT ?,?;&quot;);
+        st.setInt(1,offset);
+        st.setInt(2,numElements);
+        ResultSet rs = st.executeQuery();
+        ArrayList&lt;Canzone&gt; lista = new ArrayList&lt;&gt;();
+        while(rs.next())
+            lista.add(new CanzoneMapper().map(rs));
+
+        return lista;
+   }
+
+   /** Ritorna le canzoni del genere passato*/
+   @Generated
+   public List&lt;Canzone&gt; doRetrieveCanzoneByGenere(String genere) throws SQLException {
+        PreparedStatement ps = connection.prepareStatement(CanzoneQuery.getQueryCanzoneByGenere());
+        ps.setString(1,'%'+genere+'%');
+        List&lt;Canzone&gt; canzoni = new ArrayList&lt;&gt;();
+        ResultSet rs = ps.executeQuery();
+        while (rs.next())
+            canzoni.add(new CanzoneMapper().map(rs));
+
+        return canzoni;
+    }
+    @Generated
+    public List&lt;Canzone&gt; doRetrieveCanzoneByGenere(String genere, String filterSQL, int offset, int numElements) throws SQLException {
+
+        PreparedStatement preparedStatement = connection.prepareStatement(CanzoneQuery.getQueryCanzoneByGenere(filterSQL));
+        preparedStatement.setString(1,genere);
+        preparedStatement.setInt(2,offset);
+        preparedStatement.setInt(3,numElements);
+        ResultSet resultSet = preparedStatement.executeQuery();
+        ArrayList&lt;Canzone&gt; list = new ArrayList&lt;&gt;();
+        CanzoneMapper canzoneMapper = new CanzoneMapper();
+        while(resultSet.next())
+            list.add(canzoneMapper.map(resultSet));
+        return list;
+    }
+
+    /**Ritorna il numero di canzoni nel DB*/
+    @Generated
+   public int doRetrieveNumCanzoni() throws SQLException {
+       PreparedStatement statement = connection.prepareStatement(&quot;SELECT COUNT(*) NUM FROM canzone;&quot;);
+       ResultSet resultSet = statement.executeQuery();
+       if(resultSet.next())
+           return resultSet.getInt(&quot;NUM&quot;);
+       else return 0;
+   }
+   /*devo sapere quante canzoni ho nel database. Se ne tengo 100 e ad ogni pagina ne mosto 10 allora 100/10=10pagine
+   * se pero ne tengo 92 =&gt; 92\10=9.2 arrotondo sempre per eccesso e quindi devo fare 10 pagine
+   * */
+
+    /**Ritorna la somma dei guadagni dalle canzoni acquistate*/
+    @Generated
+    public double doRetrieveTotaleGuadagno() throws SQLException {
+        PreparedStatement st = connection.prepareStatement(CanzoneQuery.getQueryTotaleGuadagni());
+        ResultSet rs = st.executeQuery();
+        if(!rs.next())
+            return 0;
+        else return rs.getDouble(&quot;totale&quot;);
+    }
+
+    /**Ritorna le canzoni piu acquistate*/
+    @Generated
+    public List&lt;Canzone&gt; doRetrieveCanzoniTopBuy() throws SQLException {
+        PreparedStatement preparedStatement = connection.prepareStatement(CanzoneQuery.getQueryDoRetrieveCanzoniTopBuy());
+        ResultSet resultSet = preparedStatement.executeQuery();
+        ArrayList&lt;Canzone&gt; lista = new ArrayList&lt;&gt;();
+        while (resultSet.next())
+            lista.add(new CanzoneMapper().map(resultSet));
+        return lista;
+    }
+
+    /**Ritorna la canzone con quel codice*/
+    @Generated
+    public Canzone doRetrieveCanzoneByCodice(String codice) throws SQLException {
+        PreparedStatement preparedStatement = connection.prepareStatement(CanzoneQuery.getQueryDoRetrieveAlbumByCodice());
+        preparedStatement.setString(1,codice);
+        ResultSet resultSet = preparedStatement.executeQuery();
+        if(resultSet.next())
+            return new CanzoneMapper().map(resultSet);
+        else return null;
+    }
+
+    /**Ritorna la lista di canzoni in base ai codici passati, con la lista artisti*/
+    @Generated
+    public List&lt;Canzone&gt; doRetrieveCanzoniByCodiciWithArtisti(List&lt;String&gt; codici) throws SQLException {
+        PreparedStatement preparedStatement = connection.prepareStatement(CanzoneQuery.getQueryDoRetrieveCanzoniByCodici(codici.size()));
+        for(int i=0; i&lt;codici.size(); i++)
+            preparedStatement.setString(1+i,codici.get(i));
+
+        ResultSet resultSet = preparedStatement.executeQuery();
+        LinkedHashMap&lt;String, Canzone&gt; mappa = new LinkedHashMap&lt;&gt;();
+        while (resultSet.next()){
+            Canzone canzone = new CanzoneMapper().map(resultSet);
+            if(!mappa.containsKey(canzone.getCodice())){
+                canzone.setArtisti(new ArrayList&lt;&gt;());
+                mappa.put(canzone.getCodice(), canzone);
+                canzone.getArtisti().add(new ArtistaMapper().map(resultSet));
+            }else mappa.get(canzone.getCodice()).getArtisti().add(new ArtistaMapper().map(resultSet));
+        }
+        return new ArrayList&lt;&gt;(mappa.values());
+    }
+
+
+/*
+
+    public boolean doInsertPreferenza(String codice, String username){
+        try(Connection connection = ConPool.getConnection()){
+            PreparedStatement preparedStatement = connection.prepareStatement(CanzoneQuery.getQueryDoInsertPreferenza());
+            preparedStatement.setString(1,codice);
+            preparedStatement.setString(2,username);
+            return preparedStatement.executeUpdate()!=0;
+        }catch (SQLException e){
+            throw new RuntimeException(e);
+        }
+    }
+
+
+    public boolean doRemovePreferenza(String codice, String username){
+        try(Connection connection = ConPool.getConnection()){
+            PreparedStatement preparedStatement = connection.prepareStatement(CanzoneQuery.getQueryDoDeletePreferenza());
+            preparedStatement.setString(1,codice);
+            preparedStatement.setString(2,username);
+            return preparedStatement.executeUpdate()!=0;
+        }catch (SQLException e){
+            throw new RuntimeException(e);
+        }
+    }
+*/
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.2.201808211720</span></div></body></html>

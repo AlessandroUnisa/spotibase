@@ -1,0 +1,236 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="it"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>ServletPlaylist.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">spotibase4</a> &gt; <a href="index.source.html" class="el_package">logic.gestionePlaylist</a> &gt; <span class="el_source">ServletPlaylist.java</span></div><h1>ServletPlaylist.java</h1><pre class="source lang-java linenums">package logic.gestionePlaylist;
+
+import data.Artista.ArtistaDAO;
+import data.Attivazione.Attivazione;
+import data.Attivazione.AttivazioneDAO;
+import data.DAOAcquisto.AcquistoAPI;
+import data.DAOAcquisto.AcquistoDAO;
+import data.DAOCanzone.CanzoneAPI;
+import data.DAOCanzone.CanzoneDAO;
+import data.DAOPlaylist.Playlist;
+import data.DAOPlaylist.PlaylistAPI;
+import data.DAOPlaylist.PlaylistDAO;
+import data.DAOUtente.UtenteAPI;
+import data.DAOUtente.UtenteDAO;
+import data.Exceptions.OggettoGiaPresenteException;
+
+import javax.servlet.*;
+import javax.servlet.http.*;
+import javax.servlet.annotation.*;
+import java.io.IOException;
+import java.lang.annotation.Documented;
+import java.lang.annotation.Retention;
+import java.lang.annotation.Target;
+import java.sql.SQLException;
+import java.util.TreeSet;
+
+import static java.lang.annotation.ElementType.METHOD;
+import static java.lang.annotation.ElementType.TYPE;
+import static java.lang.annotation.RetentionPolicy.RUNTIME;
+
+@Documented
+@Retention(RUNTIME)
+@Target({TYPE, METHOD})
+@interface Generated {
+}
+@WebServlet(name = &quot;ServletPlaylist&quot;, value = &quot;/playlist/*&quot;)
+<span class="fc" id="L37">public class ServletPlaylist extends HttpServlet {</span>
+    /** Questo metodo viene utilizzato per cancellare una canzone dalla playlist
+     *
+     * @param request contiene il codice della canzone da cancellare, nome della playlist e dalla sessione lo username dell'utente
+     * @param playlistAPI interfaccia di playlistDAO
+     * @throws SQLException Un'eccezione che fornisce informazioni su un errore di accesso al database o altri errori.
+     */
+    @Generated
+    public void cancellaCanzone(HttpServletRequest request,PlaylistAPI playlistAPI) throws SQLException {
+        String codiceDel = request.getParameter(&quot;del&quot;); //cancellazione canzone
+        if(codiceDel!=null){
+            String username = (String) request.getSession(true).getAttribute(&quot;username&quot;);
+            String nomePlaylist = request.getParameter(&quot;name&quot;);
+            playlistAPI.doRemoveSong(nomePlaylist,username,codiceDel);
+        }
+    }
+
+    /** Questo metodo mostra la playlist dell'utente
+     *
+     * @param request serve per prendere i parametri come il nome della playlist e dalla sessione verificare se l'utente è loggato oppure no
+     * @param playlistAPI interfaccia di playlistDAO
+     * @param canzoneAPI interfaccia di canzoneDAO
+     * @param acquistoAPI interfaccia di acquistoDAO
+     * @param artistaDAO interfaccia di artistaDAO
+     * @return oggetto playlist
+     * @throws SQLException Un'eccezione che fornisce informazioni su un errore di accesso al database o altri errori.
+     */
+    public Playlist showPlaylist(HttpServletRequest request,  PlaylistAPI playlistAPI,CanzoneAPI canzoneAPI,AcquistoAPI acquistoAPI,ArtistaDAO artistaDAO) throws SQLException {
+<span class="fc" id="L65">        String nomePlaylist = request.getParameter(&quot;name&quot;);</span>
+<span class="fc" id="L66">        String username = (String) request.getSession(true).getAttribute(&quot;username&quot;);</span>
+
+<span class="fc" id="L68">        HttpSession session = request.getSession(true);</span>
+<span class="pc bpc" id="L69" title="1 of 2 branches missed.">        if(session.getAttribute(&quot;listCart&quot;)==null)</span>
+<span class="fc" id="L70">            session.setAttribute(&quot;listCart&quot;, new TreeSet&lt;String&gt;());</span>
+
+<span class="pc bpc" id="L72" title="1 of 2 branches missed.">        if(session.getAttribute(&quot;isLogged&quot;)!=null){</span>
+<span class="nc" id="L73">            request.setAttribute(&quot;listaPreferiti&quot;,canzoneAPI.doRetrieveaCodiciCanzoniPreferite(username));</span>
+<span class="nc" id="L74">            request.setAttribute(&quot;listaCanzoniAcquistate&quot;, acquistoAPI.doRetrieveCodiciCanzoniAcquistate(username));</span>
+<span class="nc" id="L75">            UtenteAPI utenteAPI = new UtenteDAO();</span>
+<span class="nc" id="L76">            request.setAttribute(&quot;listPlaylist&quot;,playlistAPI.doRetrievePlaylistByUtente(username,utenteAPI));</span>
+        }
+
+<span class="fc" id="L79">        Playlist playlist = playlistAPI.doRetrievePlaylistWithSongs(username,nomePlaylist);</span>
+        //prendo gli artisti di ogni canzone
+
+<span class="fc" id="L82">            playlist.getCanzoni().forEach(item-&gt; {</span>
+                try {
+<span class="fc" id="L84">                    item.setArtisti(artistaDAO.doRetrieveArtistiBySong(item.getCodice()));</span>
+<span class="nc" id="L85">                } catch (SQLException throwables) {</span>
+<span class="nc" id="L86">                    throwables.printStackTrace();</span>
+<span class="fc" id="L87">                }</span>
+<span class="fc" id="L88">            });</span>
+<span class="fc" id="L89">        return playlist;</span>
+    }
+
+    /** Questo metodo viene utilizzato per visualizzare la jsp della playlist
+     * @param request viene passata la metodo showPlaylist e cnacella canzone
+     * @param response  viene passata per effettuare il forward
+     * @throws ServletException Un'eccezione lanciata quando c'è un problema nella servlet
+     * @throws IOException Un' eccezione che viene lanciata quando c'è un errore di I/O
+     * @throws SQLException Un'eccezione che fornisce informazioni su un errore di accesso al database o altri errori.
+     */
+    @Override
+    @Generated
+    protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+       //mostra la playlist
+        request.setCharacterEncoding(&quot;utf-8&quot;);
+        response.setCharacterEncoding(&quot;utf-8&quot;);
+        PlaylistAPI playlistAPI = new PlaylistDAO();
+        CanzoneAPI canzoneAPI = new CanzoneDAO();
+        AcquistoAPI acquistoAPI = new AcquistoDAO();
+        try {
+            cancellaCanzone(request,playlistAPI);
+            System.out.println(showPlaylist(request,playlistAPI,canzoneAPI,acquistoAPI,new ArtistaDAO())+&quot;*************&quot;);
+            request.setAttribute(&quot;playlist&quot;, showPlaylist(request,playlistAPI,canzoneAPI,acquistoAPI,new ArtistaDAO()));
+        } catch (SQLException throwables) {
+            throwables.printStackTrace();
+        }
+        request.getRequestDispatcher(&quot;WEB-INF/views/playlist/playlist.jsp&quot;).forward(request,response);
+    }
+
+    /** Questo metodo viene utilizzato per cancellare la playlist
+     * @param request per prendere lo username dalla sessione e la canzone da canellare
+     * @throws SQLException Un'eccezione che fornisce informazioni su un errore di accesso al database o altri errori.
+     */
+    @Generated
+    private void cancellaPlaylist(HttpServletRequest request) throws SQLException {
+        String username = (String) request.getSession(false).getAttribute(&quot;username&quot;);
+        String titolo = request.getParameter(&quot;delete&quot;);
+        PlaylistAPI playlistAPI = new PlaylistDAO();
+        playlistAPI.doDelete(titolo+&quot;;&quot;+username);
+    }
+
+    /** Questo metodo viene utilizzato per creare una nuova playlist
+     *
+     * @param request viene utilizzata per prendere lo username dell'utente e il titolo della playlist
+     * @param response per fare la redirect nel caso di errore oppure in caso di successo
+     * @param playlistAPI interfaccia di playlistDAO
+     * @throws IOException Un' eccezione che viene lanciata quando c'è un errore di I/O
+     * @throws SQLException Un'eccezione che fornisce informazioni su un errore di accesso al database o altri errori.
+     * @throws IllegalArgumentException  Un'eccezione che viene lanciata quando il titolo o la nota è null o non valida
+     */
+    public void creaPlaylist(HttpServletRequest request, HttpServletResponse response,PlaylistAPI playlistAPI) throws SQLException, IOException {
+<span class="fc" id="L140">        String username = (String) request.getSession(false).getAttribute(&quot;username&quot;);</span>
+<span class="fc" id="L141">        String titolo = request.getParameter(&quot;titolo&quot;);</span>
+<span class="fc" id="L142">        System.out.println(titolo);</span>
+
+<span class="fc bfc" id="L144" title="All 2 branches covered.">        if(!playlistAPI.isValidTitolo(titolo)){</span>
+<span class="fc" id="L145">            throw new IllegalArgumentException(&quot;titolo non valido&quot;);</span>
+        }
+
+<span class="fc" id="L148">        AttivazioneDAO attivazioneDAO = new AttivazioneDAO();</span>
+
+<span class="fc" id="L150">        UtenteAPI utenteAPI = new UtenteDAO();</span>
+<span class="fc" id="L151">        int numPlaylist = playlistAPI.doRetrieveNumPlaylistOfUtente(username,utenteAPI);</span>
+
+
+<span class="pc bpc" id="L154" title="1 of 2 branches missed.">        if(playlistAPI.isPresent(titolo,username,utenteAPI)) { //titolo gia presente</span>
+<span class="nc" id="L155">            response.sendRedirect(&quot;../libreria?presentPlay=1&quot;);</span>
+            //throw new IllegalArgumentException(&quot;playlist già esistente&quot;);
+            //throw new OggettoGiaPresenteException(&quot;playlist gia esistente&quot;);
+        }
+
+        else {
+<span class="fc" id="L161">            boolean flag = false;</span>
+<span class="pc bpc" id="L162" title="1 of 2 branches missed.">            if (numPlaylist &gt; 3) {</span>
+<span class="nc bnc" id="L163" title="All 2 branches missed.">                for (Attivazione attivazione : attivazioneDAO.doRetrieveAttivazioniAttiveByUtente(username)) {</span>
+<span class="nc bnc" id="L164" title="All 4 branches missed.">                    if (attivazione.getAbbonamento().getNome().equals(&quot;plus&quot;) &amp;&amp; numPlaylist + 1 &lt; 15) {</span>
+<span class="nc" id="L165">                        flag = true;</span>
+<span class="nc" id="L166">                        break;</span>
+<span class="nc bnc" id="L167" title="All 4 branches missed.">                    } else if (attivazione.getAbbonamento().getNome().equals(&quot;mega&quot;) &amp;&amp; numPlaylist + 1 &lt; 45) {</span>
+<span class="nc" id="L168">                        flag = true;</span>
+<span class="nc" id="L169">                        break;</span>
+<span class="nc bnc" id="L170" title="All 2 branches missed.">                    } else if (attivazione.getAbbonamento().getNome().equals(&quot;ultra&quot;)) {</span>
+<span class="nc" id="L171">                        flag = true;</span>
+<span class="nc" id="L172">                        break;</span>
+                    }
+<span class="nc" id="L174">                }</span>
+<span class="fc" id="L175">            } else flag = true;</span>
+<span class="fc" id="L176">            System.out.println(numPlaylist);</span>
+<span class="fc" id="L177">            System.out.println(flag);</span>
+<span class="pc bpc" id="L178" title="1 of 2 branches missed.">            if (!flag) //num max raggiunto</span>
+<span class="nc" id="L179">                response.sendRedirect(&quot;../libreria?errInsPlay=1&quot;);</span>
+            else {
+<span class="fc" id="L181">                String note = request.getParameter(&quot;note&quot;);</span>
+<span class="fc bfc" id="L182" title="All 2 branches covered.">                if( !playlistAPI.isValidNota(note)){</span>
+<span class="fc" id="L183">                    System.out.println(note);</span>
+<span class="fc" id="L184">                    throw new IllegalArgumentException(&quot;nota non valida&quot;);</span>
+                }
+                else {
+<span class="fc" id="L187">                    Playlist playlist = new Playlist();</span>
+<span class="fc" id="L188">                    playlist.setTitolo(titolo);</span>
+<span class="fc" id="L189">                    playlist.setNote(note);</span>
+<span class="fc" id="L190">                    playlist.setUsername(username);</span>
+<span class="fc" id="L191">                    playlistAPI.doSave(playlist);</span>
+<span class="fc" id="L192">                    response.sendRedirect(&quot;../libreria&quot;);</span>
+                }
+            }
+        }
+<span class="fc" id="L196">    }</span>
+
+    /** Questo metodo in base alla path si cancella o crea una playlist
+     * @param request utilizzata per prenere la path
+     * @param response utilizzata per creaPlaylist
+     * @throws IOException Un' eccezione che viene lanciata quando c'è un errore di I/O
+     * @throws ServletException Un'eccezione lanciata quando c'è un problema nella servlet
+     * @throws SQLException Un'eccezione che fornisce informazioni su un errore di accesso al database o altri errori.
+     */
+    @Override
+    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+<span class="nc" id="L207">        String path = request.getPathInfo();</span>
+<span class="nc" id="L208">        request.setCharacterEncoding(&quot;utf-8&quot;);</span>
+<span class="nc" id="L209">        response.setCharacterEncoding(&quot;utf-8&quot;);</span>
+<span class="nc bnc" id="L210" title="All 3 branches missed.">        switch (path){</span>
+            case &quot;/cancella&quot;: {
+                //cancellazione playlist
+                try {
+<span class="nc" id="L214">                    cancellaPlaylist(request);</span>
+<span class="nc" id="L215">                } catch (SQLException throwables) {</span>
+<span class="nc" id="L216">                    throwables.printStackTrace();</span>
+<span class="nc" id="L217">                }</span>
+<span class="nc" id="L218">                response.sendRedirect(&quot;../libreria&quot;);</span>
+<span class="nc" id="L219">                break;</span>
+            }
+            case &quot;/crea&quot;: {
+                //inserimento playlist. senza abbonamento max 4, plus--&gt;15, mega--&gt;45, ultra illimitate
+                try {
+<span class="nc" id="L224">                    PlaylistAPI playlistAPI = new PlaylistDAO();</span>
+<span class="nc" id="L225">                    creaPlaylist(request,response,playlistAPI);</span>
+<span class="nc" id="L226">                } catch (SQLException throwables) {</span>
+<span class="nc" id="L227">                    throwables.printStackTrace();</span>
+<span class="nc" id="L228">                }</span>
+                break;
+                }
+            }
+<span class="nc" id="L232">        }</span>
+
+    }
+
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.2.201808211720</span></div></body></html>

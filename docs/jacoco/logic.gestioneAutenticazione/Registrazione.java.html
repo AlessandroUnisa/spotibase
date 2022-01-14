@@ -1,0 +1,142 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="it"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>Registrazione.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">spotibase4</a> &gt; <a href="index.source.html" class="el_package">logic.gestioneAutenticazione</a> &gt; <span class="el_source">Registrazione.java</span></div><h1>Registrazione.java</h1><pre class="source lang-java linenums">package logic.gestioneAutenticazione;
+
+import data.DAOUtente.Utente;
+import data.DAOUtente.UtenteAPI;
+import data.DAOUtente.UtenteDAO;
+
+import javax.servlet.ServletException;
+import javax.servlet.annotation.WebServlet;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
+import java.io.IOException;
+import java.security.NoSuchAlgorithmException;
+import java.sql.SQLException;
+
+/**
+ * Questa classe permette di registrarsi alla piattaforma
+ * @see HttpServlet fornisce l'interfaccia per creare una servlet
+ * @version 1.0
+ */
+@WebServlet(name = &quot;register&quot;, value = &quot;/register&quot;)
+<span class="fc" id="L23">public class Registrazione extends HttpServlet {</span>
+
+    /**
+     * Il metodo permette ad un utente non registrato di registrarsi
+     * @param request oggetti della servlet che permette di prelevare i parametri username, email, passwd e passwdCheck
+     *               dalla richiesta e settare i messaggi di errore
+     * @param response oggetto della servlet, che contiene i parametri della risposta
+     * @param utenteAPI interfaccia di UtenteDAO
+     * @throws SQLException
+     * @throws NoSuchAlgorithmException
+     * @throws IOException
+     * @throws ServletException
+     */
+    public void register(HttpServletRequest request, HttpServletResponse response, UtenteAPI utenteAPI) throws SQLException, NoSuchAlgorithmException, IOException, ServletException {
+<span class="fc" id="L37">        String username = request.getParameter(&quot;username&quot;);</span>
+<span class="fc" id="L38">        System.out.println(username+&quot;**********&quot;);</span>
+<span class="fc" id="L39">        String email = request.getParameter(&quot;email&quot;);</span>
+<span class="fc" id="L40">        String passwd = request.getParameter(&quot;passwd&quot;);</span>
+<span class="fc" id="L41">        String passwdCheck = request.getParameter(&quot;passwdCheck&quot;);</span>
+
+
+<span class="fc" id="L44">        int flag=0;</span>
+        //errori: username gia presente, email non valida, passwd non uguali, passwd non valida
+        //se l email non è valida oppure ci sono gia utenti con quella mail (la lista ne conterra al massimo uno)
+<span class="fc" id="L47">        System.out.println(utenteAPI.isValidEmail(email)+&quot; &quot;+email);</span>
+<span class="pc bpc" id="L48" title="1 of 4 branches missed.">        if(!utenteAPI.isValidEmail(email) || utenteAPI.findUsers(&quot;email&quot;,email).size()!=0){ //check mail</span>
+<span class="fc" id="L49">            request.setAttribute(&quot;errEmail&quot;,&quot;Email non valida&quot;);</span>
+<span class="fc" id="L50">            flag++;</span>
+        }
+<span class="fc bfc" id="L52" title="All 2 branches covered.">        if(!passwd.equals(passwdCheck)){ //check passwd uguali</span>
+<span class="fc" id="L53">            request.setAttribute(&quot;errPasswdNE&quot;,&quot;Le password non coincidono&quot;);</span>
+<span class="fc" id="L54">            flag++;</span>
+        }
+<span class="fc" id="L56">        System.out.println(passwd + &quot; &quot; + utenteAPI.isValidPasswd(passwd));</span>
+<span class="fc bfc" id="L57" title="All 2 branches covered.">        if(!utenteAPI.isValidPasswd(passwd)){  //check password</span>
+<span class="fc" id="L58">            request.setAttribute(&quot;errPasswd&quot;,&quot;Password non valida&quot;);</span>
+<span class="fc" id="L59">            flag++;</span>
+        }
+<span class="fc" id="L61">        System.out.println(utenteAPI.findUsers(&quot;username&quot;,username) + &quot; &quot;+username);</span>
+<span class="fc bfc" id="L62" title="All 2 branches covered.">        if(utenteAPI.findUsers(&quot;username&quot;,username).size()!=0){ //check username</span>
+<span class="fc" id="L63">            System.out.println(&quot;ora qui&quot;);</span>
+<span class="fc" id="L64">            request.setAttribute(&quot;errUsername&quot;,&quot;Username già presente&quot;);</span>
+<span class="fc" id="L65">            flag++;</span>
+        }
+<span class="fc bfc" id="L67" title="All 2 branches covered.">        if(!utenteAPI.isValidUsername(username)){</span>
+<span class="fc" id="L68">            request.setAttribute(&quot;errUsernameFormato&quot;, &quot;La username non rispetta il formato&quot;);</span>
+<span class="fc" id="L69">            flag++;</span>
+        }
+
+<span class="fc bfc" id="L72" title="All 2 branches covered.">        if(flag&gt;0){  //setto i campi che aveva gia inserito</span>
+<span class="fc" id="L73">            System.out.println(&quot;flag= &quot;+flag);</span>
+<span class="fc" id="L74">            request.setAttribute(&quot;username&quot;,username);</span>
+<span class="fc" id="L75">            request.setAttribute(&quot;email&quot;,email);</span>
+<span class="fc" id="L76">            request.setAttribute(&quot;passwd&quot;,passwd);</span>
+<span class="fc" id="L77">            request.setAttribute(&quot;passwdCheck&quot;,passwdCheck);</span>
+<span class="fc" id="L78">            request.getRequestDispatcher(&quot;./WEB-INF/views/utente/register.jsp&quot;).forward(request,response);</span>
+        }else{ //tutto ok
+<span class="fc" id="L80">            System.out.println(&quot;tutto ok&quot;);</span>
+
+<span class="fc" id="L82">            Utente utente = new Utente();</span>
+<span class="fc" id="L83">            utente.setPassword(passwd);</span>
+<span class="fc" id="L84">            utente.setEmail(email);</span>
+<span class="fc" id="L85">            utente.setUsername(username);</span>
+<span class="fc" id="L86">            utenteAPI.doSave(utente);  //inserisco l utente nel db</span>
+
+<span class="fc" id="L88">            HttpSession session = request.getSession(true); //è automaticamente loggato</span>
+<span class="fc" id="L89">            session.setAttribute(&quot;username&quot;,utente.getUsername());</span>
+<span class="fc" id="L90">            session.setAttribute(&quot;isLogged&quot;, true);</span>
+
+<span class="fc" id="L92">            response.sendRedirect(&quot;./index.html&quot;);</span>
+        }
+
+<span class="fc" id="L95">    }</span>
+
+
+    /**
+     * Il metodo ereditato dalla classe HttpServlet che esplicita i parametri della request e permette di accedere
+     * alla pagina di registrazione nel caso in cui l'utente non sia gia in sessione, altrimenti alla home
+     * @param request permette di settare la codifica dei caratteri della richiesta, verificare che l'utente sia loggato
+     * @param response permette di settare la codifica dei caratteri della risposta
+     * @throws SQLException Un'eccezione che fornisce informazioni su un errore di accesso al database o altri errori.
+     * @throws IOException Un'eccezione lanciata quando si verifica un errore I/O
+     */
+    @Override
+    protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+<span class="nc" id="L108">        request.setCharacterEncoding(&quot;utf-8&quot;);</span>
+<span class="nc" id="L109">        response.setCharacterEncoding(&quot;utf-8&quot;);</span>
+<span class="nc" id="L110">        String path = request.getPathInfo();</span>
+<span class="nc bnc" id="L111" title="All 2 branches missed.">        if(request.getSession(true).getAttribute(&quot;isLogged&quot;)==null)</span>
+<span class="nc" id="L112">            request.getRequestDispatcher(&quot;./WEB-INF/views/utente/register.jsp&quot;).forward(request, response);</span>
+<span class="nc" id="L113">        else response.sendRedirect(&quot;./index.html&quot;);</span>
+
+<span class="nc" id="L115">    }</span>
+
+    /**
+     * Il metodo ereditato dalla classe HttpServlet che chiama il metodo login
+     * @param request permette di settare la codifica dei caratteri della richiesta
+     * @param response permette di settare la codifica dei caratteri della risposta
+     * @throws ServletException Un'eccezione lanciata quando si verifica un errore nella servlet
+     * @throws IOException Un'eccezione lanciata quando si verifica un errore I/O
+     * @throws  SQLException Un'eccezione che fornisce informazioni su un errore di accesso al database o altri errori.
+     * @throws NoSuchAlgorithmException Un'eccezione lanciata quando è richiesto un particolare algoritmo ma che non e disponibile
+     */
+    @Override
+    @Generated
+    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        request.setCharacterEncoding(&quot;utf-8&quot;);
+        response.setCharacterEncoding(&quot;utf-8&quot;);
+        String path = request.getPathInfo();
+        try {
+            UtenteAPI utenteAPI = new UtenteDAO();
+            register(request,response, utenteAPI);
+        } catch (SQLException throwables) {
+            throwables.printStackTrace();
+        } catch (NoSuchAlgorithmException e) {
+            e.printStackTrace();
+        }
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.2.201808211720</span></div></body></html>

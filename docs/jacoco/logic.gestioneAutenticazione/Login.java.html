@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="it"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>Login.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">spotibase4</a> &gt; <a href="index.source.html" class="el_package">logic.gestioneAutenticazione</a> &gt; <span class="el_source">Login.java</span></div><h1>Login.java</h1><pre class="source lang-java linenums">package logic.gestioneAutenticazione;
+
+import data.DAOUtente.Utente;
+import data.DAOUtente.UtenteAPI;
+import data.DAOUtente.UtenteDAO;
+import data.Exceptions.OggettoNonTrovatoException;
+
+import javax.servlet.ServletException;
+import javax.servlet.annotation.WebServlet;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
+import java.io.IOException;
+import java.security.NoSuchAlgorithmException;
+import java.sql.SQLException;
+
+/**Questa classe permette di effettuare l'accesso alla piattaforma
+ * @see HttpServlet fornisce l'interfaccia per creare una servlet
+ * @version 1.0
+ */
+
+@WebServlet(name = &quot;Login&quot;, value = &quot;/login&quot;)
+<span class="fc" id="L24">public class Login extends HttpServlet {</span>
+
+    /**
+     * Il metodo consente all'utente di accedere alla home della piattaforma nel caso sia gia registrato
+     * @param request oggetto della servlet, che contiene i parametri email e password dell'utente, la sessione corrente
+     * @param response oggetto della servlet, che contiene i parametri della risposta
+     * @param utenteAPI interfaccia  di utenteDAO
+     * @throws SQLException Un'eccezione che fornisce informazioni su un errore di accesso al database o altri errori.
+     * @throws NoSuchAlgorithmException Un'eccezione lanciata quando è richiesto un particolare algoritmo ma che non e disponibile
+     * @throws IOException Un'eccezione lanciata quando si verifica un errore I/O
+     * @throws ServletException Un'eccezione lanciata quando si verifica un errore nella servlet
+     */
+    public void login(HttpServletRequest request, HttpServletResponse response,UtenteAPI utenteAPI) throws SQLException, NoSuchAlgorithmException, IOException, ServletException {
+<span class="fc" id="L37">        Utente utenteTemp = new Utente();</span>
+<span class="fc" id="L38">        utenteTemp.setEmail(request.getParameter(&quot;email&quot;));</span>
+<span class="fc" id="L39">        utenteTemp.setPassword(request.getParameter(&quot;passwd&quot;));  //per criptare la password</span>
+
+        Utente utente;
+        try{
+<span class="fc" id="L43">            utente = utenteAPI.doGet(utenteTemp.getEmail(), utenteTemp.getPassword());  //cerco l utente nel db</span>
+<span class="nc" id="L44">        }catch (OggettoNonTrovatoException e){</span>
+<span class="nc" id="L45">            utente=null;</span>
+<span class="fc" id="L46">        }</span>
+
+<span class="pc bpc" id="L48" title="1 of 4 branches missed.">        if (utente != null &amp;&amp; utenteAPI.isAdminEmail(utente.getEmail())) {  //amministratore</span>
+<span class="nc" id="L49">            HttpSession session = request.getSession(true);</span>
+<span class="nc" id="L50">            session.setAttribute(&quot;isLogged&quot;, true);</span>
+<span class="nc" id="L51">            session.setAttribute(&quot;username&quot;, &quot;admin&quot;);</span>
+<span class="nc" id="L52">            response.sendRedirect(&quot;./admin/dashboard&quot;);</span>
+<span class="pc bfc" id="L53" title="All 2 branches covered.">        } else if (utente != null ) {  //utente</span>
+<span class="fc" id="L54">            HttpSession session = request.getSession(true);</span>
+<span class="fc" id="L55">            session.setAttribute(&quot;isLogged&quot;, true);</span>
+<span class="fc" id="L56">            session.setAttribute(&quot;username&quot;, utente.getUsername());</span>
+<span class="fc" id="L57">            response.sendRedirect(&quot;./index.html&quot;);</span>
+            //sendRedirect invece del forward perche poi il browser fa request sbagliati
+<span class="fc" id="L59">        } else {</span>
+<span class="fc" id="L60">            request.setAttribute(&quot;errCredenziali&quot;, &quot;Credenziali errate&quot;);</span>
+<span class="fc" id="L61">            request.getRequestDispatcher(&quot;./WEB-INF/views/utente/login.jsp&quot;).forward(request, response);</span>
+        }
+
+<span class="fc" id="L64">    }</span>
+
+    /**
+     * Il metodo ereditato dalla classe HttpServlet che esplicita i parametri della request e permette di accedere
+     * alla pagina di login nel caso in cui l'utente non sia loggato, altrimenti alla home
+     * @param request oggetto della servlet che permette di settare la codifica dei caratteri della richiesta, verificare
+     *                che l'utente sia loggato
+     * @param response oggetto della servlet che permette di settare la codifica dei caratteri della risposta
+     * @throws ServletException Un'eccezione lanciata quando si verifica un errore nella servlet
+     * @throws IOException Un'eccezione lanciata quando si verifica un errore I/O
+     */
+    @Override
+    protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+<span class="nc" id="L77">        request.setCharacterEncoding(&quot;utf-8&quot;);</span>
+<span class="nc" id="L78">        response.setCharacterEncoding(&quot;utf-8&quot;);</span>
+<span class="nc" id="L79">        String path = request.getPathInfo();</span>
+<span class="nc bnc" id="L80" title="All 2 branches missed.">        if(request.getSession(true).getAttribute(&quot;isLogged&quot;)==null)  //se l'utente non ha fatto ancora la login</span>
+<span class="nc" id="L81">            request.getRequestDispatcher(&quot;/WEB-INF/views/utente/login.jsp&quot;).forward(request,response);</span>
+<span class="nc" id="L82">        else response.sendRedirect(&quot;./index.html&quot;);</span>
+
+<span class="nc" id="L84">    }</span>
+
+    /**
+     * Il metodo ereditato dalla classe HttpServlet che chiama il metodo login
+     * @param request oggetto della servlet permette di settare la codifica dei caratteri della richiesta
+     * @param response oggetto della servlet che permette di settare la codifica dei caratteri della risposta
+     * @throws ServletException Un'eccezione lanciata quando si verifica un errore nella servlet
+     * @throws IOException Un'eccezione lanciata quando si verifica un errore I/O
+     * @throws  SQLException Un'eccezione che fornisce informazioni su un errore di accesso al database o altri errori.
+     * @throws NoSuchAlgorithmException Un'eccezione lanciata quando è richiesto un particolare algoritmo ma che non e disponibile
+     */
+    @Override
+    @Generated
+    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        request.setCharacterEncoding(&quot;utf-8&quot;);
+        response.setCharacterEncoding(&quot;utf-8&quot;);
+        UtenteAPI utenteAPI = new UtenteDAO();
+        String path = request.getPathInfo();
+        try {
+            login(request,response,utenteAPI);
+        } catch (SQLException throwables) {
+            throwables.printStackTrace();
+        } catch (NoSuchAlgorithmException e) {
+            e.printStackTrace();
+        }
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.2.201808211720</span></div></body></html>

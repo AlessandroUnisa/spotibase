@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="it"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>SingletonJDBC.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">spotibase4</a> &gt; <a href="index.source.html" class="el_package">data.utils</a> &gt; <span class="el_source">SingletonJDBC.java</span></div><h1>SingletonJDBC.java</h1><pre class="source lang-java linenums">package data.utils;
+
+import org.apache.tomcat.jdbc.pool.DataSource;
+import org.apache.tomcat.jdbc.pool.PoolProperties;
+
+import java.sql.Connection;
+import java.sql.SQLException;
+import java.util.TimeZone;
+
+<span class="nc" id="L10">public class SingletonJDBC{</span>
+<span class="fc" id="L11">    private static Connection connection = null;</span>
+<span class="fc" id="L12">    private static Connection connectionTesting = null;</span>
+
+    //eseguito sono una volta: quando la classe è caricata in memoria
+    static{
+<span class="fc" id="L16">        DataSource datasource=null;</span>
+<span class="fc" id="L17">        PoolProperties p = new PoolProperties();</span>
+<span class="fc" id="L18">        p.setUrl(&quot;jdbc:mysql://localhost:3306/spotibase?useSSL=false&amp;serverTimezone=&quot; + TimeZone.getDefault().getID());</span>
+<span class="fc" id="L19">        p.setDriverClassName(&quot;com.mysql.cj.jdbc.Driver&quot;);</span>
+<span class="fc" id="L20">        p.setUsername(&quot;root&quot;);</span>
+<span class="fc" id="L21">        p.setPassword(&quot;1234&quot;);</span>
+        //The maximum number of active connections that can be allocated from this pool at the same time.
+<span class="fc" id="L23">        p.setMaxActive(1000);</span>
+<span class="fc" id="L24">        p.setInitialSize(10);</span>
+<span class="fc" id="L25">        p.setMinIdle(100);</span>
+        //p.setRemoveAbandonedTimeout(60);
+<span class="fc" id="L27">        p.setRemoveAbandoned(false);</span>
+<span class="fc" id="L28">        datasource = new DataSource();</span>
+<span class="fc" id="L29">        datasource.setPoolProperties(p);</span>
+
+        try {
+<span class="fc" id="L32">            connection = datasource.getConnection();</span>
+<span class="fc" id="L33">        } catch (SQLException throwables) {</span>
+<span class="fc" id="L34">            throwables.printStackTrace();</span>
+<span class="fc" id="L35">        }</span>
+    }
+
+    static{
+<span class="fc" id="L39">        DataSource datasource=null;</span>
+<span class="fc" id="L40">        PoolProperties p = new PoolProperties();</span>
+<span class="fc" id="L41">        p.setUrl(&quot;jdbc:mysql://localhost:3306/spotibasetesting?useSSL=false&amp;serverTimezone=&quot; + TimeZone.getDefault().getID());</span>
+<span class="fc" id="L42">        p.setDriverClassName(&quot;com.mysql.cj.jdbc.Driver&quot;);</span>
+<span class="fc" id="L43">        p.setUsername(&quot;root&quot;);</span>
+<span class="fc" id="L44">        p.setPassword(&quot;1234&quot;);</span>
+        //The maximum number of active connections that can be allocated from this pool at the same time.
+<span class="fc" id="L46">        p.setMaxActive(1000);</span>
+<span class="fc" id="L47">        p.setInitialSize(10);</span>
+<span class="fc" id="L48">        p.setMinIdle(100);</span>
+        //p.setRemoveAbandonedTimeout(60);
+<span class="fc" id="L50">        p.setRemoveAbandoned(false);</span>
+<span class="fc" id="L51">        datasource = new DataSource();</span>
+<span class="fc" id="L52">        datasource.setPoolProperties(p);</span>
+
+        try {
+<span class="fc" id="L55">            connectionTesting = datasource.getConnection();</span>
+<span class="fc" id="L56">        } catch (SQLException throwables) {</span>
+<span class="fc" id="L57">            throwables.printStackTrace();</span>
+<span class="fc" id="L58">        }</span>
+<span class="fc" id="L59">    }</span>
+    public static Connection getConnection(){
+<span class="fc" id="L61">        return connection;</span>
+    }
+    public static Connection getConnectionTesting(){
+<span class="fc" id="L64">        return connectionTesting;</span>
+    }
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.2.201808211720</span></div></body></html>

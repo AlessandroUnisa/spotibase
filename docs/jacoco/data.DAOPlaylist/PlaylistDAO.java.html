@@ -1,0 +1,402 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="it"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>PlaylistDAO.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">spotibase4</a> &gt; <a href="index.source.html" class="el_package">data.DAOPlaylist</a> &gt; <span class="el_source">PlaylistDAO.java</span></div><h1>PlaylistDAO.java</h1><pre class="source lang-java linenums">package data.DAOPlaylist;
+
+import data.DAOCanzone.CanzoneAPI;
+import data.DAOCanzone.CanzoneMapper;
+import data.DAOUtente.UtenteAPI;
+import data.DAOUtente.UtenteDAO;
+import data.Exceptions.OggettoGiaPresenteException;
+import data.Exceptions.OggettoNonCancellatoException;
+import data.Exceptions.OggettoNonInseritoException;
+import data.Exceptions.OggettoNonTrovatoException;
+import data.utils.SingletonJDBC;
+
+import java.lang.annotation.Documented;
+import java.lang.annotation.Retention;
+import java.lang.annotation.Target;
+import java.sql.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.regex.Pattern;
+
+import static java.lang.annotation.ElementType.METHOD;
+import static java.lang.annotation.ElementType.TYPE;
+import static java.lang.annotation.RetentionPolicy.RUNTIME;
+
+@Documented
+@Retention(RUNTIME)
+@Target({TYPE, METHOD})
+@interface Generated {
+}
+
+/** Questa classe contine i metodi per la gestione della playlsit specificati nel ODD
+ *
+ * @version 1.0
+ * @see PlaylistAPI interfaccia della classe
+ */
+public class PlaylistDAO implements PlaylistAPI {
+
+
+    //metodi documentati per IS-----------------------------------------------------------------------------------------
+
+    private Connection connection;
+    //ciao
+
+<span class="fc" id="L44">    public PlaylistDAO(){</span>
+<span class="fc" id="L45">        this.connection = SingletonJDBC.getConnection();</span>
+<span class="fc" id="L46">    }</span>
+<span class="fc" id="L47">    public PlaylistDAO(Connection connection){</span>
+<span class="fc" id="L48">        this.connection = connection;</span>
+<span class="fc" id="L49">    }</span>
+
+    /**Questo metodo preleva una playlist dal database
+     * &lt;p&gt;&lt;b&gt;pre: &lt;/b&gt;chiave != null, chiave.contains(;) == true, il titolo della playlist deve essere presente anche l'username != null&lt;/p&gt;
+     * @param chiave concatenazione del titolo della plyalist con la username. Esempio: &quot;playRock;pluto&quot;
+     * @throws SQLException Un'eccezione che fornisce informazioni su un errore di accesso al database o altri errori.
+     * @throws IllegalArgumentException  Un'eccezione che viene lanciata quando la chiave è null o non valida
+     * @throws OggettoNonTrovatoException  Un'eccezione che viene lanciata quando la playlist non è stata trovata
+     * @return l'oggetto playlist
+     * */
+    public Playlist doGet(String chiave) throws SQLException {
+<span class="fc bfc" id="L60" title="All 4 branches covered.">        if(chiave == null || !chiave.contains(&quot;;&quot;))</span>
+<span class="fc" id="L61">            throw new IllegalArgumentException(&quot;la chiave è null o non valida&quot;);</span>
+
+<span class="fc" id="L63">        String[] chiavi = chiave.split(&quot;;&quot;);</span>
+<span class="fc" id="L64">        PreparedStatement preparedStatement = connection.prepareStatement(&quot;SELECT * FROM playlist PLA WHERE titolo=? &amp;&amp; username=?&quot;);</span>
+<span class="fc" id="L65">        preparedStatement.setString(1,chiavi[0]);</span>
+<span class="fc" id="L66">        preparedStatement.setString(2,chiavi[1]);</span>
+<span class="fc" id="L67">        ResultSet resultSet = preparedStatement.executeQuery();</span>
+<span class="fc" id="L68">        resultSet.next();</span>
+<span class="fc bfc" id="L69" title="All 2 branches covered.">        if(resultSet.getRow()==0)</span>
+<span class="fc" id="L70">            throw new OggettoNonTrovatoException(&quot;La playlist non è stata trovata: &quot;+chiave);</span>
+        else{
+<span class="fc" id="L72">            PlaylistMapper mapper = new PlaylistMapper();</span>
+<span class="fc" id="L73">            return mapper.map(resultSet);</span>
+        }
+    }
+
+    /** Questo metodo salva nel DB la playlist
+     *  &lt;p&gt;&lt;b&gt;pre: &lt;/b&gt;playlist !=null, Titolo della playlist != null, Username dell'utente che ha creato la playlist != null e l'utente non deve avere una playlist con quel titolo&lt;br&gt;
+     *     &lt;b&gt;post: &lt;/b&gt;la playlist è aggiunta nel db per quel relativo utente&lt;/p&gt;
+     *  @param playlist la playlist da salvare con i campi titolo e username
+     *  @throws SQLException Un'eccezione che fornisce informazioni su un errore di accesso al database o altri errori.
+     *  @throws IllegalArgumentException  Un'eccezione che viene lanciata quando la playlist è null o non valida
+     *  @throws OggettoNonInseritoException Un'eccezione che viene lanciata quando la playlist non è stata inserita all'interno del db
+     * */
+
+    public void doSave(Playlist playlist) throws SQLException {
+<span class="fc bfc" id="L87" title="All 6 branches covered.">        if(playlist == null || playlist.getTitolo() == null || playlist.getUsername() == null)</span>
+<span class="fc" id="L88">            throw new IllegalArgumentException(&quot;playlist è null o qualche campo obbligatorio è null&quot;);</span>
+        try {
+<span class="fc" id="L90">            doGet(playlist.getTitolo()+&quot;;&quot;+playlist.getUsername());</span>
+<span class="fc" id="L91">            throw new OggettoGiaPresenteException(&quot;La playlist è gia presente&quot;);</span>
+<span class="fc" id="L92">        }catch (OggettoNonTrovatoException e){</span>
+<span class="fc" id="L93">            PreparedStatement ps = connection.prepareStatement(PlaylistQuery.getQueryPlaylistSave());</span>
+<span class="fc" id="L94">            ps.setString(1, playlist.getTitolo());</span>
+<span class="fc" id="L95">            ps.setString(2,playlist.getUsername());</span>
+<span class="fc" id="L96">            ps.setString(3, playlist.getNote());</span>
+
+<span class="pc bpc" id="L98" title="1 of 2 branches missed.">            if(ps.executeUpdate()!=1)</span>
+<span class="nc" id="L99">                throw new OggettoNonInseritoException(&quot;La playlist non è stata inserita&quot;);</span>
+        }
+<span class="fc" id="L101">    }</span>
+
+
+    /** Elimina la playlist dal DB
+     * &lt;p&gt;&lt;b&gt;pre: &lt;/b&gt;chiave != null, chiave.contains(;) == true e la chiave deve essere presente nel db&lt;br&gt;
+     *    &lt;b&gt;post: &lt;/b&gt;la playlist non deve essere più presente nel db&lt;/p&gt;
+     * @param chiave concatenazione del titolo della plyalist con la username. Esempio: &quot;playRock;pluto&quot;
+     * @throws SQLException Un'eccezione che fornisce informazioni su un errore di accesso al database o altri errori.
+     * @throws IllegalArgumentException  Un'eccezione che viene lanciata quando la chiave è null o non valida
+     * @throws OggettoNonCancellatoException Un'eccezione che viene lanciata quando la playlist non è stata cancellata dal db
+     * */
+    public void doDelete(String chiave) throws SQLException {
+<span class="fc bfc" id="L113" title="All 4 branches covered.">        if(chiave == null || !chiave.contains(&quot;;&quot;))</span>
+<span class="fc" id="L114">            throw new IllegalArgumentException(&quot;la chiave è null o non valida&quot;);</span>
+
+        try{
+<span class="fc" id="L117">            doGet(chiave);</span>
+<span class="fc" id="L118">            String[] chiavi = chiave.split(&quot;;&quot;);</span>
+<span class="fc" id="L119">            PreparedStatement st = connection.prepareStatement(&quot;DELETE FROM playlist WHERE titolo=? AND username=?&quot;);</span>
+<span class="fc" id="L120">            st.setString(1,chiavi[0]);</span>
+<span class="fc" id="L121">            st.setString(2,chiavi[1]);</span>
+<span class="pc bpc" id="L122" title="1 of 2 branches missed.">            if(st.executeUpdate()!=1)</span>
+<span class="nc" id="L123">                throw new OggettoNonCancellatoException(&quot;La playlist non è stata cancellata&quot;);</span>
+<span class="fc" id="L124">        }catch (OggettoNonTrovatoException e){</span>
+<span class="fc" id="L125">            throw e;</span>
+<span class="fc" id="L126">        }</span>
+<span class="fc" id="L127">    }</span>
+
+
+
+    /**Questo metodo prende le playlist di un utente
+     * &lt;p&gt;&lt;b&gt;pre: &lt;/b&gt;username != null&lt;/p&gt;
+     * @param username la username dell utente
+     * @param utenteAPI l'interfaccia dell'utente
+     * @throws SQLException Un'eccezione che fornisce informazioni su un errore di accesso al database o altri errori.
+     * @throws IllegalArgumentException  Un'eccezione che viene lanciata quando l'username è null o non valida
+     * @throws OggettoNonTrovatoException Un'eccezione che viene lanciata quando l'utente non è stato trovato nel db
+     * @return lista di playlist dell utente
+     * */
+    public List&lt;Playlist&gt; doRetrievePlaylistByUtente(String username, UtenteAPI utenteAPI) throws SQLException {
+<span class="fc bfc" id="L141" title="All 2 branches covered.">        if(username == null )</span>
+<span class="fc" id="L142">            throw new IllegalArgumentException(&quot;username è null&quot;);</span>
+<span class="fc" id="L143">        System.out.println(utenteAPI.findUsers(&quot;username&quot;,username));</span>
+<span class="pc bpc" id="L144" title="1 of 2 branches missed.">        if(utenteAPI.findUsers(&quot;username&quot;,username).size()==0)</span>
+<span class="nc" id="L145">            throw new OggettoNonTrovatoException(&quot;l'utente con username: &quot;+username+&quot; non è stato trovato&quot;);</span>
+
+<span class="fc" id="L147">        PreparedStatement preparedStatement = connection.prepareStatement(PlaylistQuery.getQueryDoRetrievePlaylistByUtente());</span>
+<span class="fc" id="L148">        preparedStatement.setString(1,username);</span>
+<span class="fc" id="L149">        ResultSet resultSet = preparedStatement.executeQuery();</span>
+<span class="fc" id="L150">        ArrayList&lt;Playlist&gt; list = new ArrayList&lt;&gt;();</span>
+<span class="fc" id="L151">        PlaylistMapper mapper = new PlaylistMapper();</span>
+<span class="fc bfc" id="L152" title="All 2 branches covered.">        while (resultSet.next())</span>
+<span class="fc" id="L153">            list.add(mapper.map(resultSet));</span>
+<span class="fc" id="L154">        return list;</span>
+    }
+
+    /**Inserisce una canzone nella playlist di un utente
+     * &lt;p&gt;&lt;b&gt;pre: &lt;/b&gt;username!=null e deve esistere nel db, titoloPlaylist != null e deve esistere nel db, codCanzone != null e deve esistere nel db e deve esistere la playlist di quel dato utente&lt;br&gt;
+     *    &lt;b&gt;post: &lt;/b&gt;canzone inserita nel db&lt;/p&gt;
+     * @param username la username dell utente
+     * @param titoloPlay il titolo della playlist in cui inserire la canzone
+     * @param codCanzone il codice della canzone da inserire
+     * @param utenteAPI interfaccia dell'utente
+     * @param canzoneAPI interfaccia della canzone
+     * @param playlistAPI interfaccia della playlist
+     * @throws SQLException Un'eccezione che fornisce informazioni su un errore di accesso al database o altri errori.
+     * @throws IllegalArgumentException  Un'eccezione che viene lanciata quando l'username o titolo o playlist sono null o non valide
+     * @throws OggettoNonTrovatoException Un'eccezione che viene lanciata quando l'utente non è stato trovato nel db
+     * @throws OggettoNonTrovatoException Un'eccezione che viene lanciata quando la canzone non è stata trovata nel db
+     * @throws OggettoNonTrovatoException Un'eccezione che viene lanciata quando la playlist dell'utente non è stata trovata nel db
+     * */
+    public void doInsertSong(String username, String titoloPlay, String codCanzone, UtenteAPI utenteAPI,
+                            CanzoneAPI canzoneAPI,PlaylistAPI playlistAPI) throws SQLException {
+
+<span class="fc bfc" id="L175" title="All 6 branches covered.">        if(username == null || titoloPlay == null || codCanzone == null)</span>
+<span class="fc" id="L176">            throw new IllegalArgumentException(&quot;username o titolo o codCanzone sono null&quot;);</span>
+
+<span class="fc bfc" id="L178" title="All 2 branches covered.">        if(!utenteAPI.exist(username))</span>
+<span class="fc" id="L179">            throw new OggettoNonTrovatoException(&quot;L'utente non è stato trovato: &quot;+username);</span>
+
+<span class="pc bpc" id="L181" title="1 of 2 branches missed.">        if(!canzoneAPI.exist(codCanzone))</span>
+<span class="nc" id="L182">            throw new OggettoNonTrovatoException(&quot;Canzone non è stata trovata: &quot;+codCanzone);</span>
+
+<span class="pc bpc" id="L184" title="1 of 2 branches missed.">        if(!playlistAPI.isPresent(titoloPlay,username,utenteAPI))</span>
+<span class="nc" id="L185">            throw new OggettoNonTrovatoException(&quot;Playlist non è stato trovato: &quot;+titoloPlay+&quot; &quot;+ &quot;username&quot;);</span>
+
+<span class="fc" id="L187">        PreparedStatement preparedStatement = connection.prepareStatement(PlaylistQuery.getQueryDoInsertSong());</span>
+<span class="fc" id="L188">        preparedStatement.setString(1,codCanzone);</span>
+<span class="fc" id="L189">        preparedStatement.setString(2,titoloPlay);</span>
+<span class="fc" id="L190">        preparedStatement.setString(3,username);</span>
+<span class="pc bpc" id="L191" title="1 of 2 branches missed.">        if(preparedStatement.executeUpdate()!=1)</span>
+<span class="nc" id="L192">            throw new OggettoNonInseritoException(&quot;La canzone non è stata inserita nella playlist&quot;);</span>
+<span class="fc" id="L193">    }</span>
+
+
+    /**Controlla se la canzone è presente nella playlist
+     * &lt;p&gt;&lt;b&gt;pre: &lt;/b&gt;username!=null e deve esistere nel db, titoloPlaylist != null e deve esistere nel db, codCanzone != null e deve esistere nel db e deve esistere la playlist di quel dato utente&lt;/p&gt;
+     * @param codiceCanzone il codice della canzone da verificare
+     * @param titolo il titolo della playlist
+     * @param username la username dell utente
+     * @param canzoneAPI interfaccia della canzone
+     * @param playlistAPI interfaccia della playlist
+     * @param utenteAPI interfaccia dell'utente
+     * @throws SQLException Un'eccezione che fornisce informazioni su un errore di accesso al database o altri errori.
+     * @throws IllegalArgumentException  Un'eccezione che viene lanciata quando l'username o titolo o playlist sono null o non valide
+     * @throws OggettoNonTrovatoException Un'eccezione che viene lanciata quando l'utente non è stato trovato nel db
+     * @throws OggettoNonTrovatoException Un'eccezione che viene lanciata quando la canzone non è stata trovata nel db
+     * @throws OggettoNonTrovatoException Un'eccezione che viene lanciata quando la playlist dell'utente non è stata trovata nel d
+     * @return true se la canzone è presente nella playlist, false altrimenti
+     * */
+    public boolean isPresent(String codiceCanzone, String titolo, String username, CanzoneAPI canzoneAPI,
+                             PlaylistAPI playlistAPI, UtenteAPI utenteAPI) throws SQLException {
+<span class="fc bfc" id="L213" title="All 6 branches covered.">        if(codiceCanzone == null || titolo == null || username == null)</span>
+<span class="fc" id="L214">            throw new IllegalArgumentException(&quot;codiceCanzone o titolo o username sono null&quot;);</span>
+
+<span class="fc bfc" id="L216" title="All 2 branches covered.">        if(!utenteAPI.exist(username))</span>
+<span class="fc" id="L217">            throw new OggettoNonTrovatoException(&quot;L'utente non è stato trovato: &quot;+username);</span>
+
+<span class="pc bpc" id="L219" title="1 of 2 branches missed.">        if(!canzoneAPI.exist(codiceCanzone))</span>
+<span class="nc" id="L220">            throw new OggettoNonTrovatoException(&quot;Canzone non è stata trovata: &quot;+codiceCanzone);</span>
+
+<span class="pc bpc" id="L222" title="1 of 2 branches missed.">        if(!playlistAPI.isPresent(titolo,username,utenteAPI))</span>
+<span class="nc" id="L223">            throw new OggettoNonTrovatoException(&quot;Playlist non è stato trovato: &quot;+titolo+&quot; &quot;+ &quot;username&quot;);</span>
+
+<span class="fc" id="L225">        PreparedStatement preparedStatement = connection.prepareStatement(PlaylistQuery.getQueryIsPresent());</span>
+<span class="fc" id="L226">        preparedStatement.setString(1,codiceCanzone);</span>
+<span class="fc" id="L227">        preparedStatement.setString(2, titolo);</span>
+<span class="fc" id="L228">        preparedStatement.setString(3, username);</span>
+<span class="fc" id="L229">        ResultSet resultSet = preparedStatement.executeQuery(); //se le FK sono violate questo lancia SQLException</span>
+<span class="fc" id="L230">        return resultSet.next();</span>
+    }
+
+    /**Questo metodo controlla se l'utente ha la playlist con quel titolo
+     * &lt;p&gt;&lt;b&gt;pre: &lt;/b&gt;username!=null e deve esistere nel db, titoloPlaylist != null e deve esistere nel db&lt;/p&gt;
+     * @param titolo il titolo della playlist da verificare
+     * @param username username dell'utente
+     * @param utenteAPI interfaccia dell'utente
+     * @throws SQLException Un'eccezione che fornisce informazioni su un errore di accesso al database o altri errori.
+     * @throws IllegalArgumentException  Un'eccezione che viene lanciata quando l'username o titolo sono null o non valide
+     * @throws OggettoNonTrovatoException Un'eccezione che viene lanciata quando l'utente non è stato trovato nel db
+     * @return true se la playlist è presente, false altrimenti
+     * */
+    public boolean isPresent(String titolo, String username,UtenteAPI utenteAPI) throws SQLException {
+<span class="fc bfc" id="L244" title="All 4 branches covered.">        if(titolo == null || username == null)</span>
+<span class="fc" id="L245">            throw  new IllegalArgumentException(&quot;titolo o username sono null&quot;);</span>
+
+<span class="fc bfc" id="L247" title="All 2 branches covered.">        if(!utenteAPI.exist(username))</span>
+<span class="fc" id="L248">            throw new OggettoNonTrovatoException(&quot;L'utente non è stato trovato: &quot;+username);</span>
+
+<span class="fc" id="L250">        PreparedStatement preparedStatement = connection.prepareStatement(PlaylistQuery.getQueryIsPresentPlaylist());</span>
+<span class="fc" id="L251">        preparedStatement.setString(1, titolo);</span>
+<span class="fc" id="L252">        preparedStatement.setString(2, username);</span>
+<span class="fc" id="L253">        ResultSet resultSet = preparedStatement.executeQuery(); //se le FK sono violate questo lancia SQLException</span>
+<span class="fc" id="L254">        return resultSet.next();</span>
+    }
+
+    /**Questo metodo preleva il numero di playlist di un utente
+     * &lt;p&gt;&lt;b&gt;pre: &lt;/b&gt;username!=null e deve esistere nel db&lt;/p&gt;
+     * @param username username dell'utente
+     * @param utenteAPI interfaccia dell'utente
+     * @throws SQLException Un'eccezione che fornisce informazioni su un errore di accesso al database o altri errori.
+     * @throws IllegalArgumentException  Un'eccezione che viene lanciata quando l'username è null o non valido
+     * @throws OggettoNonTrovatoException Un'eccezione che viene lanciata quando l'utente non è stato trovato nel db
+     * @return numero di playlist
+     * */
+    public int doRetrieveNumPlaylistOfUtente(String username, UtenteAPI utenteAPI) throws SQLException {
+<span class="fc bfc" id="L267" title="All 2 branches covered.">        if(username == null)</span>
+<span class="fc" id="L268">            throw new IllegalArgumentException(&quot;username è null&quot;);</span>
+
+<span class="fc bfc" id="L270" title="All 2 branches covered.">        if(!utenteAPI.exist(username))</span>
+<span class="fc" id="L271">            throw new OggettoNonTrovatoException(&quot;L'utente non è stato trovato: &quot;+username);</span>
+
+<span class="fc" id="L273">        PreparedStatement preparedStatement = connection.prepareStatement(PlaylistQuery.getQuerydoRetrieveNumPlaylistOfUtente());</span>
+<span class="fc" id="L274">        preparedStatement.setString(1,username);</span>
+<span class="fc" id="L275">        ResultSet resultSet = preparedStatement.executeQuery();</span>
+<span class="fc" id="L276">        resultSet.next();</span>
+<span class="fc" id="L277">        return resultSet.getInt(&quot;num&quot;);</span>
+    }
+
+
+    /** Questo metodo verifica se il titolo è valido secondo la regex
+     * &lt;p&gt;&lt;b&gt;pre: &lt;/b&gt;titolo != null&lt;/p&gt;
+     * @param titolo titolo della playlsit
+     * @return true se è valido secondo la regex, folse altrimenti
+     */
+    public boolean isValidTitolo(String titolo){
+<span class="fc" id="L287">        return TITLE.matcher(titolo).matches();</span>
+    }
+
+    /** Questo metodo verifica se la nota è valido secondo la regex
+     * &lt;p&gt;&lt;b&gt;pre: &lt;/b&gt;nota != spazio bianco&lt;/p&gt;
+     * @param nota della playlsit
+     * @return true se è valida secondo la regex, folse altrimenti
+     */
+    public boolean isValidNota(String nota){
+<span class="fc bfc" id="L296" title="All 4 branches covered.">        if(nota == null || nota.length()==0)</span>
+<span class="fc" id="L297">            return true;</span>
+        /*if(nota.charAt(nota.length()-1)==' ')
+            nota+=&quot;_&quot;;*/
+
+<span class="fc" id="L301">        System.out.println(&quot;nota : --&quot;+nota+&quot;--&quot;);</span>
+
+<span class="fc" id="L303">        return NOTA.matcher(nota).matches();</span>
+    }
+<span class="fc" id="L305">    private static final Pattern TITLE = Pattern.compile(&quot;^[a-zA-Z0-9_.-. ]{0,100}\\w$&quot;);</span>
+<span class="fc" id="L306">    private static final Pattern NOTA = Pattern.compile(&quot;^[a-zA-Z0-9_.-. ]{0,100}\\w|^$$&quot;);</span>
+
+    //metodi non documentati per IS-----------------------------------------------------------------------------------------
+    /** Ritorna tutti le playlist*/
+    @Generated
+    public List&lt;Playlist&gt; doRetrieveAllPlaylist() throws SQLException {
+        PreparedStatement st = connection.prepareStatement(&quot;SELECT * FROM playlist;&quot;);
+        ResultSet rs = st.executeQuery();
+        ArrayList&lt;Playlist&gt; lista = new ArrayList&lt;&gt;();
+        while(rs.next()){
+            lista.add(new PlaylistMapper().map(rs));
+        }
+        return lista;
+    }
+
+    /** Ritorna la lista di playlist che hanno quel titolo*/
+    @Generated
+    public ArrayList&lt;Playlist&gt; doRetrieveByTitolo(String titolo) throws SQLException {
+        PreparedStatement st = connection.prepareStatement(&quot;SELECT * FROM playlist WHERE titolo LIKE ?&quot;);
+        String titoloLike = &quot;%&quot;+titolo+&quot;%&quot;;
+        st.setString(1,titoloLike);
+        System.out.println(st.toString());
+        ResultSet rs = st.executeQuery();
+        ArrayList&lt;Playlist&gt; lista = new ArrayList&lt;Playlist&gt;();
+        while (rs.next()){
+
+            lista.add(new PlaylistMapper().map(rs));
+        }
+
+        return lista;
+    }
+
+    /**Rimuove la canzone dalla playlist*/
+    @Generated
+    public boolean doRemoveSong(String titoloPlaylist, String username, String codice) throws SQLException {
+        PreparedStatement preparedStatement = connection.prepareStatement(PlaylistQuery.getQueryDoRemoveSong());
+        preparedStatement.setString(1,titoloPlaylist);
+        preparedStatement.setString(2,username);
+        preparedStatement.setString(3,codice);
+        return preparedStatement.executeUpdate()==0;
+    }
+    /**Ritorna la playlist con le canzoni*/
+    @Generated
+    public Playlist doRetrievePlaylistWithSongs(String username, String nome) throws SQLException {
+        PreparedStatement preparedStatement = connection.prepareStatement(PlaylistQuery.getQueryDoRetrievePlaylistWithSongs());
+        preparedStatement.setString(1,username);
+        preparedStatement.setString(2,nome);
+        ResultSet resultSet = preparedStatement.executeQuery();
+        Playlist playlist=null;
+        if(resultSet.next()){
+            playlist = new PlaylistMapper().map(resultSet);
+            playlist.setCanzoni(new ArrayList&lt;&gt;());
+            if(resultSet.getString(&quot;CAN.codice&quot;)!=null)
+                playlist.getCanzoni().add(new CanzoneMapper().map(resultSet));
+            while (resultSet.next())
+                playlist.getCanzoni().add(new CanzoneMapper().map(resultSet));
+        }
+        return playlist;
+    }
+
+
+    /** Modifica la playlist */
+    @Generated
+    public void doUpdate(Playlist playlist) throws SQLException {
+        PreparedStatement st = connection.prepareStatement(PlaylistQuery.getQueryPlaylistUpdate());
+        st.setString(1,playlist.getTitolo());
+        st.setString(2,playlist.getNote());
+        //st.setDouble(3,playlist.getDurata());
+        //st.setDate(4, Date.valueOf(playlist.getDataCreazione()));
+        st.setString(5,playlist.getTitolo()); //modificare a 3
+        st.setString(6, playlist.getUsername()); //modificare a 4
+        if(st.executeUpdate()!=1)
+            throw new RuntimeException(&quot;delete error&quot;);
+    }
+
+
+
+  /*
+    public void doInsertPlaylist(Playlist playlist) throws SQLException {
+        if(playlist.getUsername() == null || playlist.getTitolo() == null)
+            throw new IllegalArgumentException(&quot;titolo o username sono null&quot;);
+
+        if(isPresent(playlist.getTitolo(),playlist.getUsername()))
+            throw new OggettoGiaPresenteException(&quot;La playlist è gia presente&quot;);
+
+        PreparedStatement preparedStatement = connection.prepareStatement(PlaylistQuery.getQueryDoInsertPlaylist());
+        preparedStatement.setString(1,playlist.getTitolo());
+        preparedStatement.setString(2,playlist.getUsername());
+        preparedStatement.setString(3,playlist.getNote());
+        preparedStatement.setDouble(4,0);
+        preparedStatement.setDate(5, Date.valueOf(LocalDate.now()));
+        if(preparedStatement.executeUpdate()!=1)
+            throw new OggettoNonInseritoException(&quot;la playlist non è stata inserita&quot;);
+    }
+*/
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.2.201808211720</span></div></body></html>

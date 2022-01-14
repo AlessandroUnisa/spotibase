@@ -1,0 +1,118 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="it"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>CanzoneQuery.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">spotibase4</a> &gt; <a href="index.source.html" class="el_package">data.DAOCanzone</a> &gt; <span class="el_source">CanzoneQuery.java</span></div><h1>CanzoneQuery.java</h1><pre class="source lang-java linenums">package data.DAOCanzone;
+
+<span class="nc" id="L3">public abstract class CanzoneQuery {</span>
+    public static String getQueryDoRetrieveSongsByPlaylist(){
+<span class="nc" id="L5">        return &quot;SELECT CAN.* FROM playlist PLA,raccoglie RAC,canzone CAN &quot; +</span>
+                &quot;WHERE PLA.titolo = RAC.titolo AND PLA.username = RAC.usernameUtente AND RAC.codiceCanzone = CAN.codice AND &quot; +
+                &quot;PLA.username LIKE ? AND PLA.titolo LIKE ?&quot;;
+    }
+
+    public static String getQueryDoRetrieveSongsByAlbum(){
+<span class="nc" id="L11">        return&quot;SELECT CAN.* FROM canzone CAN WHERE CAN.codiceAlbum = ?;&quot;;</span>
+    }
+
+    public static String getQueryDoRetrieveSinglesByArtista(){
+<span class="nc" id="L15">        return &quot;SELECT CAN.* FROM canzone CAN, scrivere SCR, artista ART &quot; +</span>
+                &quot;WHERE CAN.codice = SCR.codiceCanzone AND SCR.codFiscale= ART.codFiscale AND &quot; +
+                &quot;CAN.codiceAlbum is null AND ART.nomeDArte LIKE ? GROUP BY CAN.codice;&quot;;
+    }
+
+    public static String getQueryDoRetrieveSongsByArtista(){
+<span class="nc" id="L21">        return &quot;SELECT CAN.* FROM canzone CAN, scrivere SCR, artista ART &quot; +</span>
+                &quot;WHERE CAN.codice = SCR.codiceCanzone AND SCR.codFiscale= ART.codFiscale AND &quot; +
+                &quot;ART.nomeDArte LIKE ? GROUP BY CAN.codice;&quot;;
+    }
+
+    public static String getQueryDoRetrieveCanzonePopular(){
+<span class="nc" id="L27">        return &quot;SELECT CAN.*,COUNT(*) FROM preferenza PRE, canzone CAN WHERE PRE.codiceCanzone = CAN.codice GROUP BY codiceCanzone LIMIT 0,10;&quot;;</span>
+    }
+
+    public static String getQueryDoRetrievePopularSongsWithArtista(){
+
+<span class="nc" id="L32">        return &quot;SELECT CAN.*,ART.* FROM &quot; +</span>
+                &quot;(SELECT CAN.codice FROM preferenza PRE, canzone CAN WHERE CAN.codice=PRE.codiceCanzone GROUP BY PRE.codiceCanzone ORDER BY COUNT(*) DESC LIMIT 0,10) AS CODCAN &quot; +
+                &quot;INNER JOIN canzone CAN ON CAN.codice=CODCAN.codice &quot; +
+                &quot;INNER JOIN scrivere SCR ON SCR.codiceCanzone=CAN.codice &quot; +
+                &quot;INNER JOIN artista ART ON ART.codFiscale=SCR.codFiscale &quot;;
+    }
+
+    public static String getQueryCanzoneUpdate(){
+<span class="nc" id="L40">        return &quot;UPDATE canzone SET titolo=?, anno=?, durata=?, prezzo=? WHERE codice=?&quot;;</span>
+    }
+
+    public static String getQueryCanzoneByGenere(){
+<span class="nc" id="L44">        return &quot;SELECT DISTINCT CAN.* FROM canzone CAN, scrivere SCR, artista ART, genere GEN &quot; +</span>
+                &quot;WHERE ART.codFiscale=SCR.codFiscale AND SCR.codiceCanzone=CAN.codice AND GEN.codFiscale=ART.codFiscale AND GEN.nome LIKE ?;&quot;;
+    }
+
+    public static String getQueryTotaleGuadagni(){
+<span class="nc" id="L49">        return &quot;SELECT SUM(prezzo) totale FROM uc, canzone CAN WHERE uc.codCanzone=CAN.codice;&quot;;</span>
+    }
+
+    public static String getQueryDoRetrieveCanzoniTopBuy(){
+<span class="nc" id="L53">        return &quot;SELECT CAN.*, COUNT(*) cont FROM uc, canzone CAN WHERE uc.codCanzone=CAN.codice GROUP BY CAN.codice ORDER BY cont;&quot;;</span>
+    }
+
+    public static String getQueryCanzoneByGenere(String filterSQL){
+<span class="nc" id="L57">        return &quot;SELECT DISTINCT CAN.* FROM canzone CAN, scrivere SCR, artista ART, genere GEN &quot; +</span>
+                &quot;WHERE ART.codFiscale=SCR.codFiscale AND SCR.codiceCanzone=CAN.codice AND GEN.codFiscale=ART.codFiscale AND GEN.nome=? &quot;+filterSQL+&quot; LIMIT ?,?;&quot;;
+    }
+
+    public static String getQueryDoRetrieveAlbumByCodice(){
+<span class="nc" id="L62">        return &quot;SELECT CAN.* FROM canzone CAN WHERE CAN.codice=?&quot;;</span>
+    }
+
+    public static String getQueryDoRetrieveCodiciCanzoniPreferite(){
+<span class="nc" id="L66">        return &quot;SELECT PRE.codiceCanzone FROM preferenza PRE WHERE PRE.usernameUtente=?;&quot;;</span>
+    }
+
+    public static String getQueryDoInsertPreferenza(){
+<span class="nc" id="L70">        return &quot;INSERT INTO preferenza VALUES(?,?);&quot;;</span>
+    }
+
+    public static String getQueryDoRetrieveCanzoniAcquistate(){
+<span class="nc" id="L74">        return &quot;SELECT * FROM (SELECT CAN.* FROM utente UTE, uc, canzone CAN &quot; +</span>
+                &quot;WHERE UTE.username=uc.username AND uc.codCanzone=CAN.codice AND UTE.username=? &quot; +
+                &quot;UNION &quot; +
+                &quot;SELECT CAN.* FROM ua, album ALB, canzone CAN&quot; +
+                &quot; WHERE ua.codAlbum=ALB.codice AND CAN.codiceAlbum=ALB.codice AND ua.username=?) AS CAN;&quot;;
+    }
+
+    public static String getQueryDoRetriveCanzoneRandom() {
+<span class="nc" id="L82">        return &quot;SELECT * FROM canzone CAN ORDER BY RAND() LIMIT 0,7; &quot;;</span>
+    }
+
+    public static String getQueryDoRetriveCanzoniUltimeUscite() {
+<span class="nc" id="L86">        return &quot;Select * FROM canzone CAN order by CAN.anno desc LIMIT 0,7;&quot;;</span>
+    }
+
+    public static String getQueryDoRetrieveCanzoneWithArtisti(){
+<span class="nc" id="L90">        return &quot;SELECT CAN.*, ART.* FROM canzone CAN, scrivere SCR, artista ART &quot; +</span>
+                &quot;WHERE CAN.codice=SCR.codiceCanzone AND ART.codFiscale=SCR.codFiscale AND CAN.codice=?&quot;;
+    }
+
+    public static String getQueryDoDeletePreferenza(){
+<span class="nc" id="L95">        return &quot;DELETE FROM preferenza WHERE codiceCanzone=? AND usernameUtente=?;&quot;;</span>
+    }
+
+    public static String getQueryDoRetrieveCanzoniByCodici(int size){
+<span class="nc" id="L99">        String query = &quot;SELECT CAN.*, ART.* FROM scrivere SCR, artista ART, canzone CAN WHERE&quot; +</span>
+                &quot; ART.codFiscale=SCR.codFiscale AND SCR.codiceCanzone=CAN.codice AND  CAN.codice IN (&quot;;
+<span class="nc bnc" id="L101" title="All 2 branches missed.">        for(int i=0; i&lt;size-1; i++)</span>
+<span class="nc" id="L102">            query += &quot;?,&quot;;</span>
+<span class="nc" id="L103">        return query+&quot;?);&quot;;</span>
+    }
+
+    public static String getQueryDoInsertCanzoneAcquistata(){
+<span class="fc" id="L107">        return &quot;INSERT INTO uc VALUES(?,?);&quot;;</span>
+    }
+
+    public static String getQueryDoRetrieveCodiciCanzoniAcquistate(){
+<span class="fc" id="L111">        return &quot;SELECT uc.codCanzone FROM uc WHERE username=? &quot; +</span>
+                &quot;UNION &quot; +
+                &quot;SELECT CAN.codice FROM ua, album ALB, canzone CAN &quot; +
+                &quot;WHERE ua.username=? AND ua.codAlbum=ALB.codice AND CAN.codiceAlbum=ALB.codice&quot;;
+    }
+}
+
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.2.201808211720</span></div></body></html>

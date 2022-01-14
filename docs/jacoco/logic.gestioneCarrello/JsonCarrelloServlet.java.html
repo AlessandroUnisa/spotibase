@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="it"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>JsonCarrelloServlet.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">spotibase4</a> &gt; <a href="index.source.html" class="el_package">logic.gestioneCarrello</a> &gt; <span class="el_source">JsonCarrelloServlet.java</span></div><h1>JsonCarrelloServlet.java</h1><pre class="source lang-java linenums">package logic.gestioneCarrello;
+
+import org.json.simple.JSONObject;
+
+import javax.servlet.*;
+import javax.servlet.http.*;
+import javax.servlet.annotation.*;
+import java.io.IOException;
+import java.util.TreeSet;
+
+/**
+ * Questa classe modella l'interfaccia del carrello, quando si aggiunge un elemento al carrello
+ * Inoltre aggiunge il codice della canzone al carrello
+ * @see HttpServlet fornisce l'interfaccia per creare una servlet
+ * @version 1.0
+ */
+@WebServlet(name = &quot;jsonCarrelloServlet&quot;, value = &quot;/jsonCarrelloServlet&quot;)
+<span class="nc" id="L18">public class JsonCarrelloServlet extends HttpServlet {</span>
+
+    /**
+     * Il metodo aggiunge una canzone al carrello e modifica il badge del carrello
+     * @param request oggetto della servlet da cui preleviamo codice canzone e sessione corrente
+     * @return JSONObject che rappresenta il carrello
+     */
+    private JSONObject aggiungi(HttpServletRequest request){
+<span class="nc" id="L26">        String codice = request.getParameter(&quot;cod&quot;);</span>
+<span class="nc" id="L27">        HttpSession session = request.getSession(false);</span>
+<span class="nc" id="L28">        JSONObject object = new JSONObject();</span>
+
+<span class="nc" id="L30">        TreeSet&lt;String&gt; codici = (TreeSet&lt;String&gt;) session.getAttribute(&quot;listCart&quot;);</span>
+<span class="nc" id="L31">        object.put(&quot;flag&quot;, codici.add(codice));</span>
+<span class="nc" id="L32">        object.put(&quot;numElements&quot;, codici.size());  //per aggiornare i badgeCart</span>
+<span class="nc" id="L33">        return object;</span>
+    }
+
+    /**
+     * Il metodo ereditato dalla classe HttpServlet che esplicita i parametri della request e che inserisce gli elementi
+     * nel carrello
+     * @param request permette di settare la codifica dei caratteri della richiesta
+     * @param response permette di settare la codifica dei caratteri della risposta e l'oggetto json
+     * @throws ServletException Un'eccezione lanciata quando si verifica un errore nella servlet
+     * @throws IOException Un'eccezione lanciata quando si verifica un errore I/O
+     */
+    @Override
+    @Generated
+    protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        //inserimento elementi nel carrello
+        request.setCharacterEncoding(&quot;utf-8&quot;);
+        response.setCharacterEncoding(&quot;utf-8&quot;);
+        response.setContentType(&quot;application/json&quot;);
+        response.getWriter().println(aggiungi(request));
+    }
+
+    @Override
+    @Generated
+    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.2.201808211720</span></div></body></html>

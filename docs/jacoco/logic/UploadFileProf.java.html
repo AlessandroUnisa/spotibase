@@ -1,0 +1,469 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="it"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>UploadFileProf.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">spotibase4</a> &gt; <a href="index.source.html" class="el_package">logic</a> &gt; <span class="el_source">UploadFileProf.java</span></div><h1>UploadFileProf.java</h1><pre class="source lang-java linenums">package logic;
+
+import javax.servlet.ServletException;
+import javax.servlet.ServletOutputStream;
+import javax.servlet.annotation.WebServlet;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.*;
+import java.net.URLDecoder;
+import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.zip.GZIPOutputStream;
+
+@WebServlet(name = &quot;FileServlet&quot;, urlPatterns = &quot;/covers/*&quot;)
+<span class="nc" id="L18">public class UploadFileProf extends HttpServlet {</span>
+
+    // Constants ----------------------------------------------------------------------------------
+
+    private static final int DEFAULT_BUFFER_SIZE = 10240; // ..bytes = 10KB.
+    private static final long DEFAULT_EXPIRE_TIME = 604800000L; // ..ms = 1 week.
+    private static final String MULTIPART_BOUNDARY = &quot;MULTIPART_BYTERANGES&quot;;
+
+    // Properties ---------------------------------------------------------------------------------
+
+    private String basePath;
+
+    // Actions ------------------------------------------------------------------------------------
+
+    /**
+     * Initialize the servlet.
+     *
+     * @see HttpServlet#init().
+     */
+    @Override
+    public void init() throws ServletException {
+
+<span class="nc" id="L40">        this.basePath = System.getenv(&quot;CATALINA_HOME&quot;) + File.separator + &quot;uploads&quot;;</span>
+
+        // Validate base path.
+<span class="nc bnc" id="L43" title="All 2 branches missed.">        if (this.basePath == null) {</span>
+<span class="nc" id="L44">            throw new ServletException(&quot;FileServlet init param 'basePath' is required.&quot;);</span>
+        } else {
+<span class="nc" id="L46">            File path = new File(this.basePath);</span>
+<span class="nc bnc" id="L47" title="All 2 branches missed.">            if (!path.exists()) {</span>
+<span class="nc" id="L48">                throw new ServletException(&quot;FileServlet init param 'basePath' value '&quot;</span>
+                        + this.basePath + &quot;' does actually not exist in file system.&quot;);
+<span class="nc bnc" id="L50" title="All 2 branches missed.">            } else if (!path.isDirectory()) {</span>
+<span class="nc" id="L51">                throw new ServletException(&quot;FileServlet init param 'basePath' value '&quot;</span>
+                        + this.basePath + &quot;' is actually not a directory in file system.&quot;);
+<span class="nc bnc" id="L53" title="All 2 branches missed.">            } else if (!path.canRead()) {</span>
+<span class="nc" id="L54">                throw new ServletException(&quot;FileServlet init param 'basePath' value '&quot;</span>
+                        + this.basePath + &quot;' is actually not readable in file system.&quot;);
+            }
+        }
+<span class="nc" id="L58">    }</span>
+
+    /**
+     * Process HEAD request. This returns the same headers as GET request, but without content.
+     *
+     * @see HttpServlet#doHead(HttpServletRequest, HttpServletResponse).
+     */
+    @Override
+    protected void doHead(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
+        // Process request without content.
+<span class="nc" id="L69">        processRequest(request, response, false);</span>
+<span class="nc" id="L70">    }</span>
+
+    /**
+     * Process GET request.
+     *
+     * @see HttpServlet#doGet(HttpServletRequest, HttpServletResponse).
+     */
+    @Override
+    protected void doGet(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
+        // Process request with content.
+<span class="nc" id="L81">        processRequest(request, response, true);</span>
+<span class="nc" id="L82">    }</span>
+
+    /**
+     * Process the actual request.
+     *
+     * @param request  The request to be processed.
+     * @param response The response to be created.
+     * @param content  Whether the request body should be written (GET) or not (HEAD).
+     * @throws IOException If something fails at I/O level.
+     */
+    private void processRequest
+    (HttpServletRequest request, HttpServletResponse response, boolean content)
+            throws IOException {
+        // Validate the requested file ------------------------------------------------------------
+
+        // Get requested file by path info.
+<span class="nc" id="L98">        String requestedFile = request.getPathInfo();</span>
+
+        // Check if file is actually supplied to the request URL.
+<span class="nc bnc" id="L101" title="All 2 branches missed.">        if (requestedFile == null) {</span>
+            // Do your thing if the file is not supplied to the request URL.
+            // Throw an exception, or send 404, or show default/warning page, or just ignore it.
+<span class="nc" id="L104">            response.sendError(HttpServletResponse.SC_NOT_FOUND);</span>
+<span class="nc" id="L105">            return;</span>
+        }
+
+        // URL-decode the file name (might contain spaces and on) and prepare file object.
+<span class="nc" id="L109">        File file = new File(basePath, URLDecoder.decode(requestedFile, StandardCharsets.UTF_8));</span>
+
+        // Check if file actually exists in filesystem.
+<span class="nc bnc" id="L112" title="All 2 branches missed.">        if (!file.exists()) {</span>
+            // Do your thing if the file appears to be non-existing.
+            // Throw an exception, or send 404, or show default/warning page, or just ignore it.
+<span class="nc" id="L115">            response.sendError(HttpServletResponse.SC_NOT_FOUND);</span>
+<span class="nc" id="L116">            return;</span>
+        }
+
+        // Prepare some variables. The ETag is an unique identifier of the file.
+<span class="nc" id="L120">        String fileName = file.getName();</span>
+<span class="nc" id="L121">        long length = file.length();</span>
+<span class="nc" id="L122">        long lastModified = file.lastModified();</span>
+<span class="nc" id="L123">        String eTag = fileName + &quot;_&quot; + length + &quot;_&quot; + lastModified;</span>
+<span class="nc" id="L124">        long expires = System.currentTimeMillis() + DEFAULT_EXPIRE_TIME;</span>
+
+
+        // Validate request headers for caching ---------------------------------------------------
+
+        // If-None-Match header should contain &quot;*&quot; or ETag. If so, then return 304.
+<span class="nc" id="L130">        String ifNoneMatch = request.getHeader(&quot;If-None-Match&quot;);</span>
+<span class="nc bnc" id="L131" title="All 4 branches missed.">        if (ifNoneMatch != null &amp;&amp; matches(ifNoneMatch, eTag)) {</span>
+<span class="nc" id="L132">            response.setStatus(HttpServletResponse.SC_NOT_MODIFIED);</span>
+<span class="nc" id="L133">            response.setHeader(&quot;ETag&quot;, eTag); // Required in 304.</span>
+<span class="nc" id="L134">            response.setDateHeader(&quot;Expires&quot;, expires); // Postpone cache with 1 week.</span>
+<span class="nc" id="L135">            return;</span>
+        }
+
+        // If-Modified-Since header should be greater than LastModified. If so, then return 304.
+        // This header is ignored if any If-None-Match header is specified.
+<span class="nc" id="L140">        long ifModifiedSince = request.getDateHeader(&quot;If-Modified-Since&quot;);</span>
+<span class="nc bnc" id="L141" title="All 6 branches missed.">        if (ifNoneMatch == null &amp;&amp; ifModifiedSince != -1 &amp;&amp; ifModifiedSince + 1000 &gt; lastModified) {</span>
+<span class="nc" id="L142">            response.setStatus(HttpServletResponse.SC_NOT_MODIFIED);</span>
+<span class="nc" id="L143">            response.setHeader(&quot;ETag&quot;, eTag); // Required in 304.</span>
+<span class="nc" id="L144">            response.setDateHeader(&quot;Expires&quot;, expires); // Postpone cache with 1 week.</span>
+<span class="nc" id="L145">            return;</span>
+        }
+
+
+        // Validate request headers for resume ----------------------------------------------------
+
+        // If-Match header should contain &quot;*&quot; or ETag. If not, then return 412.
+<span class="nc" id="L152">        String ifMatch = request.getHeader(&quot;If-Match&quot;);</span>
+<span class="nc bnc" id="L153" title="All 4 branches missed.">        if (ifMatch != null &amp;&amp; !matches(ifMatch, eTag)) {</span>
+<span class="nc" id="L154">            response.sendError(HttpServletResponse.SC_PRECONDITION_FAILED);</span>
+<span class="nc" id="L155">            return;</span>
+        }
+
+        // If-Unmodified-Since header should be greater than LastModified. If not, then return 412.
+<span class="nc" id="L159">        long ifUnmodifiedSince = request.getDateHeader(&quot;If-Unmodified-Since&quot;);</span>
+<span class="nc bnc" id="L160" title="All 4 branches missed.">        if (ifUnmodifiedSince != -1 &amp;&amp; ifUnmodifiedSince + 1000 &lt;= lastModified) {</span>
+<span class="nc" id="L161">            response.sendError(HttpServletResponse.SC_PRECONDITION_FAILED);</span>
+<span class="nc" id="L162">            return;</span>
+        }
+
+
+        // Validate and process range -------------------------------------------------------------
+
+        // Prepare some variables. The full Range represents the complete file.
+<span class="nc" id="L169">        Range full = new Range(0, length - 1, length);</span>
+<span class="nc" id="L170">        List&lt;Range&gt; ranges = new ArrayList&lt;Range&gt;();</span>
+
+        // Validate and process Range and If-Range headers.
+<span class="nc" id="L173">        String range = request.getHeader(&quot;Range&quot;);</span>
+<span class="nc bnc" id="L174" title="All 2 branches missed.">        if (range != null) {</span>
+
+            // Range header should match format &quot;bytes=n-n,n-n,n-n...&quot;. If not, then return 416.
+<span class="nc bnc" id="L177" title="All 2 branches missed.">            if (!range.matches(&quot;^bytes=\\d*-\\d*(,\\d*-\\d*)*$&quot;)) {</span>
+<span class="nc" id="L178">                response.setHeader(&quot;Content-Range&quot;, &quot;bytes */&quot; + length); // Required in 416.</span>
+<span class="nc" id="L179">                response.sendError(HttpServletResponse.SC_REQUESTED_RANGE_NOT_SATISFIABLE);</span>
+<span class="nc" id="L180">                return;</span>
+            }
+
+            // If-Range header should either match ETag or be greater then LastModified. If not,
+            // then return full file.
+<span class="nc" id="L185">            String ifRange = request.getHeader(&quot;If-Range&quot;);</span>
+<span class="nc bnc" id="L186" title="All 4 branches missed.">            if (ifRange != null &amp;&amp; !ifRange.equals(eTag)) {</span>
+                try {
+<span class="nc" id="L188">                    long ifRangeTime = request.getDateHeader(&quot;If-Range&quot;); // Throws IAE if invalid.</span>
+<span class="nc bnc" id="L189" title="All 4 branches missed.">                    if (ifRangeTime != -1 &amp;&amp; ifRangeTime + 1000 &lt; lastModified) {</span>
+<span class="nc" id="L190">                        ranges.add(full);</span>
+                    }
+<span class="nc" id="L192">                } catch (IllegalArgumentException ignore) {</span>
+<span class="nc" id="L193">                    ranges.add(full);</span>
+<span class="nc" id="L194">                }</span>
+            }
+
+            // If any valid If-Range header, then process each part of byte range.
+<span class="nc bnc" id="L198" title="All 2 branches missed.">            if (ranges.isEmpty()) {</span>
+<span class="nc bnc" id="L199" title="All 2 branches missed.">                for (String part : range.substring(6).split(&quot;,&quot;)) {</span>
+                    // Assuming a file with length of 100, the following examples returns bytes at:
+                    // 50-80 (50 to 80), 40- (40 to length=100), -20 (length-20=80 to length=100).
+<span class="nc" id="L202">                    long start = sublong(part, 0, part.indexOf(&quot;-&quot;));</span>
+<span class="nc" id="L203">                    long end = sublong(part, part.indexOf(&quot;-&quot;) + 1, part.length());</span>
+
+<span class="nc bnc" id="L205" title="All 2 branches missed.">                    if (start == -1) {</span>
+<span class="nc" id="L206">                        start = length - end;</span>
+<span class="nc" id="L207">                        end = length - 1;</span>
+<span class="nc bnc" id="L208" title="All 4 branches missed.">                    } else if (end == -1 || end &gt; length - 1) {</span>
+<span class="nc" id="L209">                        end = length - 1;</span>
+                    }
+
+                    // Check if Range is syntactically valid. If not, then return 416.
+<span class="nc bnc" id="L213" title="All 2 branches missed.">                    if (start &gt; end) {</span>
+<span class="nc" id="L214">                        response.setHeader(&quot;Content-Range&quot;, &quot;bytes */&quot; + length); // Required in 416.</span>
+<span class="nc" id="L215">                        response.sendError(HttpServletResponse.SC_REQUESTED_RANGE_NOT_SATISFIABLE);</span>
+<span class="nc" id="L216">                        return;</span>
+                    }
+
+                    // Add range.
+<span class="nc" id="L220">                    ranges.add(new Range(start, end, length));</span>
+                }
+            }
+        }
+
+
+        // Prepare and initialize response --------------------------------------------------------
+
+        // Get content type by file name and set default GZIP support and content disposition.
+<span class="nc" id="L229">        String contentType = getServletContext().getMimeType(fileName);</span>
+<span class="nc" id="L230">        boolean acceptsGzip = false;</span>
+<span class="nc" id="L231">        String disposition = &quot;inline&quot;;</span>
+
+        // If content type is unknown, then set the default value.
+        // For all content types, see: http://www.w3schools.com/media/media_mimeref.asp
+        // To add new content types, add new mime-mapping entry in web.xml.
+<span class="nc bnc" id="L236" title="All 2 branches missed.">        if (contentType == null) {</span>
+<span class="nc" id="L237">            contentType = &quot;application/octet-stream&quot;;</span>
+        }
+
+        // If content type is text, then determine whether GZIP content encoding is supported by
+        // the browser and expand content type with the one and right character encoding.
+<span class="nc bnc" id="L242" title="All 2 branches missed.">        if (contentType.startsWith(&quot;text&quot;)) {</span>
+<span class="nc" id="L243">            String acceptEncoding = request.getHeader(&quot;Accept-Encoding&quot;);</span>
+<span class="nc bnc" id="L244" title="All 4 branches missed.">            acceptsGzip = acceptEncoding != null &amp;&amp; accepts(acceptEncoding, &quot;gzip&quot;);</span>
+<span class="nc" id="L245">            contentType += &quot;;charset=UTF-8&quot;;</span>
+<span class="nc" id="L246">        }</span>
+
+        // Else, expect for images, determine content disposition. If content type is supported by
+        // the browser, then set to inline, else attachment which will pop a 'save as' dialogue.
+<span class="nc bnc" id="L250" title="All 2 branches missed.">        else if (!contentType.startsWith(&quot;image&quot;)) {</span>
+<span class="nc" id="L251">            String accept = request.getHeader(&quot;Accept&quot;);</span>
+<span class="nc bnc" id="L252" title="All 4 branches missed.">            disposition = accept != null &amp;&amp; accepts(accept, contentType) ? &quot;inline&quot; : &quot;attachment&quot;;</span>
+        }
+
+        // Initialize response.
+<span class="nc" id="L256">        response.reset();</span>
+<span class="nc" id="L257">        response.setBufferSize(DEFAULT_BUFFER_SIZE);</span>
+<span class="nc" id="L258">        response.setHeader(&quot;Content-Disposition&quot;, disposition + &quot;;filename=\&quot;&quot; + fileName + &quot;\&quot;&quot;);</span>
+<span class="nc" id="L259">        response.setHeader(&quot;Accept-Ranges&quot;, &quot;bytes&quot;);</span>
+<span class="nc" id="L260">        response.setHeader(&quot;ETag&quot;, eTag);</span>
+<span class="nc" id="L261">        response.setDateHeader(&quot;Last-Modified&quot;, lastModified);</span>
+<span class="nc" id="L262">        response.setDateHeader(&quot;Expires&quot;, expires);</span>
+
+
+        // Send requested file (part(s)) to client ------------------------------------------------
+
+        // Prepare streams.
+<span class="nc" id="L268">        RandomAccessFile input = null;</span>
+<span class="nc" id="L269">        OutputStream output = null;</span>
+
+        try {
+            // Open streams.
+<span class="nc" id="L273">            input = new RandomAccessFile(file, &quot;r&quot;);</span>
+<span class="nc" id="L274">            output = response.getOutputStream();</span>
+
+<span class="nc bnc" id="L276" title="All 4 branches missed.">            if (ranges.isEmpty() || ranges.get(0) == full) {</span>
+
+                // Return full file.
+<span class="nc" id="L279">                Range r = full;</span>
+<span class="nc" id="L280">                response.setContentType(contentType);</span>
+
+<span class="nc bnc" id="L282" title="All 2 branches missed.">                if (content) {</span>
+<span class="nc bnc" id="L283" title="All 2 branches missed.">                    if (acceptsGzip) {</span>
+                        // The browser accepts GZIP, so GZIP the content.
+<span class="nc" id="L285">                        response.setHeader(&quot;Content-Encoding&quot;, &quot;gzip&quot;);</span>
+<span class="nc" id="L286">                        output = new GZIPOutputStream(output, DEFAULT_BUFFER_SIZE);</span>
+                    } else {
+                        // Content length is not directly predictable in case of GZIP.
+                        // So only add it if there is no means of GZIP, else browser will hang.
+<span class="nc" id="L290">                        response.setHeader(&quot;Content-Length&quot;, String.valueOf(r.length));</span>
+                    }
+
+                    // Copy full range.
+<span class="nc" id="L294">                    copy(input, output, r.start, r.length);</span>
+                }
+
+<span class="nc bnc" id="L297" title="All 2 branches missed.">            } else if (ranges.size() == 1) {</span>
+
+                // Return single part of file.
+<span class="nc" id="L300">                Range r = ranges.get(0);</span>
+<span class="nc" id="L301">                response.setContentType(contentType);</span>
+<span class="nc" id="L302">                response.setHeader(&quot;Content-Range&quot;, &quot;bytes &quot; + r.start + &quot;-&quot; + r.end + &quot;/&quot; + r.total);</span>
+<span class="nc" id="L303">                response.setHeader(&quot;Content-Length&quot;, String.valueOf(r.length));</span>
+<span class="nc" id="L304">                response.setStatus(HttpServletResponse.SC_PARTIAL_CONTENT); // 206.</span>
+
+<span class="nc bnc" id="L306" title="All 2 branches missed.">                if (content) {</span>
+                    // Copy single part range.
+<span class="nc" id="L308">                    copy(input, output, r.start, r.length);</span>
+                }
+
+<span class="nc" id="L311">            } else {</span>
+
+                // Return multiple parts of file.
+<span class="nc" id="L314">                response.setContentType(&quot;multipart/byteranges; boundary=&quot; + MULTIPART_BOUNDARY);</span>
+<span class="nc" id="L315">                response.setStatus(HttpServletResponse.SC_PARTIAL_CONTENT); // 206.</span>
+
+<span class="nc bnc" id="L317" title="All 2 branches missed.">                if (content) {</span>
+                    // Cast back to ServletOutputStream to get the easy println methods.
+<span class="nc" id="L319">                    ServletOutputStream sos = (ServletOutputStream) output;</span>
+
+                    // Copy multi part range.
+<span class="nc bnc" id="L322" title="All 2 branches missed.">                    for (Range r : ranges) {</span>
+                        // Add multipart boundary and header fields for every range.
+<span class="nc" id="L324">                        sos.println();</span>
+<span class="nc" id="L325">                        sos.println(&quot;--&quot; + MULTIPART_BOUNDARY);</span>
+<span class="nc" id="L326">                        sos.println(&quot;Content-Type: &quot; + contentType);</span>
+<span class="nc" id="L327">                        sos.println(&quot;Content-Range: bytes &quot; + r.start + &quot;-&quot; + r.end + &quot;/&quot; + r.total);</span>
+
+                        // Copy single part range of multi part range.
+<span class="nc" id="L330">                        copy(input, output, r.start, r.length);</span>
+<span class="nc" id="L331">                    }</span>
+
+                    // End with multipart boundary.
+<span class="nc" id="L334">                    sos.println();</span>
+<span class="nc" id="L335">                    sos.println(&quot;--&quot; + MULTIPART_BOUNDARY + &quot;--&quot;);</span>
+                }
+            }
+        } finally {
+            // Gently close streams.
+<span class="nc" id="L340">            close(output);</span>
+<span class="nc" id="L341">            close(input);</span>
+        }
+<span class="nc" id="L343">    }</span>
+
+    // Helpers (can be refactored to public utility class) ----------------------------------------
+
+    /**
+     * Returns true if the given accept header accepts the given value.
+     *
+     * @param acceptHeader The accept header.
+     * @param toAccept     The value to be accepted.
+     * @return True if the given accept header accepts the given value.
+     */
+    private static boolean accepts(String acceptHeader, String toAccept) {
+<span class="nc" id="L355">        String[] acceptValues = acceptHeader.split(&quot;\\s*(,|;)\\s*&quot;);</span>
+<span class="nc" id="L356">        Arrays.sort(acceptValues);</span>
+<span class="nc bnc" id="L357" title="All 2 branches missed.">        return Arrays.binarySearch(acceptValues, toAccept) &gt; -1</span>
+<span class="nc bnc" id="L358" title="All 2 branches missed.">                || Arrays.binarySearch(acceptValues, toAccept.replaceAll(&quot;/.*$&quot;, &quot;/*&quot;)) &gt; -1</span>
+<span class="nc bnc" id="L359" title="All 2 branches missed.">                || Arrays.binarySearch(acceptValues, &quot;*/*&quot;) &gt; -1;</span>
+    }
+
+    /**
+     * Returns true if the given match header matches the given value.
+     *
+     * @param matchHeader The match header.
+     * @param toMatch     The value to be matched.
+     * @return True if the given match header matches the given value.
+     */
+    private static boolean matches(String matchHeader, String toMatch) {
+<span class="nc" id="L370">        String[] matchValues = matchHeader.split(&quot;\\s*,\\s*&quot;);</span>
+<span class="nc" id="L371">        Arrays.sort(matchValues);</span>
+<span class="nc bnc" id="L372" title="All 2 branches missed.">        return Arrays.binarySearch(matchValues, toMatch) &gt; -1</span>
+<span class="nc bnc" id="L373" title="All 2 branches missed.">                || Arrays.binarySearch(matchValues, &quot;*&quot;) &gt; -1;</span>
+    }
+
+    /**
+     * Returns a substring of the given string value from the given begin index to the given end
+     * index as a long. If the substring is empty, then -1 will be returned
+     *
+     * @param value      The string value to return a substring as long for.
+     * @param beginIndex The begin index of the substring to be returned as long.
+     * @param endIndex   The end index of the substring to be returned as long.
+     * @return A substring of the given string value as long or -1 if substring is empty.
+     */
+    private static long sublong(String value, int beginIndex, int endIndex) {
+<span class="nc" id="L386">        String substring = value.substring(beginIndex, endIndex);</span>
+<span class="nc bnc" id="L387" title="All 2 branches missed.">        return (substring.length() &gt; 0) ? Long.parseLong(substring) : -1;</span>
+    }
+
+    /**
+     * Copy the given byte range of the given input to the given output.
+     *
+     * @param input  The input to copy the given range to the given output for.
+     * @param output The output to copy the given range from the given input for.
+     * @param start  Start of the byte range.
+     * @param length Length of the byte range.
+     * @throws IOException If something fails at I/O level.
+     */
+    private static void copy(RandomAccessFile input, OutputStream output, long start, long length)
+            throws IOException {
+<span class="nc" id="L401">        byte[] buffer = new byte[DEFAULT_BUFFER_SIZE];</span>
+        int read;
+
+<span class="nc bnc" id="L404" title="All 2 branches missed.">        if (input.length() == length) {</span>
+            // Write full range.
+<span class="nc bnc" id="L406" title="All 2 branches missed.">            while ((read = input.read(buffer)) &gt; 0) {</span>
+<span class="nc" id="L407">                output.write(buffer, 0, read);</span>
+            }
+        } else {
+            // Write partial range.
+<span class="nc" id="L411">            input.seek(start);</span>
+<span class="nc" id="L412">            long toRead = length;</span>
+
+<span class="nc bnc" id="L414" title="All 2 branches missed.">            while ((read = input.read(buffer)) &gt; 0) {</span>
+<span class="nc bnc" id="L415" title="All 2 branches missed.">                if ((toRead -= read) &gt; 0) {</span>
+<span class="nc" id="L416">                    output.write(buffer, 0, read);</span>
+                } else {
+<span class="nc" id="L418">                    output.write(buffer, 0, (int) toRead + read);</span>
+<span class="nc" id="L419">                    break;</span>
+                }
+            }
+        }
+<span class="nc" id="L423">    }</span>
+
+    /**
+     * Close the given resource.
+     *
+     * @param resource The resource to be closed.
+     */
+    private static void close(Closeable resource) {
+<span class="nc bnc" id="L431" title="All 2 branches missed.">        if (resource != null) {</span>
+            try {
+<span class="nc" id="L433">                resource.close();</span>
+<span class="nc" id="L434">            } catch (IOException ignore) {</span>
+                // Ignore IOException. If you want to handle this anyway, it might be useful to know
+                // that this will generally only be thrown when the client aborted the request.
+<span class="nc" id="L437">            }</span>
+        }
+<span class="nc" id="L439">    }</span>
+
+    // Inner classes ------------------------------------------------------------------------------
+
+    /**
+     * This class represents a byte range.
+     */
+    protected class Range {
+        long start;
+        long end;
+        long length;
+        long total;
+
+        /**
+         * Construct a byte range.
+         *
+         * @param start Start of the byte range.
+         * @param end   End of the byte range.
+         * @param total Total length of the byte source.
+         */
+<span class="nc" id="L459">        public Range(long start, long end, long total) {</span>
+<span class="nc" id="L460">            this.start = start;</span>
+<span class="nc" id="L461">            this.end = end;</span>
+<span class="nc" id="L462">            this.length = end - start + 1;</span>
+<span class="nc" id="L463">            this.total = total;</span>
+<span class="nc" id="L464">        }</span>
+
+    }
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.2.201808211720</span></div></body></html>

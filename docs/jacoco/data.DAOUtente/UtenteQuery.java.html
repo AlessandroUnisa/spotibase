@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="it"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>UtenteQuery.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">spotibase4</a> &gt; <a href="index.source.html" class="el_package">data.DAOUtente</a> &gt; <span class="el_source">UtenteQuery.java</span></div><h1>UtenteQuery.java</h1><pre class="source lang-java linenums">package data.DAOUtente;
+
+<span class="nc" id="L3">public abstract class UtenteQuery {</span>
+    public static String getQueryFetchPrefPlaylistAttByUsername(){
+<span class="nc" id="L5">        return &quot;SELECT ALB.*, CAN.*, ART.*, PLA.*, ATT.* FROM &quot; +</span>
+                &quot; utente UTE LEFT JOIN seguire SEG ON UTE.username=SEG.usernameUtente &quot; +
+                &quot; LEFT JOIN artista ART ON SEG.codFiscale=ART.codFiscale &quot; +
+                &quot; LEFT JOIN preferenza PRE ON UTE.username=PRE.usernameUtente &quot; +
+                &quot; LEFT JOIN canzone CAN ON PRE.codiceCanzone=CAN.codice &quot; +
+                &quot; LEFT JOIN interesse INTE ON INTE.usernameUtente=UTE.username &quot; +
+                &quot; LEFT JOIN album ALB ON INTE.codiceAlbum=ALB.codice &quot; +
+                &quot; LEFT JOIN playlist PLA ON UTE.username=PLA.username &quot; +
+                &quot; LEFT JOIN attivazione ATT ON ATT.usernameUtente=UTE.username &quot; +
+                &quot; WHERE UTE.username=?;&quot;;
+    }
+
+    public static String getQueryUtenteSave(){
+<span class="fc" id="L18">        return &quot;INSERT INTO utente (username,passwd,email) VALUES(?,?,?);&quot;;</span>
+    }
+
+    public static String getQueryUtenteUpdate(){
+<span class="nc" id="L22">        return &quot;UPDATE utente SET passwd=?, email=?, WHERE username=?&quot;;</span>
+    }
+
+    public static String getQueryFindAccount(){
+<span class="fc" id="L26">        return &quot;SELECT * FROM utente UTE WHERE UTE.email=? AND UTE.passwd=?;&quot;;</span>
+    }
+
+    public static String getQueryFindAccountField(String field){
+<span class="fc" id="L30">        return &quot;SELECT * FROM utente UTE WHERE UTE.&quot;+field+&quot;=?&quot;;</span>
+    }
+
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.2.201808211720</span></div></body></html>

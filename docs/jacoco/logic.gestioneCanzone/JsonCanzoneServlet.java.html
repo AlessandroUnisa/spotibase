@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="it"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>JsonCanzoneServlet.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">spotibase4</a> &gt; <a href="index.source.html" class="el_package">logic.gestioneCanzone</a> &gt; <span class="el_source">JsonCanzoneServlet.java</span></div><h1>JsonCanzoneServlet.java</h1><pre class="source lang-java linenums">package logic.gestioneCanzone;
+
+import data.DAOCanzone.Canzone;
+import data.DAOCanzone.CanzoneAPI;
+import data.DAOCanzone.CanzoneDAO;
+import data.DAOPreferenza.PreferenzaAPI;
+import data.DAOPreferenza.PreferenzaDAO;
+import org.json.simple.JSONObject;
+
+import javax.servlet.ServletException;
+import javax.servlet.annotation.WebServlet;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
+import java.lang.annotation.Documented;
+import java.lang.annotation.Retention;
+import java.lang.annotation.Target;
+import java.sql.SQLException;
+
+import static java.lang.annotation.ElementType.METHOD;
+import static java.lang.annotation.ElementType.TYPE;
+import static java.lang.annotation.RetentionPolicy.RUNTIME;
+
+@Documented
+@Retention(RUNTIME)
+@Target({TYPE, METHOD})
+@interface Generated {
+}
+
+/**Questa classe modella l'interfaccia delle canzoni a seconda della tipologia di utente
+ * @see HttpServlet fornisce l'interfaccia per creare una servlet
+ * @version 1.0
+ */
+@WebServlet(name = &quot;jsonAlbumServlet&quot;, value = &quot;/jsonCanzoneServlet&quot;)
+<span class="fc" id="L36">public class JsonCanzoneServlet extends HttpServlet {</span>
+
+    /**
+     * Il metodo permette di creare un JsonObject di una canzone
+     * @param request oggetto della servlet che consente di prelevare il codice della canzone
+     * @param canzoneAPI interfaccia di CanzoneDAO
+     * @param preferenzaAPI interfaccia di PreferenzaDAO
+     * @return JSONObject oggetto Json che rappresenta la canzone
+     * @throws SQLException Un'eccezione che fornisce informazioni su un errore di accesso al database o altri errori.
+     */
+    public JSONObject getCanzone(HttpServletRequest request, CanzoneAPI canzoneAPI, PreferenzaAPI preferenzaAPI) throws SQLException {
+<span class="fc" id="L47">        String code = request.getParameter(&quot;cod&quot;);</span>
+<span class="fc" id="L48">        JSONObject obj = new JSONObject();</span>
+
+<span class="fc" id="L50">        String username = (String) request.getSession(false).getAttribute(&quot;username&quot;);</span>
+
+<span class="fc bfc" id="L52" title="All 2 branches covered.">        if(username!=null){ //se il tasto play è stato cliccato da un utente loggato</span>
+<span class="fc" id="L53">            obj.put(&quot;isLogged&quot;,true);</span>
+<span class="fc" id="L54">            obj.put(&quot;pref&quot;,preferenzaAPI.doRetrieveCodiciCanzoniPreferite(username).contains(code)); //vedo se la canzone è tra i preferiti</span>
+<span class="fc" id="L55">        }else obj.put(&quot;isLogged&quot;, false);</span>
+
+<span class="fc" id="L57">        Canzone canzone = canzoneAPI.doRetrieveCanzoneWithArtisti(code);</span>
+<span class="fc" id="L58">        obj.put(&quot;url&quot;,canzone.getPathMP3());  //setto i campi che servono per il footer</span>
+<span class="fc" id="L59">        obj.put(&quot;titolo&quot;,canzone.getTitolo());</span>
+<span class="fc" id="L60">        obj.put(&quot;artista&quot;,canzone.getArtisti().get(0).getNomeDArte());</span>
+<span class="fc" id="L61">        return obj;</span>
+    }
+
+    /**
+     * Il metodo ereditato dalla classe HttpServlet che esplicita i parametri della request e che preleva la canzone
+     * e che modifica l'interfaccia
+     * @param request oggetto della servlet che permette di settare la codifica dei caratteri della richiesta
+     * @param response oggetto della servlet che permette di settare la codifica dei caratteri della risposta,l'oggetto json
+     * @throws ServletException Un'eccezione lanciata quando si verifica un errore nella servlet
+     * @throws IOException Un'eccezione lanciata quando si verifica un errore I/O
+     */
+    @Override
+    @Generated
+    protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+       //per il tasto play
+        request.setCharacterEncoding(&quot;utf-8&quot;);
+        response.setCharacterEncoding(&quot;utf-8&quot;);
+        response.setContentType(&quot;application/json&quot;);
+        try {
+            CanzoneAPI canzoneAPI = new CanzoneDAO();
+            PreferenzaAPI preferenzaAPI = new PreferenzaDAO();
+            response.getWriter().println(getCanzone(request,canzoneAPI,preferenzaAPI));
+        } catch (SQLException throwables) {
+            throwables.printStackTrace();
+        }
+    }
+
+    @Override
+    @Generated
+    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.2.201808211720</span></div></body></html>

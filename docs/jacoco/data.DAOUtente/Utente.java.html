@@ -1,0 +1,146 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="it"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>Utente.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">spotibase4</a> &gt; <a href="index.source.html" class="el_package">data.DAOUtente</a> &gt; <span class="el_source">Utente.java</span></div><h1>Utente.java</h1><pre class="source lang-java linenums">package data.DAOUtente;
+
+import data.Album.Album;
+import data.Artista.Artista;
+import data.DAOCanzone.Canzone;
+import data.Attivazione.Attivazione;
+import data.DAOPlaylist.Playlist;
+
+import java.nio.charset.StandardCharsets;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
+import java.sql.Connection;
+import java.util.List;
+
+<span class="fc" id="L15">public class Utente {</span>
+	private String username;
+	private String password;
+	private String email;
+	private int numPlaylistCreate;
+	private List&lt;Attivazione&gt; attivazioni;
+	private List&lt;Artista&gt; artisti;
+	private List&lt;Playlist&gt; playlists;
+	private List&lt;Canzone&gt; canzoni;
+	private List&lt;Album&gt; albums;
+
+	private List&lt;Album&gt; albumAcquistati;
+	private List&lt;Canzone&gt; canzoniAcquistate;
+
+	@Override
+	@Generated
+	public String toString() {
+		return &quot;Utente{&quot; +
+				&quot;username='&quot; + username + '\'' +
+				&quot;, password='&quot; + password + '\'' +
+				&quot;, email='&quot; + email + '\'' +
+				&quot;, numPlaylistCreate=&quot; + numPlaylistCreate +
+				&quot;, attivazioni=&quot; + attivazioni +
+				&quot;, artisti=&quot; + artisti +
+				&quot;, playlists=&quot; + playlists +
+				&quot;, canzoni=&quot; + canzoni +
+				&quot;, albums=&quot; + albums +
+				&quot;, albumAcquistati=&quot; + albumAcquistati +
+				&quot;, canzoniAcquistate=&quot; + canzoniAcquistate +
+				'}';
+	}
+
+	public List&lt;Album&gt; getAlbumAcquistati() {
+<span class="nc" id="L48">		return albumAcquistati;</span>
+	}
+
+	public void setAlbumAcquistati(List&lt;Album&gt; albumAcquistati) {
+<span class="nc" id="L52">		this.albumAcquistati = albumAcquistati;</span>
+<span class="nc" id="L53">	}</span>
+
+	public List&lt;Canzone&gt; getCanzoniAcquistate() {
+<span class="nc" id="L56">		return canzoniAcquistate;</span>
+	}
+
+	public void setCanzoniAcquistate(List&lt;Canzone&gt; canzoniAcquistate) {
+<span class="nc" id="L60">		this.canzoniAcquistate = canzoniAcquistate;</span>
+<span class="nc" id="L61">	}</span>
+
+	public List&lt;Artista&gt; getArtisti() {
+<span class="nc" id="L64">		return artisti;</span>
+	}
+
+	public void setArtisti(List&lt;Artista&gt; artisti) {
+<span class="nc" id="L68">		this.artisti = artisti;</span>
+<span class="nc" id="L69">	}</span>
+
+	public List&lt;Playlist&gt; getPlaylists() {
+<span class="nc" id="L72">		return playlists;</span>
+	}
+
+	public void setPlaylists(List&lt;Playlist&gt; playlists) {
+<span class="nc" id="L76">		this.playlists = playlists;</span>
+<span class="nc" id="L77">	}</span>
+
+	public List&lt;Canzone&gt; getCanzoni() {
+<span class="nc" id="L80">		return canzoni;</span>
+	}
+
+	public void setCanzoni(List&lt;Canzone&gt; canzoni) {
+<span class="nc" id="L84">		this.canzoni = canzoni;</span>
+<span class="nc" id="L85">	}</span>
+
+	public List&lt;Album&gt; getAlbums() {
+<span class="nc" id="L88">		return albums;</span>
+	}
+
+	public void setAlbums(List&lt;Album&gt; albums) {
+<span class="nc" id="L92">		this.albums = albums;</span>
+<span class="nc" id="L93">	}</span>
+
+
+
+	public List&lt;Attivazione&gt; getAttivazioni() {
+<span class="nc" id="L98">		return attivazioni;</span>
+	}
+
+	public void setAttivazioni(List&lt;Attivazione&gt; attivazioni) {
+<span class="nc" id="L102">		this.attivazioni = attivazioni;</span>
+<span class="nc" id="L103">	}</span>
+
+
+
+	public String getUsername() {
+<span class="fc" id="L108">		return username;</span>
+	}
+
+	public void setUsername(String username) {
+<span class="fc" id="L112">		this.username = username;</span>
+<span class="fc" id="L113">	}</span>
+
+	public String getPassword() {
+<span class="fc" id="L116">		return password;</span>
+	}
+
+	public void setPassword(String password) throws NoSuchAlgorithmException {
+<span class="fc" id="L120">		MessageDigest digest = MessageDigest.getInstance(&quot;SHA-512&quot;);</span>
+<span class="fc" id="L121">		byte[] hashedPwd = digest.digest(password.getBytes(StandardCharsets.UTF_8));</span>
+<span class="fc" id="L122">		StringBuilder builder = new StringBuilder();</span>
+<span class="fc bfc" id="L123" title="All 2 branches covered.">		for (byte bit:hashedPwd)</span>
+<span class="fc" id="L124">			builder.append(String.format(&quot;%02x&quot;,bit));</span>
+<span class="fc" id="L125">		this.password = builder.toString();</span>
+<span class="fc" id="L126">	}</span>
+
+	public String getEmail() {
+<span class="fc" id="L129">		return email;</span>
+	}
+
+	public void setEmail(String email) {
+<span class="fc" id="L133">		this.email = email;</span>
+<span class="fc" id="L134">	}</span>
+
+	public int getNumPlaylistCreate() {
+<span class="nc" id="L137">		return numPlaylistCreate;</span>
+	}
+
+	public void setNumPlaylistCreate(int numPlaylistCreate) {
+<span class="nc" id="L141">		this.numPlaylistCreate = numPlaylistCreate;</span>
+<span class="nc" id="L142">	}</span>
+	
+	
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.2.201808211720</span></div></body></html>

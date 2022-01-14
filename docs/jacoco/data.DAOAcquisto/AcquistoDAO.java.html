@@ -1,0 +1,221 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="it"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>AcquistoDAO.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">spotibase4</a> &gt; <a href="index.source.html" class="el_package">data.DAOAcquisto</a> &gt; <span class="el_source">AcquistoDAO.java</span></div><h1>AcquistoDAO.java</h1><pre class="source lang-java linenums">package data.DAOAcquisto;
+
+import data.DAOPlaylist.PlaylistAPI;
+import data.Exceptions.OggettoGiaPresenteException;
+import data.Exceptions.OggettoNonCancellatoException;
+import data.Exceptions.OggettoNonInseritoException;
+import data.Exceptions.OggettoNonTrovatoException;
+import data.utils.SingletonJDBC;
+import data.DAOCanzone.Canzone;
+import data.DAOCanzone.CanzoneMapper;
+import data.DAOCanzone.CanzoneQuery;
+
+import java.lang.annotation.Documented;
+import java.lang.annotation.Retention;
+import java.lang.annotation.Target;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
+
+import static java.lang.annotation.ElementType.METHOD;
+import static java.lang.annotation.ElementType.TYPE;
+import static java.lang.annotation.RetentionPolicy.RUNTIME;
+
+
+@Documented
+@Retention(RUNTIME)
+@Target({TYPE, METHOD})
+@interface Generated {
+}
+/** Questa classe permette  di gestire le operazioni relative ai dati persistenti degli acquisti
+ *
+ * @version 1.0
+ * @see AcquistoAPI interfaccia della classe
+ */
+public class AcquistoDAO implements AcquistoAPI {
+    
+    private Connection connection;
+    //ciao
+
+<span class="nc" id="L43">    public AcquistoDAO(){</span>
+<span class="nc" id="L44">        this.connection = SingletonJDBC.getConnection();</span>
+<span class="nc" id="L45">    }</span>
+
+<span class="fc" id="L47">    public AcquistoDAO(Connection connection){</span>
+
+<span class="fc" id="L49">        this.connection = connection;</span>
+<span class="fc" id="L50">    }</span>
+
+
+
+    /**Questo metodo ritorna l'acquisto prelevato dal DB. Può essere usato per controllare se un acquisto si trova nel DB o meno
+     * &lt;p&gt;&lt;b&gt;pre: &lt;/b&gt;chiave != null, chiave.contains(;) == true e l'acquisto deve esistere nel db&lt;/p&gt;
+     * @param chiave la concatenazione della username e del codice canzone. Esempio: &quot;pluto;C94&quot;
+     * @throws SQLException Un'eccezione che fornisce informazioni su un errore di accesso al database o altri errori.
+     * @throws IllegalArgumentException  Un'eccezione che viene lanciata quando la chiave è null o non valida
+     * @throws OggettoNonTrovatoException Un'eccezione che viene lanciata quando l'acquisto non è stato trovato nel db
+     * @return un oggetto Acquisto
+     * */
+    public Acquisto doGet(String chiave) throws SQLException {
+<span class="fc bfc" id="L63" title="All 4 branches covered.">        if(chiave == null || !chiave.contains(&quot;;&quot;))</span>
+<span class="fc" id="L64">            throw new IllegalArgumentException(&quot;la chiave è null o non valida&quot;);</span>
+<span class="fc" id="L65">        String chiavi[] = chiave.split(&quot;;&quot;);</span>
+<span class="fc" id="L66">        PreparedStatement preparedStatement = connection.prepareStatement(&quot;SELECT * FROM uc WHERE username=? &amp;&amp; codCanzone=?&quot;);</span>
+<span class="fc" id="L67">        preparedStatement.setString(1,chiavi[0]);</span>
+<span class="fc" id="L68">        preparedStatement.setString(2,chiavi[1]);</span>
+<span class="fc" id="L69">        ResultSet resultSet = preparedStatement.executeQuery();</span>
+<span class="fc" id="L70">        resultSet.next();</span>
+<span class="fc bfc" id="L71" title="All 2 branches covered.">        if(resultSet.getRow()==0)</span>
+<span class="fc" id="L72">            throw new OggettoNonTrovatoException(&quot;L'acquisto non è stato trovato: &quot;+chiave);</span>
+<span class="fc" id="L73">        return new Acquisto(resultSet.getString(&quot;username&quot;),resultSet.getString(&quot;codCanzone&quot;));</span>
+    }
+
+
+    /**Questo metodo salva un acquisto nel DB
+     * &lt;p&gt;&lt;b&gt;pre: &lt;/b&gt;acquisto deve essere diverso da null e non esistere nel db, il codice della canzone != null e l'username != null&lt;br&gt;
+     *    &lt;b&gt;post: &lt;/b&gt;Acquisto è presente nel db&lt;/p&gt;
+     * @param acquisto l'oggetto da salvare. Prima di invocare il metodo bisogna settare la username e il codCanzone all'interno dell oggetto
+     * @throws SQLException Un'eccezione che fornisce informazioni su un errore di accesso al database o altri errori.
+     * @throws IllegalArgumentException  Un'eccezione che viene lanciata quando acquisto o il codice della canzone oppure l'username dell'utente sono null o non validi
+     * @throws OggettoGiaPresenteException  Un'eccezione che viene lanciata quando l'acquisto  è già presente nel db
+     * @throws OggettoNonInseritoException Un'eccezione che viene lanciata quando l'acquisto non è stato inserito
+     * */
+    public void doSave(Acquisto acquisto) throws SQLException {
+
+<span class="fc bfc" id="L88" title="All 6 branches covered.">        if(acquisto == null || acquisto.getCodCanzone() == null || acquisto.getUsename() == null)</span>
+<span class="fc" id="L89">            throw new IllegalArgumentException(&quot;parametri non settati all'interno di acquisto&quot;);</span>
+
+<span class="fc bfc" id="L91" title="All 2 branches covered.">        if(exist(acquisto.getUsename(), acquisto.getCodCanzone()))</span>
+<span class="fc" id="L92">            throw new OggettoGiaPresenteException(&quot;L'acquisto è gia presente&quot;);</span>
+        else{
+<span class="fc" id="L94">            PreparedStatement preparedStatement = connection.prepareStatement(&quot;INSERT INTO uc VALUES (?,?)&quot;);</span>
+<span class="fc" id="L95">            preparedStatement.setString(1, acquisto.getUsename());</span>
+<span class="fc" id="L96">            preparedStatement.setString(2, acquisto.getCodCanzone());</span>
+<span class="pc bpc" id="L97" title="1 of 2 branches missed.">            if (preparedStatement.executeUpdate()!=1)</span>
+<span class="nc" id="L98">                throw new OggettoNonInseritoException(&quot;L'acquisto non è stato inserito&quot;);</span>
+        }
+<span class="fc" id="L100">    }</span>
+
+
+    /**Questo metodo cancella un acquisto dal DB
+     * &lt;p&gt;&lt;b&gt;pre:&lt;/b&gt; chiave != null, chiave.contains(;) == true e l'acquisto deve esistere nel db &lt;br&gt;
+     *    &lt;b&gt;post:&lt;/b&gt; Acquisto non presente nel db&lt;/p&gt;
+     * @param chiave la concatenazione della username e del codice canzone. Esempio: &quot;pluto;C94&quot;
+     * @throws SQLException Un'eccezione che fornisce informazioni su un errore di accesso al database o altri errori.
+     * @throws IllegalArgumentException  Un'eccezione che viene lanciata quando la chiave è null o non valida
+     * @throws OggettoNonCancellatoException  Un'eccezione che viene lanciata quando l'acquisto non è stato cancellato nel db
+     * @throws OggettoNonTrovatoException Un'eccezione che viene lanciata quando l'acquisto non è stato trovato nel db
+     *
+     *
+     * */
+
+    public void doDelete(String chiave) throws SQLException {
+<span class="fc bfc" id="L116" title="All 4 branches covered.">        if(chiave == null || !chiave.contains(&quot;;&quot;))</span>
+<span class="fc" id="L117">            throw new IllegalArgumentException(&quot;la chiave è null o non valida&quot;);</span>
+
+<span class="fc" id="L119">        String[] chiavi = chiave.split(&quot;;&quot;);</span>
+
+<span class="fc bfc" id="L121" title="All 2 branches covered.">        if(exist(chiavi[0],chiavi[1])){</span>
+<span class="fc" id="L122">            PreparedStatement preparedStatement = connection.prepareStatement(&quot;DELETE FROM uc WHERE username=? &amp;&amp; codCanzone=?&quot;);</span>
+<span class="fc" id="L123">            preparedStatement.setString(1,chiavi[0]);</span>
+<span class="fc" id="L124">            preparedStatement.setString(2, chiavi[1]);</span>
+
+<span class="pc bpc" id="L126" title="1 of 2 branches missed.">            if(preparedStatement.executeUpdate()!=1)</span>
+<span class="nc" id="L127">                throw new OggettoNonCancellatoException(&quot;l'acquisto non è stato cancellato&quot;);</span>
+<span class="fc" id="L128">        }else</span>
+<span class="fc" id="L129">            throw new OggettoNonTrovatoException(&quot;Acquisto non trovato&quot;);</span>
+<span class="fc" id="L130">    }</span>
+
+
+    /**Questo metodo inserisce una canzone negli acquisti
+     * &lt;p&gt;&lt;b&gt;pre: &lt;/b&gt;il codice della canzone != null e l'username != null e non deve esistere esistere la corrispondenza tra username e codice della canzone &lt;br&gt;
+     *    &lt;b&gt;post: &lt;/b&gt;deve esistere esistere la corrispondenza tra username e codice della canzone&lt;/p&gt;
+     * @param username contiene la username dell'utente che acquista una canzone
+     * @param codice codice della canzone che viene acquistata dall'utente
+     * @throws SQLException Un'eccezione che fornisce informazioni su un errore di accesso al database o altri errori.
+     * @throws IllegalArgumentException  Un'eccezione che viene lanciata quando acquisto o il codice della canzone oppure l'username dell'utente sono null o non validi
+     * @throws OggettoGiaPresenteException  Un'eccezione che viene lanciata quando l'acquisto è già presente nel db
+     * @throws OggettoNonInseritoException Un'eccezione che viene lanciata quando la canzone non viene acquistata
+     * */
+    public void doInsertCanzoneAcquistata(String username, String codice) throws SQLException {
+<span class="fc bfc" id="L144" title="All 4 branches covered.">        if(username == null || codice == null)</span>
+<span class="fc" id="L145">            throw new IllegalArgumentException(&quot;username o codice sono null&quot;);</span>
+
+<span class="fc bfc" id="L147" title="All 2 branches covered.">        if(exist(username,codice)==true) {</span>
+<span class="fc" id="L148">            throw new OggettoGiaPresenteException(&quot;L'acquisto è gia presente&quot;);</span>
+        }else{
+<span class="fc" id="L150">            PreparedStatement preparedStatement = connection.prepareStatement(CanzoneQuery.getQueryDoInsertCanzoneAcquistata());</span>
+<span class="fc" id="L151">            preparedStatement.setString(1, username);</span>
+<span class="fc" id="L152">            preparedStatement.setString(2, codice);</span>
+<span class="pc bpc" id="L153" title="1 of 2 branches missed.">            if (preparedStatement.executeUpdate() != 1)</span>
+<span class="nc" id="L154">                throw new OggettoNonInseritoException(&quot;La canzone non è stata acquistata&quot;);</span>
+        }
+<span class="fc" id="L156">    }</span>
+
+
+    /**Ritorna la lista delle canzoni acquistate dall utente
+     * &lt;p&gt;&lt;b&gt;pre: &lt;/b&gt; username != null e deve esistere nel db&lt;/p&gt;
+     * @param username username dell'utente che ha acquistato una serie di canzoni
+     * @throws SQLException Un'eccezione che fornisce informazioni su un errore di accesso al database o altri errori.
+     * @throws IllegalArgumentException  Un'eccezione che viene lanciata quando username dell'utente è null o non valido
+     * @return una lista di codici delle canzoni acquistate
+     * */
+    public List&lt;String&gt; doRetrieveCodiciCanzoniAcquistate(String username) throws SQLException {
+<span class="fc bfc" id="L167" title="All 2 branches covered.">        if(username == null){</span>
+<span class="fc" id="L168">            throw new IllegalArgumentException(&quot;username è null&quot;);</span>
+        }
+<span class="fc" id="L170">        PreparedStatement preparedStatement = connection.prepareStatement(CanzoneQuery.getQueryDoRetrieveCodiciCanzoniAcquistate());</span>
+<span class="fc" id="L171">        preparedStatement.setString(1,username);</span>
+<span class="fc" id="L172">        preparedStatement.setString(2,username);</span>
+<span class="fc" id="L173">        ResultSet resultSet = preparedStatement.executeQuery();</span>
+<span class="fc" id="L174">        ArrayList&lt;String&gt; codici = new ArrayList&lt;&gt;();</span>
+<span class="fc bfc" id="L175" title="All 2 branches covered.">        while (resultSet.next())</span>
+<span class="fc" id="L176">            codici.add(resultSet.getString(&quot;codCanzone&quot;));</span>
+<span class="fc" id="L177">        return codici;</span>
+    }
+
+    /**Questo metodo consente di verificare l’acquisto all’interno del database
+     * &lt;p&gt;&lt;b&gt;pre: &lt;/b&gt;codice != null e username != null&lt;/p&gt;
+     * @param username username dell'utente che ha effettuato l'acquisto
+     * @param codCanzone codice della canzone acquistata ddll'utente
+     * @throws SQLException Un'eccezione che fornisce informazioni su un errore di accesso al database o altri errori.
+     * @throws IllegalArgumentException  Un'eccezione che viene lanciata quando il codice della canzone oppure l'username dell'utente sono null o non validi
+     * @return true se l'acquisto esiste, false altrimenti
+     */
+    public boolean exist(String username, String codCanzone) throws SQLException {
+<span class="fc bfc" id="L189" title="All 4 branches covered.">        if(username == null || codCanzone == null)</span>
+<span class="fc" id="L190">            throw new IllegalArgumentException(&quot;username o codCanzone sono null&quot;);</span>
+<span class="fc" id="L191">        PreparedStatement preparedStatement = connection.prepareStatement(&quot;SELECT * FROM uc WHERE username=? &amp;&amp; codCanzone=?&quot;);</span>
+<span class="fc" id="L192">        preparedStatement.setString(1,username);</span>
+<span class="fc" id="L193">        preparedStatement.setString(2, codCanzone);</span>
+<span class="fc" id="L194">         return preparedStatement.executeQuery().next();</span>
+    }
+
+
+
+    //non documentati per IS----------------------------------------------------------------------------------------------------
+
+    /**Ritorna le canzoni acquistate dall'utente*/
+
+    @Generated
+    public List&lt;Canzone&gt; doRetrieveCanzoniAcquistate(String username) throws SQLException {
+        if(username == null){
+            throw new IllegalArgumentException(&quot;username è null&quot;);
+        }
+        PreparedStatement statement = connection.prepareStatement(CanzoneQuery.getQueryDoRetrieveCanzoniAcquistate());
+        statement.setString(1,username);
+        statement.setString(2, username);
+        ResultSet resultSet = statement.executeQuery();
+        ArrayList&lt;Canzone&gt; list = new ArrayList&lt;&gt;();
+        CanzoneMapper mapper = new CanzoneMapper();
+        System.out.println(resultSet);
+        while (resultSet.next())
+            list.add(mapper.map(resultSet));
+        return list;
+
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.2.201808211720</span></div></body></html>
