@@ -13,7 +13,7 @@ Spotibase è una piattaforma per la riproduzione di brani, inoltre permette l'ac
  - Silvio Venturino - [silvio2804](https://github.com/silvio2804)
 
 ## Built With
- - [Java](https://jdk.java.net/15/) - Linguaggio di programmazione usato per lo sviluppo front-end.
+ - [Java](https://jdk.java.net/15/) - Linguaggio di programmazione usato per lo sviluppo back-end.
  - [Maven](https://maven.apache.org/) - Dependency Management.
  - [HTML5](https://www.w3schools.com/html/default.asp) - Linguaggio usato per lo sviluppo front-end.
  - [CSS3](https://www.w3schools.com/css/default.asp) - Linguaggio usato per lo sviluppo front-end.
