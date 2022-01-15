@@ -1,0 +1,422 @@
+{
+  "id": "f9c1fabf-bafd-412f-a888-00ff7a1362ad",
+  "version": "2.0",
+  "name": "Spotibase_CreazionePlaylist",
+  "url": "http://localhost:8080/spotibase4/index.html",
+  "tests": [{
+    "id": "0661f1a9-cda6-48ea-a888-ea62becfa2b4",
+    "name": "CreazionePlaylistTC1.3_03",
+    "commands": [{
+      "id": "4368b5a6-8ef4-44f9-872d-e2b17a909ae3",
+      "comment": "",
+      "command": "open",
+      "target": "http://localhost:8080/spotibase4/index.html",
+      "targets": [],
+      "value": ""
+    }, {
+      "id": "c53e26e6-7b93-42d8-a08e-02a1ffeb42ca",
+      "comment": "",
+      "command": "setWindowSize",
+      "target": "1920x1030",
+      "targets": [],
+      "value": ""
+    }, {
+      "id": "44d7d0a3-e967-4f7a-b7a7-d2267954e281",
+      "comment": "",
+      "command": "click",
+      "target": "css=li:nth-child(4) > a",
+      "targets": [
+        ["css=li:nth-child(4) > a", "css:finder"],
+        ["xpath=(//a[contains(text(),'Libreria')])[2]", "xpath:link"],
+        ["xpath=(//a[contains(@href, './libreria')])[2]", "xpath:href"],
+        ["xpath=//li[4]/a", "xpath:position"]
+      ],
+      "value": ""
+    }, {
+      "id": "9af7c19a-d2ce-4167-a8f0-6377a77918ad",
+      "comment": "",
+      "command": "click",
+      "target": "css=.fa-plus-circle",
+      "targets": [
+        ["css=.fa-plus-circle", "css:finder"],
+        ["xpath=//i[@onclick='openPopup()']", "xpath:attributes"],
+        ["xpath=//h2[3]/i", "xpath:position"]
+      ],
+      "value": ""
+    }, {
+      "id": "d4e24e1d-4d0c-45f5-a476-3576c5d4bbe3",
+      "comment": "",
+      "command": "click",
+      "target": "id=titolo",
+      "targets": [
+        ["id=titolo", "id"],
+        ["name=titolo", "name"],
+        ["css=#titolo", "css:finder"],
+        ["xpath=//input[@id='titolo']", "xpath:attributes"],
+        ["xpath=//div/form/input", "xpath:position"]
+      ],
+      "value": ""
+    }, {
+      "id": "fbe79ba5-d50a-40d0-bb01-d791ee30576e",
+      "comment": "",
+      "command": "type",
+      "target": "id=titolo",
+      "targets": [
+        ["id=titolo", "id"],
+        ["name=titolo", "name"],
+        ["css=#titolo", "css:finder"],
+        ["xpath=//input[@id='titolo']", "xpath:attributes"],
+        ["xpath=//div/form/input", "xpath:position"]
+      ],
+      "value": "MyCar2"
+    }, {
+      "id": "39f59f4f-d43d-4042-8b8e-00fa720456c5",
+      "comment": "",
+      "command": "click",
+      "target": "id=note",
+      "targets": [
+        ["id=note", "id"],
+        ["name=note", "name"],
+        ["css=#note", "css:finder"],
+        ["xpath=//textarea[@id='note']", "xpath:attributes"],
+        ["xpath=//textarea", "xpath:position"]
+      ],
+      "value": ""
+    }, {
+      "id": "80d72cc0-01a4-44b1-b909-bb18433e5bc6",
+      "comment": "",
+      "command": "type",
+      "target": "id=note",
+      "targets": [
+        ["id=note", "id"],
+        ["name=note", "name"],
+        ["css=#note", "css:finder"],
+        ["xpath=//textarea[@id='note']", "xpath:attributes"],
+        ["xpath=//textarea", "xpath:position"]
+      ],
+      "value": "\\n"
+    }, {
+      "id": "f66f5ee6-6e38-403e-beda-cd2fdc1ec47a",
+      "comment": "",
+      "command": "click",
+      "target": "css=.btn",
+      "targets": [
+        ["css=.btn", "css:finder"],
+        ["xpath=//button[@type='submit']", "xpath:attributes"],
+        ["xpath=//div/form/button", "xpath:position"],
+        ["xpath=//button[contains(.,'Invia')]", "xpath:innerText"]
+      ],
+      "value": ""
+    }, {
+      "id": "fbc9d1ae-dc6e-48c6-9a9d-d8b69c516938",
+      "comment": "",
+      "command": "assertText",
+      "target": "id=errorNote",
+      "targets": [
+        ["id=errorNote", "id"],
+        ["css=#errorNote", "css:finder"],
+        ["xpath=//span[@id='errorNote']", "xpath:attributes"],
+        ["xpath=//form/span[2]", "xpath:position"],
+        ["xpath=//span[contains(.,'Campo note non valido')]", "xpath:innerText"]
+      ],
+      "value": "Campo note non valido"
+    }]
+  }, {
+    "id": "a090eeaa-596d-42a9-add4-91b5572b45ec",
+    "name": "CreazionePlaylistTC1.3_01",
+    "commands": [{
+      "id": "c7bdd390-e53b-46ea-8173-849ec62d5c4b",
+      "comment": "",
+      "command": "open",
+      "target": "http://localhost:8080/spotibase4/index.html",
+      "targets": [],
+      "value": ""
+    }, {
+      "id": "87a0561c-28c5-4567-afb6-be61ea510a16",
+      "comment": "",
+      "command": "setWindowSize",
+      "target": "1863x1020",
+      "targets": [],
+      "value": ""
+    }, {
+      "id": "974e2099-3491-42e3-b3e5-2962da89a35b",
+      "comment": "",
+      "command": "click",
+      "target": "css=li:nth-child(4) > a",
+      "targets": [
+        ["css=li:nth-child(4) > a", "css:finder"],
+        ["xpath=(//a[contains(text(),'Libreria')])[2]", "xpath:link"],
+        ["xpath=(//a[contains(@href, './libreria')])[2]", "xpath:href"],
+        ["xpath=//li[4]/a", "xpath:position"]
+      ],
+      "value": ""
+    }, {
+      "id": "1f35dfee-2d8e-4ce6-85b7-38d8b39db148",
+      "comment": "",
+      "command": "click",
+      "target": "css=.fa-plus-circle",
+      "targets": [
+        ["css=.fa-plus-circle", "css:finder"],
+        ["xpath=//i[@onclick='openPopup()']", "xpath:attributes"],
+        ["xpath=//h2[3]/i", "xpath:position"]
+      ],
+      "value": ""
+    }, {
+      "id": "57eaf836-5e22-439f-aafc-42d03e737940",
+      "comment": "",
+      "command": "click",
+      "target": "id=titolo",
+      "targets": [
+        ["id=titolo", "id"],
+        ["name=titolo", "name"],
+        ["css=#titolo", "css:finder"],
+        ["xpath=//input[@id='titolo']", "xpath:attributes"],
+        ["xpath=//div/form/input", "xpath:position"]
+      ],
+      "value": ""
+    }, {
+      "id": "efdf4686-de92-43b8-b899-cf807fd807d2",
+      "comment": "",
+      "command": "click",
+      "target": "css=.btn",
+      "targets": [
+        ["css=.btn", "css:finder"],
+        ["xpath=//button[@type='submit']", "xpath:attributes"],
+        ["xpath=//div/form/button", "xpath:position"],
+        ["xpath=//button[contains(.,'Invia')]", "xpath:innerText"]
+      ],
+      "value": ""
+    }, {
+      "id": "f9b4b581-114f-4126-8b68-9bed3597d373",
+      "comment": "",
+      "command": "assertText",
+      "target": "id=errorTitolo",
+      "targets": [
+        ["id=errorTitolo", "id"],
+        ["css=#errorTitolo", "css:finder"],
+        ["xpath=//span[@id='errorTitolo']", "xpath:attributes"],
+        ["xpath=//form/span", "xpath:position"],
+        ["xpath=//span[contains(.,'Campo titolo non valido')]", "xpath:innerText"]
+      ],
+      "value": "Campo titolo non valido"
+    }]
+  }, {
+    "id": "70813617-d056-44f1-a1de-b5dc0f79fd83",
+    "name": "CreazionePlaylistTC1.3_02",
+    "commands": [{
+      "id": "72b55915-52fb-4d7a-852b-3c59d000ec19",
+      "comment": "",
+      "command": "open",
+      "target": "http://localhost:8080/spotibase4/index.html",
+      "targets": [],
+      "value": ""
+    }, {
+      "id": "a6b3c6cf-b947-4812-a6b6-38a1233811fd",
+      "comment": "",
+      "command": "setWindowSize",
+      "target": "1863x1020",
+      "targets": [],
+      "value": ""
+    }, {
+      "id": "33d6ad7f-eef0-40bc-aa68-ceac9bbda3c5",
+      "comment": "",
+      "command": "click",
+      "target": "css=li:nth-child(4) > a",
+      "targets": [
+        ["css=li:nth-child(4) > a", "css:finder"],
+        ["xpath=(//a[contains(text(),'Libreria')])[2]", "xpath:link"],
+        ["xpath=(//a[contains(@href, './libreria')])[2]", "xpath:href"],
+        ["xpath=//li[4]/a", "xpath:position"]
+      ],
+      "value": ""
+    }, {
+      "id": "3775989c-485f-480c-98d1-6310f1d214d5",
+      "comment": "",
+      "command": "click",
+      "target": "css=.fa-plus-circle",
+      "targets": [
+        ["css=.fa-plus-circle", "css:finder"],
+        ["xpath=//i[@onclick='openPopup()']", "xpath:attributes"],
+        ["xpath=//h2[3]/i", "xpath:position"]
+      ],
+      "value": ""
+    }, {
+      "id": "9501bf7c-6b74-41e0-9c4e-94baca2c9b64",
+      "comment": "",
+      "command": "click",
+      "target": "id=titolo",
+      "targets": [
+        ["id=titolo", "id"],
+        ["name=titolo", "name"],
+        ["css=#titolo", "css:finder"],
+        ["xpath=//input[@id='titolo']", "xpath:attributes"],
+        ["xpath=//div/form/input", "xpath:position"]
+      ],
+      "value": ""
+    }, {
+      "id": "93f854e1-eefe-4202-8880-7e188e4dd696",
+      "comment": "",
+      "command": "type",
+      "target": "id=titolo",
+      "targets": [
+        ["id=titolo", "id"],
+        ["name=titolo", "name"],
+        ["css=#titolo", "css:finder"],
+        ["xpath=//input[@id='titolo']", "xpath:attributes"],
+        ["xpath=//div/form/input", "xpath:position"]
+      ],
+      "value": "MyCar"
+    }, {
+      "id": "f8044ed4-9033-453a-8d85-1d01a15b8b97",
+      "comment": "",
+      "command": "click",
+      "target": "css=.btn",
+      "targets": [
+        ["css=.btn", "css:finder"],
+        ["xpath=//button[@type='submit']", "xpath:attributes"],
+        ["xpath=//div/form/button", "xpath:position"],
+        ["xpath=//button[contains(.,'Invia')]", "xpath:innerText"]
+      ],
+      "value": ""
+    }, {
+      "id": "2aa73892-8527-4325-93d2-e8af6fe3b1e4",
+      "comment": "",
+      "command": "assertText",
+      "target": "id=errorTitoloPresente",
+      "targets": [
+        ["id=errorTitoloPresente", "id"],
+        ["css=#errorTitoloPresente", "css:finder"],
+        ["xpath=//span[@id='errorTitoloPresente']", "xpath:attributes"],
+        ["xpath=//form/span[2]", "xpath:position"],
+        ["xpath=//span[contains(.,'Titolo già presente')]", "xpath:innerText"]
+      ],
+      "value": "Titolo già presente"
+    }]
+  }, {
+    "id": "05ad5559-0cb6-44b6-a292-4002244760da",
+    "name": "CreazionePlaylistTC1.3_04",
+    "commands": [{
+      "id": "c252e0e7-187c-4890-9d6c-315cfcf1c30b",
+      "comment": "",
+      "command": "open",
+      "target": "http://localhost:8080/spotibase4/index.html",
+      "targets": [],
+      "value": ""
+    }, {
+      "id": "a2047d5f-d24a-4a2f-b2fb-f71c3ed3e592",
+      "comment": "",
+      "command": "setWindowSize",
+      "target": "1863x1020",
+      "targets": [],
+      "value": ""
+    }, {
+      "id": "bcd11f78-25ac-478a-884e-f148031d6416",
+      "comment": "",
+      "command": "click",
+      "target": "css=li:nth-child(4) > a",
+      "targets": [
+        ["css=li:nth-child(4) > a", "css:finder"],
+        ["xpath=(//a[contains(text(),'Libreria')])[2]", "xpath:link"],
+        ["xpath=(//a[contains(@href, './libreria')])[2]", "xpath:href"],
+        ["xpath=//li[4]/a", "xpath:position"]
+      ],
+      "value": ""
+    }, {
+      "id": "40cf8082-a8a4-4ea8-9f31-0df315e2afaa",
+      "comment": "",
+      "command": "click",
+      "target": "css=.fa-plus-circle",
+      "targets": [
+        ["css=.fa-plus-circle", "css:finder"],
+        ["xpath=//i[@onclick='openPopup()']", "xpath:attributes"],
+        ["xpath=//h2[3]/i", "xpath:position"]
+      ],
+      "value": ""
+    }, {
+      "id": "447bb525-93b9-4030-bdaf-dbf3d799bd7b",
+      "comment": "",
+      "command": "click",
+      "target": "id=titolo",
+      "targets": [
+        ["id=titolo", "id"],
+        ["name=titolo", "name"],
+        ["css=#titolo", "css:finder"],
+        ["xpath=//input[@id='titolo']", "xpath:attributes"],
+        ["xpath=//div/form/input", "xpath:position"]
+      ],
+      "value": ""
+    }, {
+      "id": "8bb3182b-34a8-4cb1-97fd-f376107a65a9",
+      "comment": "",
+      "command": "type",
+      "target": "id=titolo",
+      "targets": [
+        ["id=titolo", "id"],
+        ["name=titolo", "name"],
+        ["css=#titolo", "css:finder"],
+        ["xpath=//input[@id='titolo']", "xpath:attributes"],
+        ["xpath=//div/form/input", "xpath:position"]
+      ],
+      "value": "MyCar"
+    }, {
+      "id": "58ca792e-63ea-4cf0-992f-8e8b05d7ef84",
+      "comment": "",
+      "command": "click",
+      "target": "id=note",
+      "targets": [
+        ["id=note", "id"],
+        ["name=note", "name"],
+        ["css=#note", "css:finder"],
+        ["xpath=//textarea[@id='note']", "xpath:attributes"],
+        ["xpath=//textarea", "xpath:position"]
+      ],
+      "value": ""
+    }, {
+      "id": "94512a82-5454-43c4-857a-c69b84462d60",
+      "comment": "",
+      "command": "type",
+      "target": "id=note",
+      "targets": [
+        ["id=note", "id"],
+        ["name=note", "name"],
+        ["css=#note", "css:finder"],
+        ["xpath=//textarea[@id='note']", "xpath:attributes"],
+        ["xpath=//textarea", "xpath:position"]
+      ],
+      "value": "Canzoni Auto"
+    }, {
+      "id": "a5c7ffec-5865-4214-bfc6-8ecc0229d15f",
+      "comment": "",
+      "command": "click",
+      "target": "css=.btn",
+      "targets": [
+        ["css=.btn", "css:finder"],
+        ["xpath=//button[@type='submit']", "xpath:attributes"],
+        ["xpath=//div/form/button", "xpath:position"],
+        ["xpath=//button[contains(.,'Invia')]", "xpath:innerText"]
+      ],
+      "value": ""
+    }, {
+      "id": "9af8dfcd-6413-456b-b8fe-6ebe2393fa3d",
+      "comment": "",
+      "command": "assertText",
+      "target": "css=a:nth-child(2) > span",
+      "targets": [
+        ["css=a:nth-child(2) > span", "css:finder"],
+        ["xpath=//a/span", "xpath:position"],
+        ["xpath=//span[contains(.,'MyCar')]", "xpath:innerText"]
+      ],
+      "value": "MyCar"
+    }]
+  }],
+  "suites": [{
+    "id": "dcc4cf9a-3f74-49a1-9503-06813b71ec82",
+    "name": "Default Suite",
+    "persistSession": false,
+    "parallel": false,
+    "timeout": 300,
+    "tests": []
+  }],
+  "urls": ["http://localhost:8080/spotibase4_war_exploded/index.html", "http://localhost:8080/spotibase4/index.html"],
+  "plugins": []
+}

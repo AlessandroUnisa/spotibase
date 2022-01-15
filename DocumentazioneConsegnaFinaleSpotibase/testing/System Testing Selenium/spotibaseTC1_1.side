@@ -1,0 +1,363 @@
+{
+  "id": "5ccbdea6-4e39-41b2-b1f3-34ddfb3a5e33",
+  "version": "2.0",
+  "name": "spotibase",
+  "url": "http://localhost:8080/spotibase4/login",
+  "tests": [{
+    "id": "3436af08-f316-403a-879a-45d54396becd",
+    "name": "accedereTC_1.1_01",
+    "commands": [{
+      "id": "872d5ea4-ea02-467a-a5b0-fea619a20d6e",
+      "comment": "",
+      "command": "open",
+      "target": "/spotibase4/login",
+      "targets": [],
+      "value": ""
+    }, {
+      "id": "d4ebfb2d-5147-4fff-96e1-6635a27a833c",
+      "comment": "",
+      "command": "setWindowSize",
+      "target": "761x824",
+      "targets": [],
+      "value": ""
+    }, {
+      "id": "06f14837-e84c-422d-8bed-e78fe159895d",
+      "comment": "",
+      "command": "click",
+      "target": "id=email",
+      "targets": [
+        ["id=email", "id"],
+        ["name=email", "name"],
+        ["css=#email", "css:finder"],
+        ["xpath=//input[@id='email']", "xpath:attributes"],
+        ["xpath=//label/input", "xpath:position"]
+      ],
+      "value": ""
+    }, {
+      "id": "24190159-3ed2-47c8-93f4-6cb30d9b20e5",
+      "comment": "",
+      "command": "click",
+      "target": "css=.grid-x",
+      "targets": [
+        ["css=.grid-x", "css:finder"],
+        ["xpath=//body/div[2]/div", "xpath:position"]
+      ],
+      "value": ""
+    }, {
+      "id": "e7eb37b3-b7ff-4861-bbe5-722e956e59c1",
+      "comment": "",
+      "command": "click",
+      "target": "css=.btn",
+      "targets": [
+        ["css=.btn", "css:finder"],
+        ["xpath=(//button[@value='submit'])[3]", "xpath:attributes"],
+        ["xpath=//div/form/button", "xpath:position"],
+        ["xpath=//button[contains(.,'Accedi')]", "xpath:innerText"]
+      ],
+      "value": ""
+    }, {
+      "id": "fda5c591-4b1f-40fb-b603-7f1dd2fad49e",
+      "comment": "",
+      "command": "assertAlert",
+      "target": "Compila il campo email",
+      "targets": [],
+      "value": ""
+    }]
+  }, {
+    "id": "b06b9935-2821-4054-9732-595da19ed28a",
+    "name": "accedereTC_1.1_02",
+    "commands": [{
+      "id": "46255f89-ac01-4d57-83f9-6ad10f1cd697",
+      "comment": "",
+      "command": "open",
+      "target": "http://localhost:8080/spotibase4/login",
+      "targets": [],
+      "value": ""
+    }, {
+      "id": "ee1c1f20-0b37-4451-a3c7-358347836498",
+      "comment": "",
+      "command": "setWindowSize",
+      "target": "761x824",
+      "targets": [],
+      "value": ""
+    }, {
+      "id": "e97d776f-45a4-4d17-bd75-29e5a997c1ea",
+      "comment": "",
+      "command": "click",
+      "target": "id=email",
+      "targets": [
+        ["id=email", "id"],
+        ["name=email", "name"],
+        ["css=#email", "css:finder"],
+        ["xpath=//input[@id='email']", "xpath:attributes"],
+        ["xpath=//label/input", "xpath:position"]
+      ],
+      "value": ""
+    }, {
+      "id": "4badccf4-4079-4527-9898-9a25e6d0f0e5",
+      "comment": "",
+      "command": "type",
+      "target": "id=email",
+      "targets": [
+        ["id=email", "id"],
+        ["name=email", "name"],
+        ["css=#email", "css:finder"],
+        ["xpath=//input[@id='email']", "xpath:attributes"],
+        ["xpath=//label/input", "xpath:position"]
+      ],
+      "value": "michele23@gmail.com"
+    }, {
+      "id": "18748b5d-2696-43e4-b671-3d563bc1e846",
+      "comment": "",
+      "command": "click",
+      "target": "id=pwd",
+      "targets": [
+        ["id=pwd", "id"],
+        ["name=passwd", "name"],
+        ["css=#pwd", "css:finder"],
+        ["xpath=//input[@id='pwd']", "xpath:attributes"],
+        ["xpath=//label[2]/input", "xpath:position"]
+      ],
+      "value": ""
+    }, {
+      "id": "2256ba3d-29a5-48b6-8b7b-02f5776dde30",
+      "comment": "",
+      "command": "type",
+      "target": "id=pwd",
+      "targets": [
+        ["id=pwd", "id"],
+        ["name=passwd", "name"],
+        ["css=#pwd", "css:finder"],
+        ["xpath=//input[@id='pwd']", "xpath:attributes"],
+        ["xpath=//label[2]/input", "xpath:position"]
+      ],
+      "value": "Puippo78966"
+    }, {
+      "id": "f76d255b-dfa3-4510-b0e6-fcd5212e520d",
+      "comment": "",
+      "command": "click",
+      "target": "css=.btn",
+      "targets": [
+        ["css=.btn", "css:finder"],
+        ["xpath=(//button[@value='submit'])[3]", "xpath:attributes"],
+        ["xpath=//div/form/button", "xpath:position"],
+        ["xpath=//button[contains(.,'Accedi')]", "xpath:innerText"]
+      ],
+      "value": ""
+    }, {
+      "id": "7423caa2-19a1-4c2a-b3e7-20c63e8909e9",
+      "comment": "",
+      "command": "assertText",
+      "target": "css=.invalidSimple",
+      "targets": [
+        ["css=.invalidSimple", "css:finder"],
+        ["xpath=//div[4]/div", "xpath:position"]
+      ],
+      "value": "Credenziali errate. Riprovare."
+    }]
+  }, {
+    "id": "1eca848d-e5dc-4952-9ed7-dc37343ca6af",
+    "name": "accedereTC_1.1_03",
+    "commands": [{
+      "id": "3495ee7d-31b9-4ca8-904d-3b4b1ee5514a",
+      "comment": "",
+      "command": "open",
+      "target": "http://localhost:8080/spotibase4/login",
+      "targets": [],
+      "value": ""
+    }, {
+      "id": "12bdea14-15df-49c3-a537-b0d7938bf8b3",
+      "comment": "",
+      "command": "setWindowSize",
+      "target": "761x824",
+      "targets": [],
+      "value": ""
+    }, {
+      "id": "1c7c65e9-4b71-486a-9ae2-4df343995a0d",
+      "comment": "",
+      "command": "click",
+      "target": "id=email",
+      "targets": [
+        ["id=email", "id"],
+        ["name=email", "name"],
+        ["css=#email", "css:finder"],
+        ["xpath=//input[@id='email']", "xpath:attributes"],
+        ["xpath=//label/input", "xpath:position"]
+      ],
+      "value": ""
+    }, {
+      "id": "d4947567-7e25-4d2c-81b5-cd40dbbc8797",
+      "comment": "",
+      "command": "type",
+      "target": "id=email",
+      "targets": [
+        ["id=email", "id"],
+        ["name=email", "name"],
+        ["css=#email", "css:finder"],
+        ["xpath=//input[@id='email']", "xpath:attributes"],
+        ["xpath=//label/input", "xpath:position"]
+      ],
+      "value": "michele23@gmail.com"
+    }, {
+      "id": "27850888-0293-4cc1-9d62-d4509f8519b1",
+      "comment": "",
+      "command": "click",
+      "target": "id=pwd",
+      "targets": [
+        ["id=pwd", "id"],
+        ["name=passwd", "name"],
+        ["css=#pwd", "css:finder"],
+        ["xpath=//input[@id='pwd']", "xpath:attributes"],
+        ["xpath=//label[2]/input", "xpath:position"]
+      ],
+      "value": ""
+    }, {
+      "id": "a7b13b91-94eb-4a70-991e-dd582a3d25da",
+      "comment": "",
+      "command": "type",
+      "target": "id=pwd",
+      "targets": [
+        ["id=pwd", "id"],
+        ["name=passwd", "name"],
+        ["css=#pwd", "css:finder"],
+        ["xpath=//input[@id='pwd']", "xpath:attributes"],
+        ["xpath=//label[2]/input", "xpath:position"]
+      ],
+      "value": "Michele23"
+    }, {
+      "id": "e9f7d309-80c1-4177-9223-ee808f7777d8",
+      "comment": "",
+      "command": "click",
+      "target": "css=.btn",
+      "targets": [
+        ["css=.btn", "css:finder"],
+        ["xpath=(//button[@value='submit'])[3]", "xpath:attributes"],
+        ["xpath=//div/form/button", "xpath:position"],
+        ["xpath=//button[contains(.,'Accedi')]", "xpath:innerText"]
+      ],
+      "value": ""
+    }, {
+      "id": "21e3b411-fd68-4877-8117-f8255dbeed86",
+      "comment": "",
+      "command": "assertText",
+      "target": "css=.invalidSimple",
+      "targets": [
+        ["css=.invalidSimple", "css:finder"],
+        ["xpath=//div[4]/div", "xpath:position"]
+      ],
+      "value": "Credenziali errate. Riprovare."
+    }]
+  }, {
+    "id": "4469c9c2-e56f-427c-960f-1f2da7dc18de",
+    "name": "accedereTC_1.1_04",
+    "commands": [{
+      "id": "0e44defc-e94a-4837-8214-c3eafe1100bb",
+      "comment": "",
+      "command": "open",
+      "target": "http://localhost:8080/spotibase4/login",
+      "targets": [],
+      "value": ""
+    }, {
+      "id": "07f87d7c-b54b-4d65-9947-423fc64bba71",
+      "comment": "",
+      "command": "setWindowSize",
+      "target": "761x824",
+      "targets": [],
+      "value": ""
+    }, {
+      "id": "368d13c3-3943-4e06-acc0-792840ecf26b",
+      "comment": "",
+      "command": "click",
+      "target": "id=email",
+      "targets": [
+        ["id=email", "id"],
+        ["name=email", "name"],
+        ["css=#email", "css:finder"],
+        ["xpath=//input[@id='email']", "xpath:attributes"],
+        ["xpath=//label/input", "xpath:position"]
+      ],
+      "value": ""
+    }, {
+      "id": "12021d8b-f57e-46af-b9c2-5aabee36a211",
+      "comment": "",
+      "command": "type",
+      "target": "id=email",
+      "targets": [
+        ["id=email", "id"],
+        ["name=email", "name"],
+        ["css=#email", "css:finder"],
+        ["xpath=//input[@id='email']", "xpath:attributes"],
+        ["xpath=//label/input", "xpath:position"]
+      ],
+      "value": "michele23@gmail.com"
+    }, {
+      "id": "9a0230b6-7166-4b1e-a7bc-34b348f2272f",
+      "comment": "",
+      "command": "click",
+      "target": "css=.grid-y > form",
+      "targets": [
+        ["css=.grid-y > form", "css:finder"],
+        ["xpath=//div/form", "xpath:position"]
+      ],
+      "value": ""
+    }, {
+      "id": "b948215a-d52d-473a-8614-88c79e94a780",
+      "comment": "",
+      "command": "click",
+      "target": "id=pwd",
+      "targets": [
+        ["id=pwd", "id"],
+        ["name=passwd", "name"],
+        ["css=#pwd", "css:finder"],
+        ["xpath=//input[@id='pwd']", "xpath:attributes"],
+        ["xpath=//label[2]/input", "xpath:position"]
+      ],
+      "value": ""
+    }, {
+      "id": "4c899e2b-b717-4a50-803c-e71eb030817f",
+      "comment": "",
+      "command": "type",
+      "target": "id=pwd",
+      "targets": [
+        ["id=pwd", "id"],
+        ["name=passwd", "name"],
+        ["css=#pwd", "css:finder"],
+        ["xpath=//input[@id='pwd']", "xpath:attributes"],
+        ["xpath=//label[2]/input", "xpath:position"]
+      ],
+      "value": "Mick2356"
+    }, {
+      "id": "627fdaa9-6385-456b-99f8-317a9f0485fd",
+      "comment": "",
+      "command": "click",
+      "target": "css=.btn",
+      "targets": [
+        ["css=.btn", "css:finder"],
+        ["xpath=(//button[@value='submit'])[3]", "xpath:attributes"],
+        ["xpath=//div/form/button", "xpath:position"],
+        ["xpath=//button[contains(.,'Accedi')]", "xpath:innerText"]
+      ],
+      "value": ""
+    }, {
+      "id": "a2464af8-5843-4fea-8460-8fd5de95d695",
+      "comment": "",
+      "command": "assertText",
+      "target": "css=.popupUser:nth-child(3)",
+      "targets": [
+        ["css=.popupUser:nth-child(3)", "css:finder"],
+        ["xpath=//span/div[2]", "xpath:position"]
+      ],
+      "value": "Ciao Michele"
+    }]
+  }],
+  "suites": [{
+    "id": "c26f7561-6687-4dc6-8c2f-f7be344e20ec",
+    "name": "Default Suite",
+    "persistSession": false,
+    "parallel": false,
+    "timeout": 300,
+    "tests": []
+  }],
+  "urls": ["http://localhost:8080/", "http://localhost:8080/spotibase4/login"],
+  "plugins": []
+}
